@@ -1,0 +1,9 @@
+#conda create -n env_gridsearch python=3.6
+#conda activate env_gridsearch
+#conda install spyder
+
+wget
+matplotlib 
+numpy 
+pandas 
+tqdm

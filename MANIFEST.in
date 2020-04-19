@@ -1,0 +1,2 @@
+include gridsearch/data/*.zip
+include gridsearch/data/*.txt
