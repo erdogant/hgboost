@@ -1,4 +1,4 @@
-import gridsearch as gridsearch
+from gridsearch import gridsearch
 
-def test_plot():
+def test_fit():
 	pass

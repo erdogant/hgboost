@@ -1,13 +1,8 @@
+from gridsearch.gridsearch import gridsearch
+
 from gridsearch.gridsearch import (
-    sampling,
-	inference,
-	structure_learning,
-	parameter_learning,
-    load_example,
-	compare_networks,
-	to_undirected,
-    plot,
-)
+    import_example,
+    )
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'
