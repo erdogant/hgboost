@@ -76,13 +76,19 @@ iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris['feature_names'])
 y = iris.target
 
-gs = gridsearch(method='xgb_clf', max_evals=100)
+gs = gridsearch(method='xgb_clf', max_evals=10, eval_metric='auc')
 results = gs.fit(X, y==1)
-gs.plot()
+gs.treeplot()
 gs.plot_summary()
+gs.plot_validation()
 
 # %% CLASSIFICATION MULTI-CLASS #####
-gs = gridsearch(method='xgb_clf_multi', max_evals=10)
+iris = datasets.load_iris()
+X = pd.DataFrame(iris.data, columns=iris['feature_names'])
+y = iris.target
+
+gs = gridsearch(method='xgb_clf_multi', max_evals=10, eval_metric='mlogloss')
 results = gs.fit(X, y)
 gs.treeplot()
 gs.plot_summary()
+gs.plot_validation()

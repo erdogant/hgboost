@@ -52,6 +52,7 @@ class gridsearch():
             Evaluation metric for the regressor of classification model.
             * 'auc' : area under ROC curve (classification : default)
             * 'rmse' : root mean squared error (regression: default)
+            * 'kappa' : (multi-classification : default)
             * 'mae' : mean absolute error. (regression)
             * 'logloss' : for binary logarithmic loss.
             * 'mlogloss' : for binary logarithmic multi-class log loss (cross entropy).
@@ -77,10 +78,10 @@ class gridsearch():
         # Check the eval_metric
         if (eval_metric is None) and ('_reg' in method):
             eval_metric = 'rmse'
-        elif (eval_metric is None) and ('_clf' in method):
-            eval_metric = 'auc'
         elif (eval_metric is None) and ('_clf_multi' in method):
             eval_metric = 'kappa'
+        elif (eval_metric is None) and ('_clf' in method):
+            eval_metric = 'auc'
         # Check the greater_is_better for evaluation metric
         if (greater_is_better is None) and ('_reg' in method):
             greater_is_better = False
@@ -288,46 +289,16 @@ class gridsearch():
         # Return
         return model, results_summary, best_params
 
-    # def _train_reg(self, reg, para):
-    #     # Fit model
-    #     reg.fit(self.X_train, self.y_train, eval_set=[(self.X_test, self.y_test)], **para['fit_params'])
-    #     # Make prediction
-    #     y_pred = reg.predict(self.X_test)
-    #     loss = para['loss_func'](self.y_test, y_pred)
-    #     # Negation of the loss function if required
-    #     if self.greater_is_better: loss = loss * -1
-    #     # Store results
-    #     out = {'loss': loss, 'status': STATUS_OK, 'model' : reg}
-    #     # Return
-    #     return out
-
     def _train_model(self, model, para):
         verbose = 2 if self.verbose<=3 else 3
-
         # Evaluation is determine for both training and testing set. These results can plotted after finishing.
         eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)]
         # Make fit with stopping-rule to avoid overfitting.
         model.fit(self.X_train, self.y_train, eval_set=eval_set, **para['fit_params'])
         # Evaluate results
         out, eval_results = self._eval(self.X_test, self.y_test, model, para, verbose=verbose)
-
-        if self.verbose>=4: print("[gridsearch] >best score: {0}, best iteration: {1}".format(model.best_score, model.best_iteration))
-
-        # if '_clf' in self.method:
-            # y_proba = model.predict_proba(self.X_test)
-            # y_score = model.decision_function(self.X_test)
-        #     # Evaluate results
-        #     out, eval_results = _eval(self.method, model, para, self.y_test, y_proba, y_pred=y_pred, threshold=self.threshold, pos_label=self.pos_label, greater_is_better=self.greater_is_better, verbose=verbose)
-        # elif '_reg' in self.method:
-        #     loss = para['loss_func'](self.y_test, y_pred)
-        #     # Negation of the loss function if required
-        #     if self.greater_is_better: loss = loss * -1
-        #     # Store results
-        #     out = {'loss': loss, 'status': STATUS_OK, 'model' : model}
-        # else:
-        #     raise Exception('[gridsearch] >Error: Method %s does not exists.' %(self.method))
-
         # Return
+        if self.verbose>=4: print("[gridsearch] >best score: {0}, best iteration: {1}".format(model.best_score, model.best_iteration))
         return out, eval_results
 
     def xgb_reg(self, para):
@@ -545,6 +516,10 @@ class gridsearch():
         return ax
 
     def plot_validation(self):
+        if not hasattr(self, 'model'):
+            print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
+            return None
+
         if '_clf' in self.method:
             if (self.results.get('val_results', None)) is not None:
                 ax = cle.plot(self.results['val_results'])
@@ -598,9 +573,10 @@ class gridsearch():
         ax.legend()
         if ylim is not None: ax.set_ylim(ylim)
         
-        ax2.plot([*self.model.evals_result()['validation_0'].values()], label='Train error')
-        ax2.plot([*self.model.evals_result()['validation_1'].values()], label='Test error')
-        ax2.set_ylabel(self.eval_metric)
+        eval_metric = [*self.model.evals_result()['validation_0'].keys()][0]
+        ax2.plot([*self.model.evals_result()['validation_0'].values()][0], label='Train error')
+        ax2.plot([*self.model.evals_result()['validation_1'].values()][0], label='Test error')
+        ax2.set_ylabel(eval_metric)
         ax.set_title(self.method)
         ax2.grid(True)
         ax2.legend()
@@ -684,7 +660,6 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
             'min_child_weight': hp.choice('min_child_weight', np.arange(1, 10, 1, dtype=int)),
             'gamma': hp.choice('gamma', [0, 0.25, 0.5, 1.0]),
             'reg_lambda': hp.choice('reg_lambda', [0.1, 1.0, 5.0, 10.0, 50.0, 100.0]),
-            # 'colsample_bytree': hp.choice('colsample_bytree', np.arange(0.3, 0.8, 0.1)),
             'subsample': hp.uniform('subsample', 0.5, 1),
             'n_estimators': 100,
         }
@@ -705,7 +680,6 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
             'learning_rate': hp.choice('learning_rate', np.arange(0.05, 0.31, 0.05)),
             'max_depth': hp.choice('max_depth', np.arange(5, 16, 1, dtype=int)),
             'min_child_weight': hp.choice('min_child_weight', np.arange(1, 8, 1, dtype=int)),
-            # 'colsample_bytree': hp.choice('colsample_bytree', np.arange(0.3, 0.8, 0.1)),
             'subsample': hp.uniform('subsample', 0.8, 1),
             'n_estimators': 100,
         }
@@ -744,15 +718,26 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
 
     if 'xgb_clf' in fn_name:
         xgb_clf_params = {
-            'learning_rate' : hp.choice('learning_rate', np.arange(0.01, 0.3, 0.05)),
-            'max_depth' : hp.choice('max_depth', np.arange(5, 16, 1, dtype=int)),
-            'min_child_weight' : hp.choice('min_child_weight', np.arange(1, 10, 1, dtype=int)),
+            'learning_rate' : hp.quniform('learning_rate', 0.01, 0.5, 0.01),
+            'max_depth' : hp.choice('max_depth', range(5, 30, 1)),
+            'min_child_weight' : hp.quniform('min_child_weight', 1, 10, 1),
             'gamma' : hp.choice('gamma', [0.5, 1, 1.5, 2, 5]),
-            'subsample' : hp.uniform('subsample', 0.5, 1),
-            'n_estimators' : hp.choice('n_estimators', [10, 25, 100, 250]),
+            'subsample' : hp.quniform('subsample', 0.1, 1, 0.01),
+            'n_estimators' : hp.choice('n_estimators', range(20, 205, 5)),
             'booster' : 'gbtree',
-            # 'colsample_bytree': hp.choice('colsample_bytree', np.arange(0.3, 0.8, 0.1)),
+            'colsample_bytree' : hp.quniform('colsample_bytree', 0.1, 1.0, 0.01),
         }
+
+        # xgb_clf_params = {
+        #     'learning_rate' : hp.choice('learning_rate', np.arange(0.01, 0.3, 0.05)),
+        #     'max_depth' : hp.choice('max_depth', np.arange(5, 16, 1, dtype=int)),
+        #     'min_child_weight' : hp.choice('min_child_weight', np.arange(1, 10, 1, dtype=int)),
+        #     'gamma' : hp.choice('gamma', [0.5, 1, 1.5, 2, 5]),
+        #     'subsample' : hp.uniform('subsample', 0.5, 1),
+        #     'n_estimators' : hp.choice('n_estimators', [10, 25, 100, 250]),
+        #     'booster' : 'gbtree',
+        #     # 'colsample_bytree': hp.choice('colsample_bytree', np.arange(0.3, 0.8, 0.1)),
+        # }
 
         if fn_name=='xgb_clf':
             xgb_clf_params['eval_metric'] = hp.choice('eval_metric', ['error', eval_metric])
@@ -762,8 +747,6 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
 
         if fn_name=='xgb_clf_multi':
             xgb_clf_params['objective']='multi:softprob'
-            # from sklearn.metrics import make_scorer
-            # scoring = make_scorer(cohen_kappa_score, greater_is_better=True)
             scoring='kappa'  # Note that this variable is not used.
 
         xgb_fit_params = {'early_stopping_rounds': 10, 'verbose': False}
