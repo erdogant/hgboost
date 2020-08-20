@@ -172,24 +172,6 @@ class gridsearch():
             self.X_val = None
             self.y_val = None
 
-        # Make split for validation set
-        # if (self.val_size is not None):
-        #     self.X, self.X_val, self.y, self.y_val = train_test_split(X, y, test_size=self.val_size, random_state=self.random_state, shuffle=True, strafity=strafity)
-        #     # skf = StratifiedKFold(n_splits=int(1 / self.val_size), random_state=self.random_state, shuffle=True)
-        #     # for train_index, val_index in skf.split(X, y):
-        #     #     pass
-        #     # if len(np.unique(np.append(train_index, val_index)))!=X.shape[0]: raise Exception('[gridsearch] >Error: Split for validation set not correct.')
-        #     if self.verbose>=3: print('[gridsearch] >Validation datset: %s samples.' %(str(len(self.y_val))))
-        #     # self.X_val = X.iloc[val_index, :]
-        #     # self.y_val = y[val_index]
-        #     # self.X = X.iloc[train_index, :]
-        #     # self.y = y[train_index]
-        # else:
-        #     self.X = X
-        #     self.y = y
-        #     self.X_val = None
-        #     self.y_val = None
-
     def HPOpt(self, verbose=3):
         """Hyperoptimization of the search space.
 
