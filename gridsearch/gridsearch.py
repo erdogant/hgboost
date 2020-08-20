@@ -81,7 +81,7 @@ class gridsearch():
             greater_is_better = False
         elif (greater_is_better is None) and ('_clf' in method):
             greater_is_better = True
-        if top_cv_evals is None: top_cv_evals=max_evals
+        if top_cv_evals is None: top_cv_evals=10
 
         self.method=method
         self.eval_metric=eval_metric
@@ -135,21 +135,6 @@ class gridsearch():
         self.pos_label, self.method = _check_input(X, y, pos_label, self.method, verbose=self.verbose)
         # Set validation set
         self.set_validation_set(X, y)
-
-        # Fit model
-        # if self.cv is not None:
-        #     scores = []
-        #     models = []
-        #     for p in np.arange(0, self.cv):
-        #         # Split train-test set
-        #         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
-        #         # Find best parameters
-        #         model, results = self.HPOpt(verbose=self.verbose)
-        #         scores.append(results['summary'])
-        #         models.append(model)
-        # else:
-        # Split train-test set
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
         # Find best parameters
         self.model, self.results = self.HPOpt(verbose=self.verbose)
         
@@ -210,60 +195,60 @@ class gridsearch():
             * exception: In case of error.
 
         """
-        exception = None
-        # Import the function that is to be used
+        # Import the desired model-function for the classification/regression
         fn = getattr(self, self.method)
         # Import search space for the specific function
         space = _get_params(self.method, eval_metric=self.eval_metric)
 
         # Split train-test set
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
-        # Hyperoptimization to find best performing model
+        # Hyperoptimization to find best performing model. Set the trials which is the object where all the HPopt results are stored.
         trials=Trials()
         best_params = fmin(fn=fn, space=space, algo=self.algo, max_evals=self.max_evals, trials=trials, show_progressbar=True)
         # Summary results
         results_summary, model = self.to_df(trials, verbose=self.verbose)
-        status = 'ok'
-        
-        # Cross-validation
+
+        # Cross-validation over the optimized models.
         if self.cv is not None:
-            ascending = False if self.greater_is_better else True
-            results_summary['loss_mean'] = np.nan
-            results_summary['loss_std'] = np.nan
-            # Gather top n best results
+            model, results_summary, best_params = self._cv(results_summary, space, best_params)
+            
+            # ascending = False if self.greater_is_better else True
+            # results_summary['loss_mean'] = np.nan
+            # results_summary['loss_std'] = np.nan
+            # # Gather top n best results
+            # # if self.greater_is_better:
+            # #     ascending = False
+            # # else:
+            # #     ascending = True
+
+            # top_cv_evals = np.minimum(results_summary.shape[0], self.top_cv_evals)
+            # idx = results_summary['loss'].sort_values(ascending=ascending).index[0:top_cv_evals]
+            # if verbose>=3: print('[gridsearch] >%.0d-fold cross validation for the top %.0d models.' %(self.cv, len(idx)))
+
+            # # Run over the top models that are sorted from best first.
+            # for i in tqdm(idx):
+            #     scores = []
+            #     # Run over the cross-validations
+            #     for k in np.arange(0, self.cv):
+            #         # Split train-test set
+            #         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
+            #         # Evaluate model
+            #         score = self._train_clf(results_summary['model'].iloc[i], space)
+            #         score.pop('model')
+            #         scores.append(score)
+
+            #     # Store mean and std summary
+            #     results_summary['loss_mean'].iloc[i] = pd.DataFrame(scores)['loss'].mean()
+            #     results_summary['loss_std'].iloc[i] = pd.DataFrame(scores)['loss'].std()
+
+            # # Retrieve best model
             # if self.greater_is_better:
-            #     ascending = False
+            #     results_summary['loss_mean'] = results_summary['loss_mean'] * -1
+            #     idx_best = results_summary['loss_mean'].argmax()
             # else:
-            #     ascending = True
+            #     idx_best= results_summary['loss_mean'].argmin()
 
-            top_cv_evals = np.minimum(results_summary.shape[0], self.top_cv_evals)
-            idx = results_summary['loss'].sort_values(ascending=ascending).index[0:top_cv_evals]
-            if verbose>=3: print('[gridsearch] >%.0d-fold cross validation for the top %.0d models.' %(self.cv, len(idx)))
-
-            # Run over the top models that are sorted from best first.
-            for i in tqdm(idx):
-                scores = []
-                # Run over the cross-validations
-                for k in np.arange(0, self.cv):
-                    # Split train-test set
-                    self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
-                    # Evaluate model
-                    score = self._train_clf(results_summary['model'].iloc[i], space)
-                    score.pop('model')
-                    scores.append(score)
-
-                # Store mean and std summary
-                results_summary['loss_mean'].iloc[i] = pd.DataFrame(scores)['loss'].mean()
-                results_summary['loss_std'].iloc[i] = pd.DataFrame(scores)['loss'].std()
-
-            # Retrieve best model
-            if self.greater_is_better:
-                results_summary['loss_mean'] = results_summary['loss_mean'] * -1
-                idx_best = results_summary['loss_mean'].argmax()
-            else:
-                idx_best= results_summary['loss_mean'].argmin()
-
-            model = results_summary['model'].iloc[idx_best]
+            # model = results_summary['model'].iloc[idx_best]
 
                 # mean_scores = dict(pd.DataFrame(scores).mean(axis=0))
                 # colnames = list(map(lambda x: x + '_std', [*scores[0]]))
@@ -295,22 +280,62 @@ class gridsearch():
         # Return
         return model, results
 
-    def cv_clf(self, model, para):
+    def _cv(self, results_summary, space, best_params):
+        ascending = False if self.greater_is_better else True
+        results_summary['loss_mean'] = np.nan
+        results_summary['loss_std'] = np.nan
+
+        # Determine maximum folds
+        top_cv_evals = np.minimum(results_summary.shape[0], self.top_cv_evals)
+        idx = results_summary['loss'].sort_values(ascending=ascending).index[0:top_cv_evals]
+        if self.verbose>=3: print('[gridsearch] >%.0d-fold cross validation for the top %.0d models.' %(self.cv, len(idx)))
+
+        # Run over the top models that are sorted from best first.
+        for i in tqdm(idx):
+            scores = []
+            # Run over the cross-validations
+            for k in np.arange(0, self.cv):
+                # Split train-test set
+                self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
+                # Evaluate model
+                score = self._train_clf(results_summary['model'].iloc[i], space)
+                score.pop('model')
+                scores.append(score)
+
+            # Store mean and std summary
+            results_summary['loss_mean'].iloc[i] = pd.DataFrame(scores)['loss'].mean()
+            results_summary['loss_std'].iloc[i] = pd.DataFrame(scores)['loss'].std()
+
+        # Negate scoring if required. The hpopt is optimized for loss functions (lower is better). Therefore we need to set eg the auc to negative and here we need to return.
+        if self.greater_is_better:
+            results_summary['loss_mean'] = results_summary['loss_mean'] * -1
+            idx_best = results_summary['loss_mean'].argmax()
+        else:
+            idx_best = results_summary['loss_mean'].argmin()
+
+        # Get best (average) performing model
+        model = results_summary['model'].iloc[idx_best]
+        # Collect best parameters for this model
+        best_params = dict(results_summary.iloc[idx_best, np.isin(results_summary.columns, [*best_params.keys()])])
+        # Return
+        return model, results_summary, best_params
+
+    def _cv_clf(self, model, para):
         verbose = 2 if self.verbose<=3 else 3
         scores = []
         for p in np.arange(0, self.cv):
             X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
             # Fit model
             model.fit(X_train, y_train, eval_set=[(X_test, y_test)], **para['fit_params'])
-            # model.fit(X_train, y_train)
+            model.best_iteration
             # Make prediction
             y_pred = model.predict(X_test)
             y_proba = model.predict_proba(X_test)
+            
             # Evaluation
             if len(np.unique(y_test))==2:
                 results = cle.eval(y_test, y_proba[:, 1], y_pred=y_pred, threshold=self.threshold, pos_label=self.pos_label, verbose=verbose)
                 loss = results[para['scoring']]
-    
                 # Negation of the loss function if required
                 if self.greater_is_better: loss = loss * -1
                 # Store
