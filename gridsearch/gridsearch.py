@@ -17,7 +17,7 @@ import wget
 from sklearn.metrics import mean_squared_error, cohen_kappa_score
 import matplotlib.pyplot as plt
 
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, StratifiedKFold
 import lightgbm as lgb
 import xgboost as xgb
 import catboost as ctb
@@ -26,13 +26,14 @@ from hyperopt import fmin, tpe, STATUS_OK, STATUS_FAIL, Trials, hp
 import classeval as cle
 from df2onehot import df2onehot
 import treeplot as tree
+from tqdm import tqdm
 
 
 # %%
 class gridsearch():
     """Create a class gridsearch that is instantiated with the desired method."""
 
-    def __init__(self, method, eval_metric=None, max_evals=25, threshold=0.5, test_size=0.2, greater_is_better=None, verbose=3):
+    def __init__(self, method, max_evals=25, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_max_evals=None, eval_metric=None, greater_is_better=None, random_state=None, verbose=3):
         """Initialize gridsearch with user-defined parameters.
 
         Parameters
@@ -43,14 +44,14 @@ class gridsearch():
             * 'xgb_reg': XGboost regressor
             * 'lgb_reg': LGBM Regressor
             * 'ctb_reg': CatBoost Regressor
-        eval_metric : str, (default : None)
-            Evaluation metric for the regressor of classification model.
-            * 'auc' : classification (default)
-            * 'rmse' : regression  (default)
         max_evals : int, (default : 100)
             Search space is created on the number of evaluations.
         threshold : float, (default : 0.5)
             Classification threshold. In case of two-class model this is 0.5
+        eval_metric : str, (default : None)
+            Evaluation metric for the regressor of classification model.
+            * 'auc' : classification (default)
+            * 'rmse' : regression  (default)
         greater_is_better : bool, (default : depending on method: _clf or _reg)
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
             * clf (default: True)
@@ -80,15 +81,19 @@ class gridsearch():
             greater_is_better = False
         elif (greater_is_better is None) and ('_clf' in method):
             greater_is_better = True
+        if top_max_evals is None: top_max_evals=max_evals
 
         self.method=method
         self.eval_metric=eval_metric
         self.greater_is_better=greater_is_better
         self.max_evals=max_evals
+        self.top_max_evals=top_max_evals
         self.threshold = threshold
         self.test_size=test_size
+        self.val_size=val_size
         self.algo=tpe.suggest
-        self.trials=Trials()
+        self.cv = cv
+        self.random_state = random_state
         self.verbose = verbose
 
     def fit(self, X, y, pos_label=None, verbose=None):
@@ -125,30 +130,63 @@ class gridsearch():
             * exception: In case of error.
 
         """
-        self.pos_label = pos_label
         if verbose is None: verbose = self.verbose
-        if (type(X) is not pd.DataFrame): raise Exception('dataset X should be of type pd.DataFrame')
-        if (type(y) is not np.ndarray): raise Exception('Response variable y should be of type numpy array')
-        if np.any(np.isnan(y)): raise Exception('Response variable y can not have nan values.')
+        # Check input parameters
+        self.pos_label, self.method = _check_input(X, y, pos_label, self.method, verbose=self.verbose)
+        # Set validation set
+        self.set_validation_set(X, y)
 
-        if ('_clf' in self.method):
-            if (self.pos_label is not None) and (not np.any(np.isin(y.astype(str), str(pos_label)))):
-                if self.verbose>=2: print('[gridsearch] >Error: y contains values %s but none matches pos_label=%s <return>' %(str(np.unique(y)), self.pos_label))
-                return None
-            if (len(np.unique(y))>2) and not ('_clf_multi' in self.method):
-                self.method='xgb_clf_multi'
-                if self.verbose>=2: print('[gridsearch] >Warning: y contains more then 2 classes; method is set to: %s' %(self.method))
-
+        # Fit model
+        # if self.cv is not None:
+        #     scores = []
+        #     models = []
+        #     for p in np.arange(0, self.cv):
+        #         # Split train-test set
+        #         self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
+        #         # Find best parameters
+        #         model, results = self.HPOpt(verbose=self.verbose)
+        #         scores.append(results['summary'])
+        #         models.append(model)
+        # else:
         # Split train-test set
-        self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(X.values, y, test_size=self.test_size)
+        self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
         # Find best parameters
         self.model, self.results = self.HPOpt(verbose=self.verbose)
+        
+
         # Fit on all data using best parameters
         if self.verbose>=3: print('[gridsearch] >Refit %s on the entire dataset with the optimal parameters settings.' %(self.method))
         self.model.fit(X, y)
         # Return
         return self.results
 
+    def set_validation_set(self, X, y):
+        # from sklearn.model_selection import cross_val_score, KFold
+        if self.verbose>=3: print('[gridsearch] >Total datset: %s ' %(str(X.shape)))
+
+        # Make split for validation set
+        if self.val_size is not None:
+            skf = StratifiedKFold(n_splits=int(1 / self.val_size), random_state=self.random_state, shuffle=True)
+            for train_index, val_index in skf.split(X, y): pass
+            if len(np.unique(np.append(train_index, val_index)))!=X.shape[0]: raise Exception('[gridsearch] >Error: Split for validation set not correct.')
+            if self.verbose>=3: print('[gridsearch] >Validation datset: %s samples.' %(str(len(val_index))))
+            self.X_val = X.iloc[val_index, :]
+            self.y_val = y[val_index]
+            self.X = X.iloc[train_index, :]
+            self.y = y[train_index]
+        else:
+            self.X = X
+            self.y = y
+            self.X_val = None
+            self.y_val = None
+
+        # # Split validation-set
+        # self.X, self.x_val, self.y, self.y_val = train_test_split(X.values, y, test_size=self.val_size)
+        # if self.verbose>=3: print('[gridsearch] >Validation set: %s ' %(str(self.x_val.shape)))
+        # if self.verbose>=3: print('[gridsearch] >Remining dataset: %s ' %(str(self.X.shape)))
+        # # Split train-test set
+        # # self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(X.values, y, test_size=self.test_size)
+        
     def HPOpt(self, verbose=3):
         """Hyperoptimization of the search space.
 
@@ -184,30 +222,128 @@ class gridsearch():
         fn = getattr(self, self.method)
         # Import search space for the specific function
         space = _get_params(self.method, eval_metric=self.eval_metric)
-        if verbose>=3: print('[gridsearch] >Search space in [%s]: %.0d variables, loss function: [%s].' %(self.method, len([*space['model_params']]), self.eval_metric))
 
+        # Split train-test set
+        self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
         # Hyperoptimization to find best performing model
-        try:
-            best_params = fmin(fn=fn, space=space, algo=self.algo, max_evals=self.max_evals, trials=self.trials, show_progressbar=True)
-            results_summary, model = self.to_df(verbose=self.verbose)
-            status = 'ok'
-        except Exception as e:
-            status = STATUS_FAIL
-            exception = str(e)
-            best_params = None
-            results_summary = None
-            model = None
-            status = None
+        trials=Trials()
+        best_params = fmin(fn=fn, space=space, algo=self.algo, max_evals=self.max_evals, trials=trials, show_progressbar=True)
+        # Summary results
+        results_summary, model = self.to_df(trials, verbose=self.verbose)
+        status = 'ok'
+        
+        # Cross-validation
+        if self.cv is not None:
+            ascending = False if self.greater_is_better else True
+            results_summary['loss_mean'] = np.nan
+            results_summary['loss_std'] = np.nan
+            # Gather top n best results
+            # if self.greater_is_better:
+            #     ascending = False
+            # else:
+            #     ascending = True
 
+            top_max_evals = np.minimum(results_summary.shape[0], self.top_max_evals)
+            idx = results_summary['loss'].sort_values(ascending=ascending).index[0:top_max_evals]
+            if verbose>=3: print('[gridsearch] >%.0d-fold cross validation for the top %.0d models.' %(self.cv, len(idx)))
+
+            # Run over the top models that are sorted from best first.
+            for i in tqdm(idx):
+                scores = []
+                # Run over the cross-validations
+                for k in np.arange(0, self.cv):
+                    # Split train-test set
+                    self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
+                    # Evaluate model
+                    score = self._train_clf(results_summary['model'].iloc[i], space)
+                    score.pop('model')
+                    scores.append(score)
+
+                # Store mean and std summary
+                results_summary['loss_mean'].iloc[i] = pd.DataFrame(scores)['loss'].mean()
+                results_summary['loss_std'].iloc[i] = pd.DataFrame(scores)['loss'].std()
+
+            # Retrieve best model
+            if self.greater_is_better:
+                results_summary['loss_mean'] = results_summary['loss_mean'] * -1
+                idx_best = results_summary['loss_mean'].argmax()
+            else:
+                idx_best= results_summary['loss_mean'].argmin()
+
+            model = results_summary['model'].iloc[idx_best]
+
+                # mean_scores = dict(pd.DataFrame(scores).mean(axis=0))
+                # colnames = list(map(lambda x: x + '_std', [*scores[0]]))
+                # std_scores = dict(zip(colnames, pd.DataFrame(scores).std(axis=0).values))
+                # out = {}
+                # out.update(mean_scores)
+                # out.update(std_scores)
+                # out['model'] = model
+
+        # except Exception as e:
+        #     if verbose>=1: print('[gridsearch] >Error %s' %(e))
+        #     status = STATUS_FAIL
+        #     exception = str(e)
+        #     best_params = None
+        #     results_summary = None
+        #     model = None
+        #     status = None
+
+        # Remove the model column
+        del results_summary['model']
+        # Store
         results = {}
         results['params'] = best_params
         results['summary'] = results_summary
-        results['trials'] = self.trials
+        results['trials'] = trials
         results['model'] = model
-        results['status'] = status
-        results['exception'] = exception
+        # results['status'] = status
+        # results['exception'] = exception
         # Return
         return model, results
+
+    def cv_clf(self, model, para):
+        verbose = 2 if self.verbose<=3 else 3
+        scores = []
+        for p in np.arange(0, self.cv):
+            X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
+            # Fit model
+            model.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_test, y_test)], **para['fit_params'])
+            # model.fit(X_train, y_train)
+            # Make prediction
+            y_pred = model.predict(X_test)
+            y_proba = model.predict_proba(X_test)
+            # Evaluation
+            if len(np.unique(y_test))==2:
+                results = cle.eval(y_test, y_proba[:, 1], y_pred=y_pred, threshold=self.threshold, pos_label=self.pos_label, verbose=verbose)
+                loss = results[para['scoring']]
+    
+                # Negation of the loss function if required
+                if self.greater_is_better: loss = loss * -1
+                # Store
+                score = {'loss': loss, 'auc': results['auc'], 'kappa': results['kappa'], 'f1': results['f1'], 'status': STATUS_OK}
+            else:
+                # Compute the loss
+                kappscore = cohen_kappa_score(y_test, y_pred)
+                loss = kappscore
+                # Negation of the loss function if required
+                if self.greater_is_better: loss = loss * -1
+                # Store
+                score = {'loss': loss, 'status': STATUS_OK, 'model': model}
+
+            scores.append(score)
+
+        # Return
+        mean_scores = dict(pd.DataFrame(scores).mean(axis=0))
+        colnames = list(map(lambda x: x + '_std', [*scores[0]]))
+        std_scores = dict(zip(colnames, pd.DataFrame(scores).std(axis=0).values))
+
+        out = {}
+        out.update(mean_scores)
+        # out.update(std_scores)
+        out['model'] = model
+        return out
+
 
     def _train_reg(self, reg, para):
         # Fit model
@@ -224,8 +360,36 @@ class gridsearch():
 
     def _train_clf(self, clf, para):
         verbose = 2 if self.verbose<=3 else 3
+
         # Fit model
+        # if self.cv is not None:
+            # out = self.cv_clf(clf, para)
+            # scores = []
+            # # getmodels = []
+            # # for train_index, test_index in skf.split(self.X, self.y):
+            # for p in np.arange(0,self.cv):
+            #     X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
+            #     # Fit model
+            #     clf.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_test, y_test)], **para['fit_params'])
+            #     # model.fit(X_train, y_train)
+            #     # Make prediction
+            #     y_pred = clf.predict(X_test)
+            #     y_proba = clf.predict_proba(X_test)
+            #     # Evaluate
+            #     score = _eval(clf, para, y_test, y_proba, y_pred=y_pred, threshold=self.threshold, pos_label=self.pos_label, greater_is_better=self.greater_is_better, verbose=verbose)
+            #     score.pop('model')
+            #     scores.append(score)
+
+            # mean_scores = dict(pd.DataFrame(scores).mean(axis=0))
+            # colnames = list(map(lambda x: x + '_std', [*scores[0]]))
+            # std_scores = dict(zip(colnames, pd.DataFrame(scores).std(axis=0).values))
+            # out = {}
+            # out.update(mean_scores)
+            # out.update(std_scores)
+            # out['model'] = clf
+
         clf.fit(self.x_train, self.y_train, eval_set=[(self.x_train, self.y_train), (self.x_test, self.y_test)], **para['fit_params'])
+        # clf.fit(self.x_train, self.y_train)
         # Make prediction
         y_pred = clf.predict(self.x_test)
         y_proba = clf.predict_proba(self.x_test)
@@ -234,24 +398,25 @@ class gridsearch():
         # Note that the loss function is by default maximized towards small/negative values by the hptop method.
         # When you want to optimize auc or f1, you simply need to negate the score.
         # The negation is fixed with the parameter: greater_is_better=False
+        out = _eval(clf, para, self.y_test, y_proba, y_pred=y_pred, threshold=self.threshold, pos_label=self.pos_label, greater_is_better=self.greater_is_better, verbose=verbose)
 
-        # Scoring two class classification
-        if len(np.unique(self.y_test))==2:
-            results = cle.eval(self.y_test, y_proba[:, 1], y_pred=y_pred, threshold=self.threshold, pos_label=self.pos_label, verbose=verbose)
-            loss = results[para['scoring']]
+        # # Scoring classification
+        # if len(np.unique(y_test))==2:
+        #     results = cle.eval(y_test, y_proba[:, 1], y_pred=y_pred, threshold=self.threshold, pos_label=self.pos_label, verbose=verbose)
+        #     loss = results[para['scoring']]
 
-            # Negation of the loss function if required
-            if self.greater_is_better: loss = loss * -1
-            # Store
-            out = {'loss': loss, 'auc': results['auc'], 'kappa': results['kappa'], 'f1': results['f1'], 'status': STATUS_OK, 'model' : clf}
-        else:
-            # Compute the loss
-            kappscore = cohen_kappa_score(self.y_test, y_pred)
-            loss = kappscore
-            # Negation of the loss function if required
-            if self.greater_is_better: loss = loss * -1
-            # Store
-            out = {'loss': loss, 'status': STATUS_OK, 'model': clf}
+        #     # Negation of the loss function if required
+        #     if self.greater_is_better: loss = loss * -1
+        #     # Store
+        #     out = {'loss': loss, 'auc': results['auc'], 'kappa': results['kappa'], 'f1': results['f1'], 'status': STATUS_OK, 'model' : clf}
+        # else:
+        #     # Compute the loss
+        #     kappscore = cohen_kappa_score(self.y_test, y_pred)
+        #     loss = kappscore
+        #     # Negation of the loss function if required
+        #     if self.greater_is_better: loss = loss * -1
+        #     # Store
+        #     out = {'loss': loss, 'status': STATUS_OK, 'model': clf}
         # Return
         return out
 
@@ -276,12 +441,12 @@ class gridsearch():
         return self._train_clf(clf, para)
 
     # Transform results into dataframe
-    def to_df(self, verbose=3):
+    def to_df(self, trials, verbose=3):
         # Combine params with scoring results
-        df_params = pd.DataFrame(self.trials.vals)
-        df_scoring = pd.DataFrame(self.trials.results)
+        df_params = pd.DataFrame(trials.vals)
+        df_scoring = pd.DataFrame(trials.results)
         df = pd.concat([df_params, df_scoring], axis=1)
-        df['tid'] = self.trials.tids
+        df['tid'] = trials.tids
 
         # Retrieve only the models with OK status
         Iloc = df['status']=='ok'
@@ -298,7 +463,7 @@ class gridsearch():
         score = df['loss'].iloc[idx]
 
         # Remove the model column
-        del df['model']
+        # del df['model']
 
         # Return
         if verbose>=3: print('[gridsearch] >Best peforming [%s] model: %s=%g' %(self.method, self.eval_metric, score))
@@ -437,19 +602,26 @@ class gridsearch():
             print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
             return None
 
-        if self.greater_is_better:
-            ascending = False
-        else:
-            ascending = True
+        # if self.greater_is_better:
+        #     ascending = False
+        # else:
+        #     ascending = True
 
         fig, ax = plt.subplots(figsize=figsize)
-        tmpdf = self.results['summary'].sort_values(by='loss', ascending=ascending)
-        plt.plot(tmpdf['loss'].values)
+        tmpdf = self.results['summary'].sort_values(by='tid', ascending=True)
+
+        if np.any(tmpdf.columns=='loss_mean'):
+            # ax.errorbar(tmpdf['tid'], tmpdf['loss_mean'], tmpdf['loss_std'], marker='s', mfc='red', mec='green', ms=20, mew=4)
+            ax.errorbar(tmpdf['tid'], tmpdf['loss_mean'], tmpdf['loss_std'], marker='s', mfc='red')
+        else:
+            ax.plot(tmpdf['loss'].values)
+
         ax.set_title(self.method)
-        ax.set_xlabel('Search space')
+        ax.set_xlabel('Space id')
         ax.set_ylabel(self.eval_metric)
         ax.grid(True)
         if ylim is not None: ax.set_ylim(ylim)
+
         return ax
 
 
@@ -617,5 +789,56 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         xgb_para['model_params'] = xgb_clf_params
         xgb_para['fit_params'] = xgb_fit_params
         xgb_para['scoring'] = scoring
+        if verbose>=3: print('[gridsearch] >Total search space is across [%.0d] variables, loss function: [%s].' %(len([*xgb_para['model_params']]), eval_metric))
 
         return(xgb_para)
+
+
+def _check_input(X, y, pos_label, method, verbose=3):
+    # if (type(X) is not np.ndarray): raise Exception('[gridsearch] >Error: dataset X should be of type numpy array')
+    if (type(X) is not pd.DataFrame): raise Exception('[gridsearch] >Error: dataset X should be of type pd.DataFrame')
+    if (type(y) is not np.ndarray): raise Exception('[gridsearch] >Error: Response variable y should be of type numpy array')
+    if np.any(np.isnan(y)): raise Exception('[gridsearch] >Error: Response variable y can not have nan values.')
+
+    # Checks pos_label status in case of method is classification
+    if ('_clf' in method):
+        # Set pos_label to True when boolean
+        if (pos_label is None) and (str(y.dtype)=='bool'):
+            pos_label = True
+        # Raise exception in case of pos_label is not set and not bool.
+        if (pos_label is None) and (len(np.unique(y))==2) and not (str(y.dtype)=='bool'):
+            if verbose>=1: raise Exception('[gridsearch] >Error: In a two-class approach [%s], pos_label needs to be set or of type bool.' %(pos_label))
+
+        # Check label for classificaiton and two-class model
+        if (pos_label is not None) and (len(np.unique(y))==2) and not (np.any(np.isin(y.astype(str), str(pos_label)))):
+            if verbose>=2: raise Exception('[gridsearch] >Error: y contains values %s but none matches pos_label=%s <return>' %(str(np.unique(y)), pos_label))
+
+    # Method checks
+    if (len(np.unique(y))>2) and not ('_clf_multi' in method):
+        method='xgb_clf_multi'
+        if verbose>=2: print('[gridsearch] >Warning: y contains more then 2 classes; method is set to: %s' %(method))
+    if (len(np.unique(y))==2) and ('_clf_multi' in method):
+        method='xgb_clf'
+        if verbose>=2: print('[gridsearch] >Warning: y contains 2 classes; method is set to: %s' %(method))
+
+    return pos_label, method
+
+
+def _eval(clf, para, y_test, y_proba, y_pred, threshold, pos_label, greater_is_better, verbose):
+    # Scoring classification
+    if len(np.unique(y_test))==2:
+        results = cle.eval(y_test, y_proba[:, 1], y_pred=y_pred, threshold=threshold, pos_label=pos_label, verbose=verbose)
+        loss = results[para['scoring']]
+        # Negation of the loss function if required
+        if greater_is_better: loss = loss * -1
+        # Store
+        out = {'loss': loss, 'auc': results['auc'], 'kappa': results['kappa'], 'f1': results['f1'], 'status': STATUS_OK, 'model' : clf}
+    else:
+        # Compute the loss
+        kappscore = cohen_kappa_score(y_test, y_pred)
+        loss = kappscore
+        # Negation of the loss function if required
+        if greater_is_better: loss = loss * -1
+        # Store
+        out = {'loss': loss, 'status': STATUS_OK, 'model': clf}
+    return out
