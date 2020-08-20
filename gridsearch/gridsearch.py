@@ -33,7 +33,7 @@ from tqdm import tqdm
 class gridsearch():
     """Create a class gridsearch that is instantiated with the desired method."""
 
-    def __init__(self, method, max_evals=25, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_max_evals=None, eval_metric=None, greater_is_better=None, random_state=None, verbose=3):
+    def __init__(self, method, max_evals=25, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=None, eval_metric=None, greater_is_better=None, random_state=None, verbose=3):
         """Initialize gridsearch with user-defined parameters.
 
         Parameters
@@ -81,13 +81,13 @@ class gridsearch():
             greater_is_better = False
         elif (greater_is_better is None) and ('_clf' in method):
             greater_is_better = True
-        if top_max_evals is None: top_max_evals=max_evals
+        if top_cv_evals is None: top_cv_evals=max_evals
 
         self.method=method
         self.eval_metric=eval_metric
         self.greater_is_better=greater_is_better
         self.max_evals=max_evals
-        self.top_max_evals=top_max_evals
+        self.top_cv_evals=top_cv_evals
         self.threshold = threshold
         self.test_size=test_size
         self.val_size=val_size
@@ -142,14 +142,14 @@ class gridsearch():
         #     models = []
         #     for p in np.arange(0, self.cv):
         #         # Split train-test set
-        #         self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
+        #         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
         #         # Find best parameters
         #         model, results = self.HPOpt(verbose=self.verbose)
         #         scores.append(results['summary'])
         #         models.append(model)
         # else:
         # Split train-test set
-        self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
         # Find best parameters
         self.model, self.results = self.HPOpt(verbose=self.verbose)
         
@@ -180,13 +180,6 @@ class gridsearch():
             self.X_val = None
             self.y_val = None
 
-        # # Split validation-set
-        # self.X, self.x_val, self.y, self.y_val = train_test_split(X.values, y, test_size=self.val_size)
-        # if self.verbose>=3: print('[gridsearch] >Validation set: %s ' %(str(self.x_val.shape)))
-        # if self.verbose>=3: print('[gridsearch] >Remining dataset: %s ' %(str(self.X.shape)))
-        # # Split train-test set
-        # # self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(X.values, y, test_size=self.test_size)
-        
     def HPOpt(self, verbose=3):
         """Hyperoptimization of the search space.
 
@@ -224,7 +217,7 @@ class gridsearch():
         space = _get_params(self.method, eval_metric=self.eval_metric)
 
         # Split train-test set
-        self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
         # Hyperoptimization to find best performing model
         trials=Trials()
         best_params = fmin(fn=fn, space=space, algo=self.algo, max_evals=self.max_evals, trials=trials, show_progressbar=True)
@@ -243,8 +236,8 @@ class gridsearch():
             # else:
             #     ascending = True
 
-            top_max_evals = np.minimum(results_summary.shape[0], self.top_max_evals)
-            idx = results_summary['loss'].sort_values(ascending=ascending).index[0:top_max_evals]
+            top_cv_evals = np.minimum(results_summary.shape[0], self.top_cv_evals)
+            idx = results_summary['loss'].sort_values(ascending=ascending).index[0:top_cv_evals]
             if verbose>=3: print('[gridsearch] >%.0d-fold cross validation for the top %.0d models.' %(self.cv, len(idx)))
 
             # Run over the top models that are sorted from best first.
@@ -253,7 +246,7 @@ class gridsearch():
                 # Run over the cross-validations
                 for k in np.arange(0, self.cv):
                     # Split train-test set
-                    self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
+                    self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
                     # Evaluate model
                     score = self._train_clf(results_summary['model'].iloc[i], space)
                     score.pop('model')
@@ -308,7 +301,7 @@ class gridsearch():
         for p in np.arange(0, self.cv):
             X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
             # Fit model
-            model.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_test, y_test)], **para['fit_params'])
+            model.fit(X_train, y_train, eval_set=[(X_test, y_test)], **para['fit_params'])
             # model.fit(X_train, y_train)
             # Make prediction
             y_pred = model.predict(X_test)
@@ -347,9 +340,9 @@ class gridsearch():
 
     def _train_reg(self, reg, para):
         # Fit model
-        reg.fit(self.x_train, self.y_train, eval_set=[(self.x_train, self.y_train), (self.x_test, self.y_test)], **para['fit_params'])
+        reg.fit(self.X_train, self.y_train, eval_set=[(self.X_test, self.y_test)], **para['fit_params'])
         # Make prediction
-        y_pred = reg.predict(self.x_test)
+        y_pred = reg.predict(self.X_test)
         loss = para['loss_func'](self.y_test, y_pred)
         # Negation of the loss function if required
         if self.greater_is_better: loss = loss * -1
@@ -370,7 +363,7 @@ class gridsearch():
             # for p in np.arange(0,self.cv):
             #     X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
             #     # Fit model
-            #     clf.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_test, y_test)], **para['fit_params'])
+            #     clf.fit(X_train, y_train, eval_set=[(X_test, y_test)], **para['fit_params'])
             #     # model.fit(X_train, y_train)
             #     # Make prediction
             #     y_pred = clf.predict(X_test)
@@ -388,12 +381,12 @@ class gridsearch():
             # out.update(std_scores)
             # out['model'] = clf
 
-        clf.fit(self.x_train, self.y_train, eval_set=[(self.x_train, self.y_train), (self.x_test, self.y_test)], **para['fit_params'])
-        # clf.fit(self.x_train, self.y_train)
+        clf.fit(self.X_train, self.y_train, eval_set=[(self.X_test, self.y_test)], **para['fit_params'])
+        # clf.fit(self.X_train, self.y_train)
         # Make prediction
-        y_pred = clf.predict(self.x_test)
-        y_proba = clf.predict_proba(self.x_test)
-        # y_score = clf.decision_function(self.x_test)
+        y_pred = clf.predict(self.X_test)
+        y_proba = clf.predict_proba(self.X_test)
+        # y_score = clf.decision_function(self.X_test)
 
         # Note that the loss function is by default maximized towards small/negative values by the hptop method.
         # When you want to optimize auc or f1, you simply need to negate the score.
@@ -595,9 +588,6 @@ class gridsearch():
         ax : object
 
         """
-        # figsize: tuple, default (25,25)
-        #     Figure size, (height, width)
-
         if not hasattr(self, 'model'):
             print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
             return None
@@ -611,7 +601,6 @@ class gridsearch():
         tmpdf = self.results['summary'].sort_values(by='tid', ascending=True)
 
         if np.any(tmpdf.columns=='loss_mean'):
-            # ax.errorbar(tmpdf['tid'], tmpdf['loss_mean'], tmpdf['loss_std'], marker='s', mfc='red', mec='green', ms=20, mew=4)
             ax.errorbar(tmpdf['tid'], tmpdf['loss_mean'], tmpdf['loss_std'], marker='s', mfc='red')
         else:
             ax.plot(tmpdf['loss'].values)
