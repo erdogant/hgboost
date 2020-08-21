@@ -649,19 +649,24 @@ def import_example(data='titanic', url=None, sep=',', verbose=3):
 
 # %% Set the search spaces
 def _get_params(fn_name, eval_metric=None, verbose=3):
+    # choice : categorical variables
+    # quniform : discrete uniform (integers spaced evenly)
+    # uniform: continuous uniform (floats spaced evenly)
+    # loguniform: continuous log uniform (floats spaced evenly on a log scale)
+
     if eval_metric is None: raise Exception('[gridsearch] >eval_metric must be provided.')
     if verbose>=3: print('[gridsearch] >Collecting %s parameters.' %(fn_name))
 
     # XGB parameters
     if fn_name=='xgb_reg':
         xgb_reg_params = {
-            'learning_rate': hp.choice('learning_rate', np.arange(0.05, 0.31, 0.05)),
-            'max_depth': hp.choice('max_depth', np.arange(5, 16, 1, dtype=int)),
+            'learning_rate' : hp.quniform('learning_rate', 0.05, 0.31, 0.05),
+            'max_depth' : hp.choice('max_depth', np.arange(5, 30, 1, dtype=int)),
             'min_child_weight': hp.choice('min_child_weight', np.arange(1, 10, 1, dtype=int)),
             'gamma': hp.choice('gamma', [0, 0.25, 0.5, 1.0]),
             'reg_lambda': hp.choice('reg_lambda', [0.1, 1.0, 5.0, 10.0, 50.0, 100.0]),
             'subsample': hp.uniform('subsample', 0.5, 1),
-            'n_estimators': 100,
+            'n_estimators' : hp.choice('n_estimators', range(20, 205, 5)),
         }
         xgb_fit_params = {
             'eval_metric': eval_metric,
@@ -677,11 +682,11 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
     # LightGBM parameters
     if fn_name=='lgb_reg':
         lgb_reg_params = {
-            'learning_rate': hp.choice('learning_rate', np.arange(0.05, 0.31, 0.05)),
-            'max_depth': hp.choice('max_depth', np.arange(5, 16, 1, dtype=int)),
+            'learning_rate' : hp.quniform('learning_rate', 0.05, 0.31, 0.05),
+            'max_depth' : hp.choice('max_depth', np.arange(5, 30, 1, dtype=int)),
             'min_child_weight': hp.choice('min_child_weight', np.arange(1, 8, 1, dtype=int)),
             'subsample': hp.uniform('subsample', 0.8, 1),
-            'n_estimators': 100,
+            'n_estimators' : hp.choice('n_estimators', range(20, 205, 5)),
         }
         lgb_fit_params = {
             'eval_metric': 'l2',
@@ -699,10 +704,10 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
     if fn_name=='ctb_reg':
         # CatBoost parameters
         ctb_reg_params = {
-            'learning_rate' : hp.choice('learning_rate', np.arange(0.05, 0.31, 0.05)),
-            'max_depth' : hp.choice('max_depth', np.arange(5, 16, 1, dtype=int)),
+            'learning_rate' : hp.quniform('learning_rate', 0.05, 0.31, 0.05),
+            'max_depth' : hp.choice('max_depth', np.arange(5, 30, 1, dtype=int)),
             'colsample_bylevel' : hp.choice('colsample_bylevel', np.arange(0.3, 0.8, 0.1)),
-            'n_estimators' : 100,
+            'n_estimators' : hp.choice('n_estimators', range(20, 205, 5)),
             'eval_metric' : eval_metric,
         }
         ctb_fit_params = {
@@ -727,17 +732,6 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
             'booster' : 'gbtree',
             'colsample_bytree' : hp.quniform('colsample_bytree', 0.1, 1.0, 0.01),
         }
-
-        # xgb_clf_params = {
-        #     'learning_rate' : hp.choice('learning_rate', np.arange(0.01, 0.3, 0.05)),
-        #     'max_depth' : hp.choice('max_depth', np.arange(5, 16, 1, dtype=int)),
-        #     'min_child_weight' : hp.choice('min_child_weight', np.arange(1, 10, 1, dtype=int)),
-        #     'gamma' : hp.choice('gamma', [0.5, 1, 1.5, 2, 5]),
-        #     'subsample' : hp.uniform('subsample', 0.5, 1),
-        #     'n_estimators' : hp.choice('n_estimators', [10, 25, 100, 250]),
-        #     'booster' : 'gbtree',
-        #     # 'colsample_bytree': hp.choice('colsample_bytree', np.arange(0.3, 0.8, 0.1)),
-        # }
 
         if fn_name=='xgb_clf':
             xgb_clf_params['eval_metric'] = hp.choice('eval_metric', ['error', eval_metric])
