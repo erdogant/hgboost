@@ -22,18 +22,26 @@ print(dir(gridsearch))
 import numpy as np
 
 # %% classifier
-gs = gridsearch(method='xgb_clf', max_evals=200, cv=5, eval_metric='auc', val_size=0.2)
+gs = gridsearch(method='xgb_clf', max_evals=10, cv=5, eval_metric='auc', val_size=0.2)
 # gs = gridsearch(method='xgb_clf', max_evals=25, cv=None, eval_metric='auc', val_size=None)
+
 df = gs.import_example()
 y = df['Survived'].values
 del df['Survived']
 X = gs.preprocessing(df, verbose=0)
 
-results = gs.fit(X, y==1)
-results = gs.fit(X, y, pos_label=1)
+y = y.astype(str)
+y[y=='1']='survived'
+y[y=='0']='dead'
+
+# results = gs.fit(X, y=='survived')
+results = gs.fit(X, y, pos_label='survived')
 
 # use the predictor
-y_pred, y_proba = gs.predict(X)
+# y_pred, y_proba = gs.predict(X)
+
+# Make some plots
+gs.plot_params(top_n=3)
 gs.plot_summary()
 gs.treeplot()
 gs.plot_validation()
@@ -63,7 +71,7 @@ y_pred, y_proba = gs.predict(X)
 gs.plot_summary()
 gs.treeplot()
 gs.plot_validation()
-gs.plot_params()
+gs.plot_params(top_n=3)
 
 import matplotlib.pyplot as plt
 plt.scatter(y, y_pred)

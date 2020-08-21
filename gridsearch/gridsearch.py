@@ -16,6 +16,7 @@ import wget
 
 from sklearn.metrics import mean_squared_error, cohen_kappa_score
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 from sklearn.model_selection import train_test_split, StratifiedKFold
 import lightgbm as lgb
@@ -26,6 +27,7 @@ from hyperopt import fmin, tpe, STATUS_OK, STATUS_FAIL, Trials, hp
 import classeval as cle
 from df2onehot import df2onehot
 import treeplot as tree
+import colourmap
 from tqdm import tqdm
 
 
@@ -66,7 +68,7 @@ class gridsearch():
         Returns
         -------
         None.
-        
+
         References
         ----------
         * https://github.com/hyperopt/hyperopt
@@ -432,7 +434,7 @@ class gridsearch():
             out = {'loss': loss, 'status': STATUS_OK, 'model' : model}
         else:
             raise Exception('[gridsearch] >Error: Method %s does not exists.' %(self.method))
-    
+
         return out, results
 
     def preprocessing(self, df, y_min=2, perc_min_num=0.8, verbose=None):
@@ -516,6 +518,14 @@ class gridsearch():
         return ax
 
     def plot_validation(self):
+        """Plot the results on the validation set.
+
+        Returns
+        -------
+        ax : object
+            Figure axis.
+
+        """
         if not hasattr(self, 'model'):
             print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
             return None
@@ -548,13 +558,10 @@ class gridsearch():
 
         Returns
         -------
-        ax : TYPE
-            DESCRIPTION.
+        ax : object
+            Figure axis.
 
         """
-        import seaborn as sns
-        import colourmap
-
         top_n = np.minimum(top_n, self.results['summary'].shape[0])
         getcolors = colourmap.generate(top_n, cmap='Reds_r')
         ascending = False if self.greater_is_better else True
@@ -568,8 +575,8 @@ class gridsearch():
             colbest = 'best'
 
         # Retrieve data
-        tmpdf = self.results['summary'].sort_values(by=colname, ascending=ascending)
-        idx_best = np.where(tmpdf[colbest])[0]
+        df_summary = self.results['summary'].sort_values(by=colname, ascending=ascending)
+        idx_best = np.where(df_summary[colbest])[0]
         # Collect parameters
         params = [*self.results['params'].keys()]
         # Setup figure size
@@ -578,37 +585,59 @@ class gridsearch():
         fig, ax = plt.subplots(nrCols, nrRows, figsize=figsize)
 
         # Plot density for each parameter.
-        count = 0
+        c = 0
         for i in range(0, nrRows):
             # Density Plot with Rug Plot
-            for k in np.arange(0, nrCols):
-                param_name = params[count]
-                linefit = sns.distplot(self.results['summary'][param_name],
-                                  hist = False,
-                                  kde = True,
-                                  rug = True,
-                                  color = 'darkblue', 
-                                  kde_kws={'shade': shade, 'linewidth': 1},
-                                  rug_kws={'color': 'black'},
-                                  ax=ax[i][k])
+            for k in range(0, nrCols):
+                if c<=len(params):
+                    param_name = params[c]
+                    c = c + 1
+                    linefit = sns.distplot(self.results['summary'][param_name],
+                                           hist=False,
+                                           kde=True,
+                                           rug=True,
+                                           color='darkblue',
+                                           kde_kws={'shade': shade, 'linewidth': 1},
+                                           rug_kws={'color': 'black'},
+                                           ax=ax[i][k])
 
-                y_data = linefit.get_lines()[0].get_data()[1]
-                getvals = tmpdf[param_name].values
-                if len(y_data)>0:
-                    # Plot the top n (not the first because that one is plotted in green)
-                    ax[i][k].vlines(getvals[1:top_n], np.min(y_data), np.max(y_data), linewidth=1, colors='r', linestyles='dashed', label='Top '+str(top_n))
-                    # Plot the best one
-                    ax[i][k].vlines(getvals[idx_best], np.min(y_data), np.max(y_data), linewidth=2, colors=getcolors, linestyles='solid', label='Best')
+                    y_data = linefit.get_lines()[0].get_data()[1]
+                    getvals = df_summary[param_name].values
+                    if len(y_data)>0:
+                        # Plot the top n (not the first because that one is plotted in green)
+                        ax[i][k].vlines(getvals[1:top_n], np.min(y_data), np.max(y_data), linewidth=1, colors=getcolors, linestyles='dashed', label='Top ' + str(top_n))
+                        # Plot the best one
+                        ax[i][k].vlines(getvals[idx_best], np.min(y_data), np.max(y_data), linewidth=2, colors='g', linestyles='solid', label='Best')
 
-                ax[i][k].set_title(('%s: %.3g' %(param_name, getvals[idx_best])))
-                ax[i][k].set_ylabel('Density')
-                ax[i][k].grid(True)
-                ax[i][k].legend()
-                count = count + 1
+                    ax[i][k].set_title(('%s: %.3g' %(param_name, getvals[idx_best])))
+                    ax[i][k].set_ylabel('Density')
+                    ax[i][k].grid(True)
+                    ax[i][k].legend()
 
-        return ax
+            # Scatter plot
+            df_sum = self.results['summary'].sort_values(by='tid', ascending=True)
+            idx_best = np.where(df_sum[colbest])[0]
+            _, ax2 = plt.subplots(nrCols, nrRows, figsize=figsize)
+            c = 0
+            for i in range(0, nrRows):
+                for k in np.arange(0, nrCols):
+                    if c<=len(params):
+                        param_name = params[c]
+                        sns.regplot('tid', param_name, data=df_sum, ax=ax2[i][k], label='all results')
+                        # Scatter best value
+                        ax2[i][k].scatter(df_sum['tid'].values[idx_best], df_sum[param_name].values[idx_best], s=100, color='r', marker='x', label='best')
+                        # Scatter top n values
+                        ax2[i][k].scatter(df_summary['tid'].values[1:top_n], df_summary[param_name].values[1:top_n], s=100, color=getcolors[0:top_n-1, :], marker='.', label='Top ' + str(top_n))
+                        # Set labels
+                        ax2[i][k].set(xlabel = 'iteration', ylabel = '{}'.format(param_name), title = '{} over Search'.format(param_name));
+                        ax2[i][k].set_title(('%s: %.3g' %(param_name, df_sum[param_name].values[idx_best])))
+                        ax2[i][k].grid(True)
+                        ax2[i][k].legend()
+                        c = c + 1
 
-    def plot_summary(self, ylim=None, figsize=(15, 8)):
+        return ax, ax2
+
+    def plot_summary(self, ylim=None, figsize=(15, 10)):
         """Plot the summary results.
 
         Parameters
@@ -621,13 +650,14 @@ class gridsearch():
         Returns
         -------
         ax : object
+            Figure axis.
 
         """
         if not hasattr(self, 'model'):
             print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
             return None
 
-        fig, (ax1, ax2) = plt.subplots(2,1,figsize=figsize)
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
         tmpdf = self.results['summary'].sort_values(by='tid', ascending=True)
 
         if np.any(tmpdf.columns=='loss_mean'):
@@ -641,15 +671,24 @@ class gridsearch():
             ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss'].iloc[idx], colors='r', linestyles='dashed')
 
         # Plot all other evalution results on the single test-set
-        ax1.plot(tmpdf['loss'].values, label='Test size: '+ str(self.test_size))
-
+        ax1.scatter(tmpdf['tid'].values, tmpdf['loss'].values, s=10, label='Test size: '+ str(self.test_size))
         # Set labels
         ax1.set_title(self.method)
-        ax1.set_xlabel('Search space identifier')
+        ax1.set_xlabel('Iteration')
         ax1.set_ylabel(self.eval_metric)
         ax1.grid(True)
         ax1.legend()
         if ylim is not None: ax1.set_ylim(ylim)
+
+        # scores = tmpdf[['loss','tid']]
+        # sns.lmplot('tid', 'loss', data = scores, size = 8)
+        # plt.title(self.method)
+        # plt.xlabel('Iteration')
+        # plt.ylabel(self.eval_metric)
+        # plt.grid(True)
+        # plt.legend()
+        # if ylim is not None: ax1.set_ylim(ylim)
+        
         
         eval_metric = [*self.model.evals_result()['validation_0'].keys()][0]
         ax2.plot([*self.model.evals_result()['validation_0'].values()][0], label='Train error')
@@ -836,7 +875,10 @@ def _check_input(X, y, pos_label, method, verbose=3):
     # if (type(X) is not np.ndarray): raise Exception('[gridsearch] >Error: dataset X should be of type numpy array')
     if (type(X) is not pd.DataFrame): raise Exception('[gridsearch] >Error: dataset X should be of type pd.DataFrame')
     if (type(y) is not np.ndarray): raise Exception('[gridsearch] >Error: Response variable y should be of type numpy array')
-    if np.any(np.isnan(y)): raise Exception('[gridsearch] >Error: Response variable y can not have nan values.')
+    if 'str' in str(type(y[0])):
+        if any(elem is None for elem in y): raise Exception('[gridsearch] >Error: Response variable y can not have None values.')
+    else:
+        if np.any(np.isnan(y)): raise Exception('[gridsearch] >Error: Response variable y can not have nan values.')
 
     # Checks pos_label status in case of method is classification
     if ('_clf' in method):

@@ -10,12 +10,28 @@ __version__ = '0.1.0'
 
 # module level doc-string
 __doc__ = """
-gridsearch
+gridsearch - Determine best model by minimizing xgboost function over a hyperparameter space.
 =====================================================================
 
 Description
 -----------
-gridsearch is for...
+Determine best model by minimizing xgboost function over a hyperparameter space.
+Explore a function over a hyperparameter space according to a given algorithm,
+allowing up to a certain number of function evaluations.
+The library consists the underneath parts that can be used set:
+    * regression
+    * binary classification
+    * multiclass classification
+    * cross-validation
+    * Independent validation dataset
+    * hyperparameter searching
+    * feature importance
+    * early stopping
+    * plotting
+        - parameter space
+        - validation set
+        - summary
+        - tree
 
 Example
 -------
@@ -25,6 +41,6 @@ Example
 
 References
 ----------
-https://github.com/erdogant/gridsearch
+* https://github.com/erdogant/gridsearch
 
 """
