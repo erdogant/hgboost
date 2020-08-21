@@ -13,7 +13,7 @@ else:
 with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
-     install_requires=['wget','matplotlib','numpy','pandas','tqdm','hyperopt','lightgbm','catboost','xgboost','classeval','treeplot','df2onehot'],
+     install_requires=['wget','matplotlib','numpy','pandas','tqdm','hyperopt','lightgbm','catboost','xgboost','classeval','treeplot','df2onehot','colourmap','seaborn'],
      python_requires='>=3',
      name='gridsearch',
      version=new_version,

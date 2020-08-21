@@ -528,7 +528,85 @@ class gridsearch():
             # fig, ax = plt.subplots(figsize=figsize)
             # plt.scatter(y, y_pred)
             print('[gridsearch] >This plot only works for classifcation. <return>')
-            
+
+    def plot_params(self, top_n=10, shade=True, figsize=(15, 15)):
+        """Distribution of parameters.
+
+        Description
+        -----------
+        This plot demonstrate the density distribution of the used parameters.
+        Green will depic the best detected parameter and red demonstrates the top n paramters with best loss.
+
+        Parameters
+        ----------
+        top_n : int, (default : 10)
+            Top n paramters that scored highest are plotted in red.
+        shade : bool, (default : True)
+            Fill the density plot.
+        figsize: tuple, default (15,15)
+            Figure size, (height, width)
+
+        Returns
+        -------
+        ax : TYPE
+            DESCRIPTION.
+
+        """
+        import seaborn as sns
+        import colourmap
+
+        top_n = np.minimum(top_n, self.results['summary'].shape[0])
+        getcolors = colourmap.generate(top_n, cmap='Reds_r')
+        ascending = False if self.greater_is_better else True
+
+        # Sort data based on loss
+        if np.any(self.results['summary'].columns=='loss_mean'):
+            colname = 'loss_mean'
+            colbest = 'best_cv'
+        else:
+            colname = 'loss'
+            colbest = 'best'
+
+        # Retrieve data
+        tmpdf = self.results['summary'].sort_values(by=colname, ascending=ascending)
+        idx_best = np.where(tmpdf[colbest])[0]
+        # Collect parameters
+        params = [*self.results['params'].keys()]
+        # Setup figure size
+        nrRows = np.mod(3, len(params)) + len(params) - (np.mod(3, len(params)) * 3)
+        nrCols = 3
+        fig, ax = plt.subplots(nrCols, nrRows, figsize=figsize)
+
+        # Plot density for each parameter.
+        count = 0
+        for i in range(0, nrRows):
+            # Density Plot with Rug Plot
+            for k in np.arange(0, nrCols):
+                param_name = params[count]
+                linefit = sns.distplot(self.results['summary'][param_name],
+                                  hist = False,
+                                  kde = True,
+                                  rug = True,
+                                  color = 'darkblue', 
+                                  kde_kws={'shade': shade, 'linewidth': 1},
+                                  rug_kws={'color': 'black'},
+                                  ax=ax[i][k])
+
+                y_data = linefit.get_lines()[0].get_data()[1]
+                getvals = tmpdf[param_name].values
+                if len(y_data)>0:
+                    # Plot the top n (not the first because that one is plotted in green)
+                    ax[i][k].vlines(getvals[1:top_n], np.min(y_data), np.max(y_data), linewidth=1, colors='r', linestyles='dashed', label='Top '+str(top_n))
+                    # Plot the best one
+                    ax[i][k].vlines(getvals[idx_best], np.min(y_data), np.max(y_data), linewidth=2, colors=getcolors, linestyles='solid', label='Best')
+
+                ax[i][k].set_title(('%s: %.3g' %(param_name, getvals[idx_best])))
+                ax[i][k].set_ylabel('Density')
+                ax[i][k].grid(True)
+                ax[i][k].legend()
+                count = count + 1
+
+        return ax
 
     def plot_summary(self, ylim=None, figsize=(15, 8)):
         """Plot the summary results.
@@ -549,39 +627,39 @@ class gridsearch():
             print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
             return None
 
-        fig, (ax, ax2) = plt.subplots(2,1,figsize=figsize)
+        fig, (ax1, ax2) = plt.subplots(2,1,figsize=figsize)
         tmpdf = self.results['summary'].sort_values(by='tid', ascending=True)
 
         if np.any(tmpdf.columns=='loss_mean'):
-            ax.errorbar(tmpdf['tid'], tmpdf['loss_mean'], tmpdf['loss_std'], marker='s', mfc='red', label=str(self.cv) + '-fold cv')
+            ax1.errorbar(tmpdf['tid'], tmpdf['loss_mean'], tmpdf['loss_std'], marker='s', mfc='red', label=str(self.cv) + '-fold cv')
             idx = np.where(tmpdf['best_cv'].values)[0]
-            ax.hlines(tmpdf['loss_mean'].iloc[idx], 0, tmpdf['loss_mean'].shape[0], colors='r', linestyles='dashed', label='best model with cv')
-            ax.vlines(idx, tmpdf['loss'].min(), tmpdf['loss_mean'].iloc[idx], colors='r', linestyles='dashed')
+            ax1.hlines(tmpdf['loss_mean'].iloc[idx], 0, tmpdf['loss_mean'].shape[0], colors='r', linestyles='dashed', label='best model with cv')
+            ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss_mean'].iloc[idx], colors='r', linestyles='dashed')
         else:
             idx = np.where(tmpdf['best'].values)[0]
-            ax.hlines(tmpdf['loss'].iloc[idx], 0, tmpdf['loss'].shape[0], colors='r', linestyles='dashed', label='best model')
-            ax.vlines(idx, tmpdf['loss'].min(), tmpdf['loss'].iloc[idx], colors='r', linestyles='dashed')
+            ax1.hlines(tmpdf['loss'].iloc[idx], 0, tmpdf['loss'].shape[0], colors='r', linestyles='dashed', label='best model')
+            ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss'].iloc[idx], colors='r', linestyles='dashed')
 
         # Plot all other evalution results on the single test-set
-        ax.plot(tmpdf['loss'].values, label='Test size: '+ str(self.test_size))
+        ax1.plot(tmpdf['loss'].values, label='Test size: '+ str(self.test_size))
 
         # Set labels
-        ax.set_title(self.method)
-        ax.set_xlabel('Search space identifier')
-        ax.set_ylabel(self.eval_metric)
-        ax.grid(True)
-        ax.legend()
-        if ylim is not None: ax.set_ylim(ylim)
+        ax1.set_title(self.method)
+        ax1.set_xlabel('Search space identifier')
+        ax1.set_ylabel(self.eval_metric)
+        ax1.grid(True)
+        ax1.legend()
+        if ylim is not None: ax1.set_ylim(ylim)
         
         eval_metric = [*self.model.evals_result()['validation_0'].keys()][0]
         ax2.plot([*self.model.evals_result()['validation_0'].values()][0], label='Train error')
         ax2.plot([*self.model.evals_result()['validation_1'].values()][0], label='Test error')
         ax2.set_ylabel(eval_metric)
-        ax.set_title(self.method)
+        ax2.set_title(self.method)
         ax2.grid(True)
         ax2.legend()
 
-        return ax
+        return ax1, ax2
 
 
 # %% Import example dataset from github.
