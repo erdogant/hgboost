@@ -2,6 +2,8 @@
 # https://towardsdatascience.com/fine-tuning-xgboost-in-python-like-a-boss-b4543ed8b1e
 # https://scikit-learn.org/stable/auto_examples/model_selection/plot_cv_indices.html#sphx-glr-auto-examples-model-selection-plot-cv-indices-py
 # https://github.com/WillKoehrsen/hyperparameter-optimization/blob/master/Bayesian%20Hyperparameter%20Optimization%20of%20Gradient%20Boosting%20Machine.ipynb
+# https://www.kaggle.com/henrylidgley/xgboost-with-hyperopt-tuning
+
 # Objective is to demonstrate:
 
 # regression ✓
@@ -11,7 +13,6 @@
 # hyperparameter searching ✓
 # feature importance ✓
 # early stopping ✓
-# evaluations
 # plotting ✓
 
 # %%
@@ -21,7 +22,7 @@ print(dir(gridsearch))
 import numpy as np
 
 # %% classifier
-gs = gridsearch(method='xgb_clf', max_evals=25, cv=5, eval_metric='auc', val_size=0.2)
+gs = gridsearch(method='xgb_clf', max_evals=200, cv=5, eval_metric='auc', val_size=0.2)
 # gs = gridsearch(method='xgb_clf', max_evals=25, cv=None, eval_metric='auc', val_size=None)
 df = gs.import_example()
 y = df['Survived'].values
@@ -62,6 +63,7 @@ y_pred, y_proba = gs.predict(X)
 gs.plot_summary()
 gs.treeplot()
 gs.plot_validation()
+gs.plot_params()
 
 import matplotlib.pyplot as plt
 plt.scatter(y, y_pred)
