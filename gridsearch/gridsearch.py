@@ -487,7 +487,7 @@ class gridsearch():
         """
         return import_example(data=data, url=url, sep=sep, verbose=verbose)
 
-    def treeplot(self, num_trees=None, plottype='horizontal', figsize=(15, 25), verbose=3):
+    def treeplot(self, num_trees=None, plottype='horizontal', figsize=(15, 25), return_ax=False, verbose=3):
         """Tree plot.
 
         Parameters
@@ -515,9 +515,9 @@ class gridsearch():
 
         if num_trees is None: num_trees = self.model.best_iteration
         ax = tree.plot(self.model, num_trees=num_trees, plottype=plottype, figsize=figsize, verbose=verbose)
-        return ax
+        if return_ax: return ax
 
-    def plot_validation(self):
+    def plot_validation(self, return_ax=False):
         """Plot the results on the validation set.
 
         Returns
@@ -533,13 +533,13 @@ class gridsearch():
         if '_clf' in self.method:
             if (self.results.get('val_results', None)) is not None:
                 ax = cle.plot(self.results['val_results'])
-                return ax
+                if return_ax: return ax
         else:
             # fig, ax = plt.subplots(figsize=figsize)
             # plt.scatter(y, y_pred)
             print('[gridsearch] >This plot only works for classifcation. <return>')
 
-    def plot_params(self, top_n=10, shade=True, figsize=(15, 15)):
+    def plot_params(self, top_n=10, shade=True, cmap='Set2', figsize=(18, 18), return_ax=False):
         """Distribution of parameters.
 
         Description
@@ -563,81 +563,112 @@ class gridsearch():
 
         """
         top_n = np.minimum(top_n, self.results['summary'].shape[0])
-        getcolors = colourmap.generate(top_n, cmap='Reds_r')
+        # getcolors = colourmap.generate(top_n, cmap='Reds_r')
         ascending = False if self.greater_is_better else True
 
         # Sort data based on loss
-        if np.any(self.results['summary'].columns=='loss_mean'):
-            colname = 'loss_mean'
-            colbest = 'best_cv'
+        colname = 'loss'
+        colbest = 'best'
+        if self.cv is not None:
+            colname_cv = 'loss_mean'
+            colbest_cv = 'best_cv'
+            colnames = [colname_cv, colname]
         else:
-            colname = 'loss'
-            colbest = 'best'
+            colnames = colname
 
-        # Retrieve data
-        df_summary = self.results['summary'].sort_values(by=colname, ascending=ascending)
+        # Sort on best loss
+        df_summary = self.results['summary'].sort_values(by=colnames, ascending=ascending)
+        # Get parameters for best scoring model
         idx_best = np.where(df_summary[colbest])[0]
+        if self.cv is not None:
+            idx_best_cv = np.where(df_summary[colbest_cv])[0]
         # Collect parameters
-        params = [*self.results['params'].keys()]
+        params = np.array([*self.results['params'].keys()])
+        color_params = colourmap.generate(len(params), cmap=cmap)
         # Setup figure size
         nrRows = np.mod(3, len(params)) + len(params) - (np.mod(3, len(params)) * 3)
         nrCols = 3
+
+        ################### Density plot for each parameter ##################
         fig, ax = plt.subplots(nrCols, nrRows, figsize=figsize)
+        i_row = -1
+        for i, param in enumerate(params):
+            # Get row number
+            i_col = np.mod(i, nrCols)
+            # Make new column
+            if i_col == 0: i_row = i_row + 1
+            # Make density
+            linefit = sns.distplot(self.results['summary'][param],
+                                   hist=False,
+                                   kde=True,
+                                   rug=True,
+                                   color='darkblue',
+                                   kde_kws={'shade': shade, 'linewidth': 1, 'color': color_params[i, :]},
+                                   rug_kws={'color': 'black'},
+                                   ax=ax[i_row][i_col])
 
-        # Plot density for each parameter.
-        c = 0
-        for i in range(0, nrRows):
-            # Density Plot with Rug Plot
-            for k in range(0, nrCols):
-                if c<=len(params):
-                    param_name = params[c]
-                    c = c + 1
-                    linefit = sns.distplot(self.results['summary'][param_name],
-                                           hist=False,
-                                           kde=True,
-                                           rug=True,
-                                           color='darkblue',
-                                           kde_kws={'shade': shade, 'linewidth': 1},
-                                           rug_kws={'color': 'black'},
-                                           ax=ax[i][k])
+            y_data = linefit.get_lines()[0].get_data()[1]
+            getvals = df_summary[param].values
+            if len(y_data)>0:
+                # Plot the top n (not the first because that one is plotted in green)
+                ax[i_row][i_col].vlines(getvals[1:top_n], np.min(y_data), np.max(y_data), linewidth=1, colors='k', linestyles='dashed', label='Top ' + str(top_n))
+                # Plot the best (without cv)
+                ax[i_row][i_col].vlines(getvals[idx_best], np.min(y_data), np.max(y_data), linewidth=2, colors='g', linestyles='dashed', label='Best (without cv)')
+                # Plot the best (with cv)
+                if self.cv is not None:
+                    ax[i_row][i_col].vlines(getvals[idx_best_cv], np.min(y_data), np.max(y_data), linewidth=2, colors='r', linestyles='dotted', label='Best ' + str(self.cv) + '-fold cv')
 
-                    y_data = linefit.get_lines()[0].get_data()[1]
-                    getvals = df_summary[param_name].values
-                    if len(y_data)>0:
-                        # Plot the top n (not the first because that one is plotted in green)
-                        ax[i][k].vlines(getvals[1:top_n], np.min(y_data), np.max(y_data), linewidth=1, colors=getcolors, linestyles='dashed', label='Top ' + str(top_n))
-                        # Plot the best one
-                        ax[i][k].vlines(getvals[idx_best], np.min(y_data), np.max(y_data), linewidth=2, colors='g', linestyles='solid', label='Best')
+            if self.cv is not None:
+                ax[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, getvals[idx_best_cv], self.cv)))
+            else:
+                ax[i_row][i_col].set_title(('%s: %.3g' %(param, getvals[idx_best])))
+            ax[i_row][i_col].set_ylabel('Density')
+            ax[i_row][i_col].grid(True)
+            ax[i_row][i_col].legend(loc='upper right')
+            # print(param)
+            # print(i_col)
+            # print(i_row)
 
-                    ax[i][k].set_title(('%s: %.3g' %(param_name, getvals[idx_best])))
-                    ax[i][k].set_ylabel('Density')
-                    ax[i][k].grid(True)
-                    ax[i][k].legend()
+        ##################### Scatter plot #####################
+        df_sum = self.results['summary'].sort_values(by='tid', ascending=True)
+        idx_best = np.where(df_sum[colbest])[0]
+        if self.cv is not None:
+            idx_best_cv = np.where(df_sum[colbest_cv])[0]
 
-            # Scatter plot
-            df_sum = self.results['summary'].sort_values(by='tid', ascending=True)
-            idx_best = np.where(df_sum[colbest])[0]
-            _, ax2 = plt.subplots(nrCols, nrRows, figsize=figsize)
-            c = 0
-            for i in range(0, nrRows):
-                for k in np.arange(0, nrCols):
-                    if c<=len(params):
-                        param_name = params[c]
-                        sns.regplot('tid', param_name, data=df_sum, ax=ax2[i][k], label='all results')
-                        # Scatter best value
-                        ax2[i][k].scatter(df_sum['tid'].values[idx_best], df_sum[param_name].values[idx_best], s=100, color='r', marker='x', label='best')
-                        # Scatter top n values
-                        ax2[i][k].scatter(df_summary['tid'].values[1:top_n], df_summary[param_name].values[1:top_n], s=100, color=getcolors[0:top_n-1, :], marker='.', label='Top ' + str(top_n))
-                        # Set labels
-                        ax2[i][k].set(xlabel = 'iteration', ylabel = '{}'.format(param_name), title = '{} over Search'.format(param_name));
-                        ax2[i][k].set_title(('%s: %.3g' %(param_name, df_sum[param_name].values[idx_best])))
-                        ax2[i][k].grid(True)
-                        ax2[i][k].legend()
-                        c = c + 1
+        fig2, ax2 = plt.subplots(nrCols, nrRows, figsize=figsize)
+        i_row = -1
+        for i, param in enumerate(params):
+            # Get row number
+            i_col = np.mod(i, nrCols)
+            # Make new column
+            if i_col == 0: i_row = i_row + 1
+            # Make the plot
+            sns.regplot('tid', param, data=df_sum, ax=ax2[i_row][i_col], color=color_params[i, :])
 
-        return ax, ax2
+            # Scatter top n values
+            ax2[i_row][i_col].scatter(df_summary['tid'].values[1:top_n], df_summary[param].values[1:top_n], s=50, color='k', marker='.', label='Top ' + str(top_n))
 
-    def plot_summary(self, ylim=None, figsize=(15, 10)):
+            # Scatter best value
+            ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best], df_sum[param].values[idx_best], s=100, color='g', marker='*', label='Best (without cv)')
+
+            # Scatter best cv
+            if self.cv is not None:
+                ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best_cv], df_sum[param].values[idx_best], s=100, color='r', marker='x', label='Best ' + str(self.cv) + '-fold cv')
+
+            # Set labels
+            ax2[i_row][i_col].set(xlabel = 'iteration', ylabel = '{}'.format(param), title = '{} over Search'.format(param));
+            if self.cv is not None:
+                ax2[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, df_sum[param].values[idx_best_cv], self.cv)))
+            else:
+                ax2[i_row][i_col].set_title(('%s: %.3g' %(param, df_sum[param].values[idx_best])))
+
+            ax2[i_row][i_col].grid(True)
+            ax2[i_row][i_col].legend(loc='upper right')
+
+        if return_ax:
+            return ax, ax2
+
+    def plot_summary(self, ylim=None, figsize=(15, 10), return_ax=False):
         """Plot the summary results.
 
         Parameters
@@ -660,18 +691,18 @@ class gridsearch():
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
         tmpdf = self.results['summary'].sort_values(by='tid', ascending=True)
 
-        if np.any(tmpdf.columns=='loss_mean'):
-            ax1.errorbar(tmpdf['tid'], tmpdf['loss_mean'], tmpdf['loss_std'], marker='s', mfc='red', label=str(self.cv) + '-fold cv')
+        if self.cv is not None:
+            ax1.errorbar(tmpdf['tid'], tmpdf['loss_mean'], tmpdf['loss_std'], marker='s', mfc='red', label=str(self.cv) + '-fold cv for top ' + str(self.top_cv_evals) + ' models')
             idx = np.where(tmpdf['best_cv'].values)[0]
-            ax1.hlines(tmpdf['loss_mean'].iloc[idx], 0, tmpdf['loss_mean'].shape[0], colors='r', linestyles='dashed', label='best model with cv')
+            ax1.hlines(tmpdf['loss_mean'].iloc[idx], 0, tmpdf['loss_mean'].shape[0], colors='r', linestyles='dotted', label='Best (' + str(self.cv) + '-fold cv)')
             ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss_mean'].iloc[idx], colors='r', linestyles='dashed')
-        else:
-            idx = np.where(tmpdf['best'].values)[0]
-            ax1.hlines(tmpdf['loss'].iloc[idx], 0, tmpdf['loss'].shape[0], colors='r', linestyles='dashed', label='best model')
-            ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss'].iloc[idx], colors='r', linestyles='dashed')
+
+        idx = np.where(tmpdf['best'].values)[0]
+        ax1.hlines(tmpdf['loss'].iloc[idx], 0, tmpdf['loss'].shape[0], colors='g', linestyles='dashed', label='Best (wihtout cv)')
+        ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss'].iloc[idx], colors='g', linestyles='dashed')
 
         # Plot all other evalution results on the single test-set
-        ax1.scatter(tmpdf['tid'].values, tmpdf['loss'].values, s=10, label='Test size: '+ str(self.test_size))
+        ax1.scatter(tmpdf['tid'].values, tmpdf['loss'].values, s=10, label='All models')
         # Set labels
         ax1.set_title(self.method)
         ax1.set_xlabel('Iteration')
@@ -680,16 +711,6 @@ class gridsearch():
         ax1.legend()
         if ylim is not None: ax1.set_ylim(ylim)
 
-        # scores = tmpdf[['loss','tid']]
-        # sns.lmplot('tid', 'loss', data = scores, size = 8)
-        # plt.title(self.method)
-        # plt.xlabel('Iteration')
-        # plt.ylabel(self.eval_metric)
-        # plt.grid(True)
-        # plt.legend()
-        # if ylim is not None: ax1.set_ylim(ylim)
-        
-        
         eval_metric = [*self.model.evals_result()['validation_0'].keys()][0]
         ax2.plot([*self.model.evals_result()['validation_0'].values()][0], label='Train error')
         ax2.plot([*self.model.evals_result()['validation_1'].values()][0], label='Test error')
@@ -698,7 +719,8 @@ class gridsearch():
         ax2.grid(True)
         ax2.legend()
 
-        return ax1, ax2
+        if return_ax:
+            return ax1, ax2
 
 
 # %% Import example dataset from github.
@@ -894,9 +916,8 @@ def _check_input(X, y, pos_label, method, verbose=3):
             if verbose>=2: raise Exception('[gridsearch] >Error: y contains values %s but none matches pos_label=%s <return>' %(str(np.unique(y)), pos_label))
 
     # Method checks
-    if (len(np.unique(y))>2) and ('_clf' in method) and not ('_clf_multi' in method):
-        method='xgb_clf_multi'
-        if verbose>=2: print('[gridsearch] >Warning: y contains more then 2 classes; method is set to: %s' %(method))
+    if (len(np.unique(y))>2) and (pos_label is None) and ('_clf' in method) and not ('_clf_multi' in method):
+        if verbose>=2: raise Exception('[gridsearch] >Error: y contains more then 2 classes and no pos_label is given. Top: use the xgb_clf_multi for multi-class clasification')
     if (len(np.unique(y))==2) and ('_clf_multi' in method):
         method='xgb_clf'
         if verbose>=2: print('[gridsearch] >Warning: y contains 2 classes; method is set to: %s' %(method))

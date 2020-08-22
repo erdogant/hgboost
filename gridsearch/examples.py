@@ -22,7 +22,7 @@ print(dir(gridsearch))
 import numpy as np
 
 # %% classifier
-gs = gridsearch(method='xgb_clf', max_evals=10, cv=5, eval_metric='auc', val_size=0.2)
+gs = gridsearch(method='xgb_clf', max_evals=500, cv=5, eval_metric='auc', val_size=0.2)
 # gs = gridsearch(method='xgb_clf', max_evals=25, cv=None, eval_metric='auc', val_size=None)
 
 df = gs.import_example()
@@ -38,20 +38,20 @@ y[y=='0']='dead'
 results = gs.fit(X, y, pos_label='survived')
 
 # use the predictor
-# y_pred, y_proba = gs.predict(X)
+y_pred, y_proba = gs.predict(X)
 
 # Make some plots
-gs.plot_params(top_n=3)
+gs.plot_params()
 gs.plot_summary()
 gs.treeplot()
 gs.plot_validation()
 
 
 # %% Regression
-# gs = gridsearch(method='xgb_reg', max_evals=25, cv=5, val_size=0.2)
-# gs = gridsearch(method='xgb_reg', max_evals=25, cv=5, val_size=None)
-# gs = gridsearch(method='xgb_reg', max_evals=25, cv=None, val_size=0.2)
-gs = gridsearch(method='xgb_reg', max_evals=25, cv=None, val_size=None)
+gs = gridsearch(method='xgb_reg', max_evals=200, cv=5, val_size=0.2)
+# gs = gridsearch(method='xgb_reg', max_evals=200, cv=5, val_size=None)
+# gs = gridsearch(method='xgb_reg', max_evals=200, cv=None, val_size=0.2)
+# gs = gridsearch(method='xgb_reg', max_evals=200, cv=None, val_size=None)
 # gs = gridsearch(method='xgb_reg')
 # gs = gridsearch(method='lgb_reg')
 # gs = gridsearch(method='ctb_reg')
@@ -67,11 +67,12 @@ X = X.loc[I,:]
 results = gs.fit(X, y)
 # Prdict
 y_pred, y_proba = gs.predict(X)
+
 # Plot
 gs.plot_summary()
 gs.treeplot()
 gs.plot_validation()
-gs.plot_params(top_n=3)
+gs.plot_params()
 
 import matplotlib.pyplot as plt
 plt.scatter(y, y_pred)
