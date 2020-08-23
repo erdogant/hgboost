@@ -885,44 +885,94 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
             xgb_clf_params['objective']='multi:softprob'
             scoring='kappa'  # Note that this variable is not used.
 
-        xgb_fit_params = {'early_stopping_rounds': 10, 'verbose': False}
-
-        xgb_para = {}
-        xgb_para['model_params'] = xgb_clf_params
-        xgb_para['fit_params'] = xgb_fit_params
-        xgb_para['scoring'] = scoring
-        if verbose>=3: print('[gridsearch] >Number of variables in search space is [%.0d], loss function: [%s].' %(len([*xgb_para['model_params']]), eval_metric))
-
-        return(xgb_para)
+        space = {}
+        space['model_params'] = xgb_clf_params
+        space['fit_params'] = {'early_stopping_rounds': 10, 'verbose': False}
+        space['scoring'] = scoring
+        if verbose>=3: print('[gridsearch] >Number of variables in search space is [%.0d], loss function: [%s].' %(len([*space['model_params']]), eval_metric))
+        return(space)
 
 
 def _check_input(X, y, pos_label, method, verbose=3):
-    # if (type(X) is not np.ndarray): raise Exception('[gridsearch] >Error: dataset X should be of type numpy array')
-    if (type(X) is not pd.DataFrame): raise Exception('[gridsearch] >Error: dataset X should be of type pd.DataFrame')
-    if (type(y) is not np.ndarray): raise Exception('[gridsearch] >Error: Response variable y should be of type numpy array')
+    # X should be of type dataframe
+    if (type(X) is not pd.DataFrame):
+        raise ValueError('[gridsearch] >Error: dataset X should be of type pd.DataFrame')
+
+    # y should be of type array-like
+    if (type(y) is not np.ndarray):
+        raise ValueError('[gridsearch] >Error: Response variable y should be of type numpy array')
+
+    # Check None and np.nan values in string/numeric type
     if 'str' in str(type(y[0])):
-        if any(elem is None for elem in y): raise Exception('[gridsearch] >Error: Response variable y can not have None values.')
+        if any(elem is None for elem in y): raise ValueError('[gridsearch] >Error: Response variable y can not have None values.')
     else:
-        if np.any(np.isnan(y)): raise Exception('[gridsearch] >Error: Response variable y can not have nan values.')
+        if np.any(np.isnan(y)): raise ValueError('[gridsearch] >Error: Response variable y can not have nan values.')
+
+    # Set pos_label and y
+    if (pos_label is not None) and ('clf_' in method):
+        if verbose>=3: print('[gridsearch] >[%s] is used to set [y].' %(pos_label))
+        y = y==pos_label
+        pos_label=True
+
+    if ('_reg' in method):
+        pos_label = None
 
     # Checks pos_label status in case of method is classification
-    if ('_clf' in method):
-        # Set pos_label to True when boolean
-        if (pos_label is None) and (str(y.dtype)=='bool'):
-            pos_label = True
-        # Raise exception in case of pos_label is not set and not bool.
-        if (pos_label is None) and (len(np.unique(y))==2) and not (str(y.dtype)=='bool'):
-            if verbose>=1: raise Exception('[gridsearch] >Error: In a two-class approach [%s], pos_label needs to be set or of type bool.' %(pos_label))
+    if ('_clf' in method) and (pos_label is None) and (str(y.dtype)=='bool'):
+        if verbose>=3: print('[gridsearch] >[pos_label] is set to [True] because of [y] is of type [bool].')
+        pos_label = True
 
-        # Check label for classificaiton and two-class model
-        if (pos_label is not None) and (len(np.unique(y))==2) and not (np.any(np.isin(y.astype(str), str(pos_label)))):
-            if verbose>=2: raise Exception('[gridsearch] >Error: y contains values %s but none matches pos_label=%s <return>' %(str(np.unique(y)), pos_label))
+    # Raise ValueError in case of pos_label is not set and not bool.
+    if ('_clf' in method) and (pos_label is None) and (len(np.unique(y))==2) and not (str(y.dtype)=='bool'):
+        raise ValueError('[gridsearch] >Error: In a two-class approach [%s], pos_label needs to be set or of type bool.' %(pos_label))
 
-    # Method checks
-    if (len(np.unique(y))>2) and (pos_label is None) and ('_clf' in method) and not ('_clf_multi' in method):
-        if verbose>=2: raise Exception('[gridsearch] >Error: y contains more then 2 classes and no pos_label is given. Top: use the xgb_clf_multi for multi-class clasification')
-    if (len(np.unique(y))==2) and ('_clf_multi' in method):
-        method='xgb_clf'
-        if verbose>=2: print('[gridsearch] >Warning: y contains 2 classes; method is set to: %s' %(method))
+    # Check label for classificaiton and two-class model
+    if ('_clf' in method) and (pos_label is not None) and (len(np.unique(y))==2) and not (np.any(np.isin(y.astype(str), str(pos_label)))):
+        raise ValueError('[gridsearch] >Error: y contains values %s but none matches pos_label=%s <return>' %(str(np.unique(y)), pos_label))
 
-    return pos_label, method
+    # two-class classifier should have 2 classes
+    if ('_clf' in method) and not ('_multi' in method) and (len(np.unique(y))>2) and (pos_label is None):
+        raise ValueError('[gridsearch] >Error: [y] contains more then 2 classes and no [pos_label] is given. Hint: use method=[xgb_clf_multi] for multi-class clasification.')
+
+    # multi-class method should have >2 classes
+    if ('_clf_multi' in method) and (len(np.unique(y))==2):
+        raise ValueError('[gridsearch] >Error: [xgb_clf_multi] requires >2 classes but only 2 classes are detected., Hint: use method="xgb_clf" or set [pos_label].')
+
+    if ('_clf_multi' in method):
+        pos_label = None
+        if verbose>=3: print('[gridsearch] >[pos_label] is set to [None] because [method] is of type [%s].' %(method))
+
+    # Check counts y
+    y_counts = np.unique(y, return_counts=True)[1]
+    if np.any(y_counts<5) and ('_clf' in method):
+        raise ValueError('[gridsearch] >Error: [y] contains [%.0d] classes with < 5 samples. Each class should have >=5 samples.' %(sum(y_counts<5)))
+    # Check number of classes, should be >1
+    if (len(np.unique(y))<=1) and ('_clf' in method):
+        raise ValueError('[gridsearch] >Error: [y] should have >= 2 classes.')
+
+    # Set X
+    X.reset_index(drop=True, inplace=True)
+    X.columns = X.columns.values.astype(str)
+    if verbose>=4: print('[gridsearch] >Reset index for X.')
+
+    # Return
+    return X, y, pos_label
+
+
+def _check_eval_metric(method, eval_metric, greater_is_better):
+    # Check the eval_metric
+    if (eval_metric is None) and ('_reg' in method):
+        eval_metric = 'rmse'
+    elif (eval_metric is None) and ('_clf_multi' in method):
+        eval_metric = 'kappa'
+    elif (eval_metric is None) and ('_clf' in method):
+        eval_metric = 'auc'
+
+    # Check the greater_is_better for evaluation metric
+    if (greater_is_better is None) and ('_reg' in method):
+        greater_is_better = False
+    elif (greater_is_better is None) and ('_clf' in method):
+        greater_is_better = True
+
+    # Return
+    return eval_metric, greater_is_better
