@@ -659,7 +659,7 @@ class gridsearch():
                 ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best_cv], df_sum[param].values[idx_best], s=100, color='r', marker='x', label='Best ' + str(self.cv) + '-fold cv')
 
             # Set labels
-            ax2[i_row][i_col].set(xlabel = 'iteration', ylabel = '{}'.format(param), title = '{} over Search'.format(param));
+            ax2[i_row][i_col].set(xlabel = 'iteration', ylabel = '{}'.format(param), title = '{} over Search'.format(param))
             if self.cv is not None:
                 ax2[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, df_sum[param].values[idx_best_cv], self.cv)))
             else:
@@ -671,7 +671,7 @@ class gridsearch():
         if return_ax:
             return ax, ax2
 
-    def plot_summary(self, ylim=None, figsize=(15, 10), return_ax=False):
+    def plot(self, ylim=None, figsize=(15, 10), return_ax=False):
         """Plot the summary results.
 
         Parameters
@@ -690,37 +690,49 @@ class gridsearch():
         if not hasattr(self, 'model'):
             print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
             return None
+        ax1, ax2 = None, None
 
-        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
+        if hasattr(self.model, 'evals_result'):
+            fig, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
+        else:
+            fig, ax1 = plt.subplots(1, 1, figsize=figsize)
+
         tmpdf = self.results['summary'].sort_values(by='tid', ascending=True)
 
+        # Plot results with testsize
+        idx = np.where(tmpdf['best'].values)[0]
+        ax1.hlines(tmpdf['loss'].iloc[idx], 0, tmpdf['loss'].shape[0], colors='g', linestyles='dashed', label='Best (wihtout cv)')
+        ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss'].iloc[idx], colors='g', linestyles='dashed')
+        best_loss = tmpdf['loss'].iloc[idx]
+        title = ('%s (%s: %.3g)' %(self.method, self.eval_metric, best_loss))
+
+        # Plot results with cv
         if self.cv is not None:
             ax1.errorbar(tmpdf['tid'], tmpdf['loss_mean'], tmpdf['loss_std'], marker='s', mfc='red', label=str(self.cv) + '-fold cv for top ' + str(self.top_cv_evals) + ' models')
             idx = np.where(tmpdf['best_cv'].values)[0]
             ax1.hlines(tmpdf['loss_mean'].iloc[idx], 0, tmpdf['loss_mean'].shape[0], colors='r', linestyles='dotted', label='Best (' + str(self.cv) + '-fold cv)')
             ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss_mean'].iloc[idx], colors='r', linestyles='dashed')
-
-        idx = np.where(tmpdf['best'].values)[0]
-        ax1.hlines(tmpdf['loss'].iloc[idx], 0, tmpdf['loss'].shape[0], colors='g', linestyles='dashed', label='Best (wihtout cv)')
-        ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss'].iloc[idx], colors='g', linestyles='dashed')
+            best_loss = tmpdf['loss_mean'].iloc[idx]
+            title = ('%s (%.0d-fold cv mean %s: %.3g)' %(self.method, self.cv, self.eval_metric, best_loss))
 
         # Plot all other evalution results on the single test-set
         ax1.scatter(tmpdf['tid'].values, tmpdf['loss'].values, s=10, label='All models')
+
         # Set labels
-        ax1.set_title(self.method)
-        ax1.set_xlabel('Iteration')
+        ax1.set_title(title)
         ax1.set_ylabel(self.eval_metric)
         ax1.grid(True)
         ax1.legend()
         if ylim is not None: ax1.set_ylim(ylim)
 
-        eval_metric = [*self.model.evals_result()['validation_0'].keys()][0]
-        ax2.plot([*self.model.evals_result()['validation_0'].values()][0], label='Train error')
-        ax2.plot([*self.model.evals_result()['validation_1'].values()][0], label='Test error')
-        ax2.set_ylabel(eval_metric)
-        ax2.set_title(self.method)
-        ax2.grid(True)
-        ax2.legend()
+        if hasattr(self.model, 'evals_result'):
+            eval_metric = [*self.model.evals_result()['validation_0'].keys()][0]
+            ax2.plot([*self.model.evals_result()['validation_0'].values()][0], label='Train error')
+            ax2.plot([*self.model.evals_result()['validation_1'].values()][0], label='Test error')
+            ax2.set_ylabel(eval_metric)
+            ax2.set_title(self.method)
+            ax2.grid(True)
+            ax2.legend()
 
         if return_ax:
             return ax1, ax2
@@ -796,7 +808,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
     # uniform: continuous uniform (floats spaced evenly)
     # loguniform: continuous log uniform (floats spaced evenly on a log scale)
 
-    if eval_metric is None: raise Exception('[gridsearch] >eval_metric must be provided.')
+    if eval_metric is None: raise ValueError('[gridsearch] >eval_metric must be provided.')
     if verbose>=3: print('[gridsearch] >Collecting %s parameters.' %(fn_name))
 
     # XGB parameters
@@ -810,16 +822,11 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
             'subsample': hp.uniform('subsample', 0.5, 1),
             'n_estimators' : hp.choice('n_estimators', range(20, 205, 5)),
         }
-        xgb_fit_params = {
-            'eval_metric': eval_metric,
-            'early_stopping_rounds': 10,
-            'verbose': False
-        }
-        xgb_para = {}
-        xgb_para['model_params'] = xgb_reg_params
-        xgb_para['fit_params'] = xgb_fit_params
-        xgb_para['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
-        return(xgb_para)
+        space = {}
+        space['model_params'] = xgb_reg_params
+        space['fit_params'] = {'eval_metric': eval_metric, 'early_stopping_rounds': 10, 'verbose': False}
+        space['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
+        return(space)
 
     # LightGBM parameters
     if fn_name=='lgb_reg':
@@ -830,17 +837,12 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
             'subsample': hp.uniform('subsample', 0.8, 1),
             'n_estimators' : hp.choice('n_estimators', range(20, 205, 5)),
         }
-        lgb_fit_params = {
-            'eval_metric': 'l2',
-            'early_stopping_rounds': 10,
-            'verbose': False
-        }
-        lgb_para = {}
-        lgb_para['model_params'] = lgb_reg_params
-        lgb_para['fit_params'] = lgb_fit_params
-        lgb_para['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
+        space = {}
+        space['model_params'] = lgb_reg_params
+        space['fit_params'] = {'eval_metric': 'l2', 'early_stopping_rounds': 10, 'verbose': False }
+        space['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
 
-        return(lgb_para)
+        return(space)
 
     # LightGBM parameters
     if fn_name=='ctb_reg':
@@ -852,16 +854,11 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
             'n_estimators' : hp.choice('n_estimators', range(20, 205, 5)),
             'eval_metric' : eval_metric,
         }
-        ctb_fit_params = {
-            'early_stopping_rounds': 10,
-            'verbose': False
-        }
-        ctb_para = {}
-        ctb_para['model_params'] = ctb_reg_params
-        ctb_para['fit_params'] = ctb_fit_params
-        ctb_para['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
-
-        return(ctb_para)
+        space = {}
+        space['model_params'] = ctb_reg_params
+        space['fit_params'] = {'early_stopping_rounds': 10, 'verbose': False}
+        space['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
+        return(space)
 
     if 'xgb_clf' in fn_name:
         xgb_clf_params = {
