@@ -71,13 +71,15 @@ gs.plot_validation()
 gs.plot_cv()
 
 # %% Regression
-gs = gridsearch(method='ctb_reg', max_evals=15, cv=5, val_size=0.2)
+gs = gridsearch(method='xgb_reg', max_evals=15, cv=5, val_size=0.2)
+# gs = gridsearch(method='lgb_reg', max_evals=15, cv=5, val_size=0.2)
 # gs = gridsearch(method='xgb_reg', max_evals=200, cv=5, val_size=None)
 # gs = gridsearch(method='xgb_reg', max_evals=200, cv=None, val_size=0.2)
 # gs = gridsearch(method='xgb_reg', max_evals=200, cv=None, val_size=None)
 # gs = gridsearch(method='xgb_reg')
 # gs = gridsearch(method='lgb_reg')
 # gs = gridsearch(method='ctb_reg')
+
 df = gs.import_example()
 y = df['Age'].values
 del df['Age']

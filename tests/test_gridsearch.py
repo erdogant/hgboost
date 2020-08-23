@@ -68,8 +68,8 @@ def test_fit():
     max_evals = [None, 10, 25]
     cvs = [None, 1, 5]
     val_sizes = [None, 0.2]
+    methods = ['xgb_reg','lgb_reg']
     # methods = ['xgb_reg','lgb_reg','ctb_reg']
-    methods = ['xgb_reg']
     pos_labels = [None, 0, 2, 'value not in y']
 
     for max_eval in max_evals:

@@ -515,7 +515,7 @@ class gridsearch():
         if not hasattr(self, 'model'):
             print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
             return None
-
+        ax = None
         # if num_trees is None:
         #     if hasattr(self.model, 'best_iteration'):
         #         num_trees = self.model.best_iteration
