@@ -22,8 +22,8 @@ print(dir(gridsearch))
 import numpy as np
 
 # %% classifier
-gs = gridsearch(method='xgb_clf', max_evals=500, cv=5, eval_metric='auc', val_size=0.2)
-# gs = gridsearch(method='xgb_clf', max_evals=25, cv=None, eval_metric='auc', val_size=None)
+gs = gridsearch(method='xgb_clf', max_evals=100, cv=5, eval_metric='auc', val_size=0.2, random_state=42)
+# gs = gridsearch(method='xgb_clf', max_evals=25, cv=5, eval_metric='auc', val_size=None, random_state=42)
 
 df = gs.import_example()
 y = df['Survived'].values
@@ -42,13 +42,36 @@ y_pred, y_proba = gs.predict(X)
 
 # Make some plots
 gs.plot_params()
-gs.plot_summary()
+gs.plot()
 gs.treeplot()
 gs.plot_validation()
+gs.plot_cv()
 
+# %% multi-classifier
+gs = gridsearch(method='xgb_clf_multi', max_evals=100, cv=5, eval_metric='auc', val_size=0.2, random_state=42)
+# gs = gridsearch(method='xgb_clf_multi', max_evals=10, eval_metric='mlogloss')
+
+df = gs.import_example()
+y = df['Parch'].values
+y[y>=3]=3
+del df['Parch']
+X = gs.preprocessing(df, verbose=0)
+
+# Fit
+results = gs.fit(X, y)
+
+# use the predictor
+y_pred, y_proba = gs.predict(X)
+
+# Make some plots
+gs.plot_params()
+gs.plot()
+gs.treeplot()
+gs.plot_validation()
+gs.plot_cv()
 
 # %% Regression
-gs = gridsearch(method='xgb_reg', max_evals=200, cv=5, val_size=0.2)
+gs = gridsearch(method='ctb_reg', max_evals=15, cv=5, val_size=0.2)
 # gs = gridsearch(method='xgb_reg', max_evals=200, cv=5, val_size=None)
 # gs = gridsearch(method='xgb_reg', max_evals=200, cv=None, val_size=0.2)
 # gs = gridsearch(method='xgb_reg', max_evals=200, cv=None, val_size=None)
@@ -65,19 +88,16 @@ X = X.loc[I,:]
 
 # Fit
 results = gs.fit(X, y)
+
 # Prdict
 y_pred, y_proba = gs.predict(X)
 
 # Plot
-gs.plot_summary()
+gs.plot_params()
+gs.plot()
 gs.treeplot()
 gs.plot_validation()
-gs.plot_params()
-
-import matplotlib.pyplot as plt
-plt.scatter(y, y_pred)
-
-
+gs.plot_cv()
 
 # %% CLASSIFICATION TWO-CLASS #####
 from sklearn import datasets
@@ -87,10 +107,13 @@ iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris['feature_names'])
 y = iris.target
 
-gs = gridsearch(method='xgb_clf', max_evals=10, eval_metric='auc')
+gs = gridsearch(method='xgb_clf', max_evals=100, eval_metric='auc')
 results = gs.fit(X, y==1)
+
+# Plot
+gs.plot_params()
+gs.plot()
 gs.treeplot()
-gs.plot_summary()
 gs.plot_validation()
 
 # %% CLASSIFICATION MULTI-CLASS #####
@@ -98,8 +121,8 @@ iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris['feature_names'])
 y = iris.target
 
-gs = gridsearch(method='xgb_clf_multi', max_evals=10, eval_metric='mlogloss')
+gs = gridsearch(method='xgb_clf_multi', max_evals=100, eval_metric='mlogloss')
 results = gs.fit(X, y)
 gs.treeplot()
-gs.plot_summary()
+gs.plot()
 gs.plot_validation()
