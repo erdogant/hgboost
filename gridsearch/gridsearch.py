@@ -294,41 +294,41 @@ class gridsearch():
         # Return
         return model, results_summary, best_params
 
-    def _train_model(self, model, para):
+    def _train_model(self, model, space):
         verbose = 2 if self.verbose<=3 else 3
         # Evaluation is determine for both training and testing set. These results can plotted after finishing.
         eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)]
         # Make fit with stopping-rule to avoid overfitting.
-        model.fit(self.X_train, self.y_train, eval_set=eval_set, **para['fit_params'])
+        model.fit(self.X_train, self.y_train, eval_set=eval_set, **space['fit_params'])
         # Evaluate results
-        out, eval_results = self._eval(self.X_test, self.y_test, model, para, verbose=verbose)
+        out, eval_results = self._eval(self.X_test, self.y_test, model, space, verbose=verbose)
         # Return
         if self.verbose>=4: print("[gridsearch] >best score: {0}, best iteration: {1}".format(model.best_score, model.best_iteration))
         return out, eval_results
 
-    def xgb_reg(self, para):
-        reg = xgb.XGBRegressor(**para['model_params'])
-        out, _ = self._train_model(reg, para)
+    def xgb_reg(self, space):
+        reg = xgb.XGBRegressor(**space['model_params'])
+        out, _ = self._train_model(reg, space)
         return out
 
-    def lgb_reg(self, para):
-        reg = lgb.LGBMRegressor(**para['model_params'])
-        out, _ = self._train_model(reg, para)
+    def lgb_reg(self, space):
+        reg = lgb.LGBMRegressor(**space['model_params'])
+        out, _ = self._train_model(reg, space)
         return out
 
-    def ctb_reg(self, para):
-        reg = ctb.CatBoostRegressor(**para['model_params'])
-        out, _ = self._train_model(reg, para)
+    def ctb_reg(self, space):
+        reg = ctb.CatBoostRegressor(**space['model_params'])
+        out, _ = self._train_model(reg, space)
         return out
 
-    def xgb_clf(self, para):
-        clf = xgb.XGBClassifier(**para['model_params'])
-        out, _ = self._train_model(clf, para)
+    def xgb_clf(self, space):
+        clf = xgb.XGBClassifier(**space['model_params'])
+        out, _ = self._train_model(clf, space)
         return out
 
-    def xgb_clf_multi(self, para):
-        clf = xgb.XGBClassifier(**para['model_params'])
-        out, _ = self._train_model(clf, para)
+    def xgb_clf_multi(self, space):
+        clf = xgb.XGBClassifier(**space['model_params'])
+        out, _ = self._train_model(clf, space)
         return out
 
     # Transform results into dataframe
