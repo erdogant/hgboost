@@ -141,16 +141,16 @@ class gridsearch():
             * val_results: Results on indepedent validation dataset.
 
         """
-        if self.verbose>=3: print('[gridsearch] >Start hyperparameter optimization.')
+        if self.verbose>=3: print('[gridsearch] >Start hyperparameter optimization..')
         if verbose is None: verbose = self.verbose
         # Check input parameters
-        self.pos_label, self.method = _check_input(X, y, pos_label, self.method, verbose=self.verbose)
+        X, y, self.pos_label = _check_input(X, y, pos_label, self.method, verbose=self.verbose)
         # Set validation set
         self._set_validation_set(X, y)
         # Find best parameters
         self.model, self.results = self.HPOpt(verbose=self.verbose)
         # Fit on all data using best parameters
-        if self.verbose>=3: print('[gridsearch] >Refit %s on the entire dataset with the optimal parameters settings.' %(self.method))
+        if self.verbose>=3: print('[gridsearch] >Refit [%s] on the entire dataset with the optimal parameters settings.' %(self.method))
         self.model.fit(X, y)
         # Return
         return self.results
@@ -210,7 +210,7 @@ class gridsearch():
         # Import the desired model-function for the classification/regression
         fn = getattr(self, self.method)
         # Import search space for the specific function
-        space = _get_params(self.method, eval_metric=self.eval_metric)
+        self.space = _get_params(self.method, eval_metric=self.eval_metric)
 
         # Split train-test set
         if '_clf' in self.method:
@@ -220,20 +220,20 @@ class gridsearch():
 
         # Hyperoptimization to find best performing model. Set the trials which is the object where all the HPopt results are stored.
         trials=Trials()
-        best_params = fmin(fn=fn, space=space, algo=self.algo, max_evals=self.max_evals, trials=trials, show_progressbar=True)
+        best_params = fmin(fn=fn, space=self.space, algo=self.algo, max_evals=self.max_evals, trials=trials, show_progressbar=True)
         # Summary results
         results_summary, model = self.to_df(trials, verbose=self.verbose)
 
         # Cross-validation over the optimized models.
         if self.cv is not None:
-            model, results_summary, best_params = self._cv(results_summary, space, best_params)
+            model, results_summary, best_params = self._cv(results_summary, self.space, best_params)
 
         # Validation error
         val_results = None
         if self.val_size is not None:
             if self.verbose>=3: print('[gridsearch] >Evalute best %s model on independent validation dataset (%.0f samples).' %(self.method, len(self.y_val)))
             # Evaluate results
-            val_score, val_results = self._eval(self.X_val, self.y_val, model, space, verbose=2)
+            val_score, val_results = self._eval(self.X_val, self.y_val, model, self.space, verbose=2)
             if self.verbose>=3: print('[gridsearch] >%s on independent validation dataset: %.4g' %(self.eval_metric, val_score['loss']))
 
         # Remove the model column
@@ -265,9 +265,9 @@ class gridsearch():
             for k in np.arange(0, self.cv):
                 # Split train-test set
                 if '_clf' in self.method:
-                    self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
+                    self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=None, shuffle=True, stratify=self.y)
                 elif '_reg' in self.method:
-                    self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True)
+                    self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=None, shuffle=True)
 
                 # Evaluate model
                 score, _ = self._train_model(results_summary['model'].iloc[i], space)
@@ -394,7 +394,7 @@ class gridsearch():
         # Return
         return y_pred, y_proba
 
-    def _eval(self, X_test, y_test, model, para, verbose=3):
+    def _eval(self, X_test, y_test, model, space, verbose=3):
         """Classifier Evaluation.
 
         Description
@@ -414,7 +414,7 @@ class gridsearch():
             # 2-class classification
             if len(np.unique(y_test))==2:
                 results = cle.eval(y_test, y_proba[:, 1], y_pred=y_pred, threshold=self.threshold, pos_label=self.pos_label, verbose=verbose)
-                loss = results[para['scoring']]
+                loss = results[space['scoring']]
                 # Negation of the loss function if required
                 if self.greater_is_better: loss = loss * -1
                 # Store
@@ -430,13 +430,13 @@ class gridsearch():
                 out = {'loss': loss, 'status': STATUS_OK, 'model': model}
         elif '_reg' in self.method:
             # Regression
-            loss = para['loss_func'](y_test, y_pred)
+            loss = space['loss_func'](y_test, y_pred)
             # Negation of the loss function if required
             if self.greater_is_better: loss = loss * -1
             # Store results
             out = {'loss': loss, 'status': STATUS_OK, 'model' : model}
         else:
-            raise Exception('[gridsearch] >Error: Method %s does not exists.' %(self.method))
+            raise ValueError('[gridsearch] >Error: Method %s does not exists.' %(self.method))
 
         return out, results
 
