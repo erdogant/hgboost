@@ -88,21 +88,12 @@ class gridsearch():
         * https://scikit-learn.org/stable/modules/model_evaluation.html
 
         """
-        if (method is None): raise Exception('[gridsearch] >Set the method type.')
-        # Check the eval_metric
-        if (eval_metric is None) and ('_reg' in method):
-            eval_metric = 'rmse'
-        elif (eval_metric is None) and ('_clf_multi' in method):
-            eval_metric = 'kappa'
-        elif (eval_metric is None) and ('_clf' in method):
-            eval_metric = 'auc'
-        # Check the greater_is_better for evaluation metric
-        if (greater_is_better is None) and ('_reg' in method):
-            greater_is_better = False
-        elif (greater_is_better is None) and ('_clf' in method):
-            greater_is_better = True
+        if (method is None): raise ValueError('[gridsearch] >Set the method type.')
+        if max_evals is None: max_evals = 1
+        eval_metric, greater_is_better = _check_eval_metric(method, eval_metric, greater_is_better)
+
         if top_cv_evals is None: top_cv_evals=0
-        if (test_size<=0) or (test_size is None): raise Exception('[gridsearch] >Error: test_size must be >0 and not None. Note that the final model is learned on the entire dataset.')
+        if (test_size<=0) or (test_size is None): raise ValueError('[gridsearch] >Error: test_size must be >0 and not None. Note that the final model is learned on the entire dataset.')
 
         self.method=method
         self.eval_metric=eval_metric
