@@ -516,12 +516,71 @@ class gridsearch():
             print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
             return None
 
-        if num_trees is None: num_trees = self.model.best_iteration
+        # if num_trees is None:
+        #     if hasattr(self.model, 'best_iteration'):
+        #         num_trees = self.model.best_iteration
+        #     elif hasattr(self.model, 'best_iteration_'):
+        #         num_trees = self.model.best_iteration_
+        #     else:
+        #         num_trees = 0
+        # Plot the tree
         ax = tree.plot(self.model, num_trees=num_trees, plottype=plottype, figsize=figsize, verbose=verbose)
+        # Return
         if return_ax: return ax
 
-    def plot_validation(self, return_ax=False):
+    def plot_cv(self, figsize=(15, 8), cmap='Set2', return_ax=False):
+        """Plot the results on the crossvalidation set.
+
+        Parameters
+        ----------
+        figsize: tuple, default (25,25)
+            Figure size, (height, width)
+
+        Returns
+        -------
+        ax : object
+            Figure axis.
+
+        """
+        print('[gridsearch] >%.0d-fold crossvalidation is performed with [%s]' %(self.cv, self.method))
+
+        # Run the cross-validations
+        cv_results = {}
+        for i in tqdm(np.arange(0, self.cv)):
+            name = 'cross ' + str(i)
+            # Split train-test set
+            if '_clf' in self.method:
+                _, X_test, _, y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=None, shuffle=True, stratify=self.y)
+                # Evaluate model
+                _, cl_results = self._eval(X_test, y_test, self.model, self.space, verbose=0)
+                cv_results[name] = cl_results
+            elif '_reg' in self.method:
+                _, X_test, _, y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=None, shuffle=True)
+                y_pred = self.predict(X_test, model=self.model)[0]
+                cv_results[name] = pd.DataFrame(np.c_[y_test, y_pred], columns=['y', 'y_pred'])
+
+        # Make plots
+        if '_clf' in self.method:
+            ax = cle.plot_cross(cv_results, title=('%.0d-fold crossvalidation results on best-performing %s' %(self.cv, self.method)), figsize=figsize)
+        elif '_reg' in self.method:
+            fig, ax = plt.subplots(figsize=figsize)
+            colors = colourmap.generate(len(cv_results), cmap=cmap)
+            for i, key in enumerate(cv_results.keys()):
+                sns.regplot('y', 'y_pred', data=cv_results.get(key), ax=ax, color=colors[i, :], label=key)
+            ax.legend()
+            ax.grid(True)
+            ax.set_xlabel('True value')
+            ax.set_ylabel('Predicted value')
+
+        return ax
+
+    def plot_validation(self, figsize=(15, 8), cmap='Set2', return_ax=False):
         """Plot the results on the validation set.
+
+        Parameters
+        ----------
+        figsize: tuple, default (25,25)
+            Figure size, (height, width)
 
         Returns
         -------
