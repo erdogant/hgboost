@@ -35,14 +35,15 @@ from tqdm import tqdm
 class gridsearch():
     """Create a class gridsearch that is instantiated with the desired method."""
 
-    def __init__(self, method, max_evals=25, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, eval_metric=None, greater_is_better=None, random_state=None, verbose=3):
+    def __init__(self, method, max_evals=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, eval_metric=None, greater_is_better=None, random_state=None, verbose=3):
         """Initialize gridsearch with user-defined parameters.
 
         Parameters
         ----------
         method : String,
             Classifier.
-            * 'xgb_clf': XGboost Classifier (two-class or multi-class classifier is automatically choosen based on the number of classes)
+            * 'xgb_clf': XGboost two-class classifier
+            * 'xgb_clf_multi': XGboost multi-class classifier
             * 'xgb_reg': XGboost regressor
             * 'lgb_reg': LGBM Regressor
             * 'ctb_reg': CatBoost Regressor
@@ -50,6 +51,14 @@ class gridsearch():
             Search space is created on the number of evaluations.
         threshold : float, (default : 0.5)
             Classification threshold. In case of two-class model this is 0.5
+        cv : int, optional (default : 5)
+            Cross-validation. Specifying the test size by test_size.
+        top_cv_evals : int, (default : 10)
+            Number of top best performing models that is evaluated.
+        test_size : float, (default : 0.2)
+            Splitting train/test set with test_size=0.2 and train = 1-test_size.
+        val_size : float, (default : 0.2)
+            Setup the validation set. This part is kept entirely seperate from the test-size.
         eval_metric : str, (default : None)
             Evaluation metric for the regressor of classification model.
             * 'auc' : area under ROC curve (classification : default)
@@ -62,8 +71,11 @@ class gridsearch():
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
             * clf (default: True)
             * reg (default: False)
-        test_size : float, (default : 0.2)
-            Splitting train/test set with test_size=0.2 and train = 1-test_size.
+        random_state : int, (default : None)
+            Fix the random state for validation set and test set. Note that is not used for the crossvalidation.
+        verbose : int, (default : 3)
+            Print progress to screen.
+            0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE
 
         Returns
         -------
