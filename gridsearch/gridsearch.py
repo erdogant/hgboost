@@ -533,14 +533,25 @@ class gridsearch():
             print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
             return None
 
-        if '_clf' in self.method:
+        title = 'Results on independent validation set'
+        if ('_clf' in self.method) and not ('_multi' in self.method):
             if (self.results.get('val_results', None)) is not None:
-                ax = cle.plot(self.results['val_results'])
+                ax = cle.plot(self.results['val_results'], title=title)
                 if return_ax: return ax
-        else:
+        elif '_reg' in self.method:
             # fig, ax = plt.subplots(figsize=figsize)
-            # plt.scatter(y, y_pred)
-            print('[gridsearch] >This plot only works for classifcation. <return>')
+            y_pred = self.predict(self.X_val, model=self.model)[0]
+            df = pd.DataFrame(np.c_[self.y_val, y_pred], columns=['y', 'y_pred'])
+
+            fig, ax = plt.subplots(figsize=figsize)
+            sns.regplot('y', 'y_pred', data=df, ax=ax, color='k', label='Validation set')
+            ax.legend()
+            ax.grid(True)
+            ax.set_title(title)
+            ax.set_xlabel('True value')
+            ax.set_ylabel('Predicted value')
+
+        return ax
 
     def plot_params(self, top_n=10, shade=True, cmap='Set2', figsize=(18, 18), return_ax=False):
         """Distribution of parameters.
@@ -589,11 +600,11 @@ class gridsearch():
         params = np.array([*self.results['params'].keys()])
         color_params = colourmap.generate(len(params), cmap=cmap)
         # Setup figure size
-        nrRows = np.mod(3, len(params)) + len(params) - (np.mod(3, len(params)) * 3)
         nrCols = 3
+        nrRows = int(np.ceil(len(params) / 3))
 
         ################### Density plot for each parameter ##################
-        fig, ax = plt.subplots(nrCols, nrRows, figsize=figsize)
+        fig, ax = plt.subplots(nrRows, nrCols, figsize=figsize)
         i_row = -1
         for i, param in enumerate(params):
             # Get row number
@@ -638,7 +649,7 @@ class gridsearch():
         if self.cv is not None:
             idx_best_cv = np.where(df_sum[colbest_cv])[0]
 
-        fig2, ax2 = plt.subplots(nrCols, nrRows, figsize=figsize)
+        fig2, ax2 = plt.subplots(nrRows, nrCols, figsize=figsize)
         i_row = -1
         for i, param in enumerate(params):
             # Get row number
