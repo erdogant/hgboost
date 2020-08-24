@@ -61,16 +61,18 @@ class gridsearch():
             Setup the validation set. This part is kept entirely seperate from the test-size.
         eval_metric : str, (default : None)
             Evaluation metric for the regressor of classification model.
-            * 'auc' : area under ROC curve (classification : default)
-            * 'rmse' : root mean squared error (regression: default)
+            * 'auc' : area under ROC curve (two-class classification : default)
             * 'kappa' : (multi-classification : default)
+            * 'rmse' : root mean squared error (regression: default)
             * 'mae' : mean absolute error. (regression)
-            * 'logloss' : for binary logarithmic loss.
-            * 'mlogloss' : for binary logarithmic multi-class log loss (cross entropy).
+            * 'f1' : F1 score (two and multi-class Classifiction)
+            * 'logloss' : for binary logarithmic loss and multi-class log loss (cross entropy) (TODO)
         greater_is_better : bool, (default : depending on method: _clf or _reg)
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-            * clf (default: True)
-            * reg (default: False)
+            * auc :  True
+            * kappa : True
+            * rmse : False
+            * mae : False
         random_state : int, (default : None)
             Fix the random state for validation set and test set. Note that is not used for the crossvalidation.
         verbose : int, (default : 3)
@@ -145,12 +147,19 @@ class gridsearch():
         if verbose is None: verbose = self.verbose
         # Check input parameters
         X, y, self.pos_label = _check_input(X, y, pos_label, self.method, verbose=self.verbose)
+
+        if self.verbose>=3:
+            print('[gridsearch] >[method] is set to [%s].' %(self.method))
+            print('[gridsearch] >[eval_metric] is set to [%s].' %(self.eval_metric))
+            print('[gridsearch] >[greater_is_better] is set to [%s].' %(self.greater_is_better))
+            print('[gridsearch] >[pos_label] is set to [%s].' %(str(self.pos_label)))
+
         # Set validation set
         self._set_validation_set(X, y)
         # Find best parameters
         self.model, self.results = self.HPOpt(verbose=self.verbose)
         # Fit on all data using best parameters
-        if self.verbose>=3: print('[gridsearch] >Refit [%s] on the entire dataset with the optimal parameters settings.' %(self.method))
+        if self.verbose>=3: print('[gridsearch] >Retrain [%s] on the entire dataset with the optimal parameters settings.' %(self.method))
         self.model.fit(X, y)
         # Return
         return self.results
@@ -231,10 +240,10 @@ class gridsearch():
         # Validation error
         val_results = None
         if self.val_size is not None:
-            if self.verbose>=3: print('[gridsearch] >Evalute best %s model on independent validation dataset (%.0f samples).' %(self.method, len(self.y_val)))
+            if self.verbose>=3: print('[gridsearch] >Evalute best [%s] model on independent validation dataset (%.0f samples, %.2f%%).' %(self.method, len(self.y_val), self.val_size * 100))
             # Evaluate results
             val_score, val_results = self._eval(self.X_val, self.y_val, model, self.space, verbose=2)
-            if self.verbose>=3: print('[gridsearch] >%s on independent validation dataset: %.4g' %(self.eval_metric, val_score['loss']))
+            if self.verbose>=3: print('[gridsearch] >[%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score['loss']))
 
         # Remove the model column
         del results_summary['model']
@@ -403,35 +412,61 @@ class gridsearch():
         When you want to optimize auc or f1, you simply need to negate the score.
         The negation is fixed with the parameter: greater_is_better=False
         """
+        from sklearn.metrics import mean_squared_error, mean_absolute_error, log_loss, roc_auc_score, f1_score
         results = None
         # Make prediction
         y_pred = model.predict(X_test)
+
         # Evaluate results
         if '_clf' in self.method:
+            # Compute probability
             y_proba = model.predict_proba(X_test)
             # y_score = model.decision_function(self.X_test)
 
-            # 2-class classification
-            if len(np.unique(y_test))==2:
-                results = cle.eval(y_test, y_proba[:, 1], y_pred=y_pred, threshold=self.threshold, pos_label=self.pos_label, verbose=verbose)
-                loss = results[space['scoring']]
-                # Negation of the loss function if required
-                if self.greater_is_better: loss = loss * -1
-                # Store
-                out = {'loss': loss, 'auc': results['auc'], 'kappa': results['kappa'], 'f1': results['f1'], 'status': STATUS_OK, 'model' : model}
-            else:
-                # Multi-class classification
-                # Compute the loss
-                kappscore = cohen_kappa_score(y_test, y_pred)
-                loss = kappscore
-                # Negation of the loss function if required
+            # multi-class classification
+            if ('_clf_multi' in self.method):
+                if self.eval_metric=='kappa':
+                    loss = cohen_kappa_score(y_test, y_pred)
+                elif self.eval_metric=='logloss':
+                    loss = log_loss(y_test, y_pred)
+                elif self.eval_metric=='auc':
+                    loss = roc_auc_score(y_test, y_pred, multi_class='ovr')
+                elif self.eval_metric=='f1':
+                    loss = f1_score(y_test, y_pred)
+                else:
+                    raise ValueError('[gridsearch] >Error: [%s] is not a valid [eval_metric] for [%s].' %(self.eval_metric, self.method))
+                # Negative loss score if required
                 if self.greater_is_better: loss = loss * -1
                 # Store
                 out = {'loss': loss, 'status': STATUS_OK, 'model': model}
+            else:
+                # Two-class classification
+                results = cle.eval(y_test, y_proba[:, 1], y_pred=y_pred, threshold=self.threshold, pos_label=self.pos_label, verbose=verbose)
+
+                if self.eval_metric=='kappa':
+                    loss = results[self.eval_metric]
+                elif self.eval_metric=='auc':
+                    loss = results[self.eval_metric]
+                elif self.eval_metric=='f1':
+                    loss = results[self.eval_metric]
+                else:
+                    raise ValueError('[gridsearch] >Error: [%s] is not a valid [eval_metric] for [%s].' %(self.eval_metric, self.method))
+
+                # Negative loss score if required
+                if self.greater_is_better: loss = loss * -1
+                # Store
+                out = {'loss': loss, 'auc': results['auc'], 'kappa': results['kappa'], 'f1': results['f1'], 'status': STATUS_OK, 'model' : model}
         elif '_reg' in self.method:
             # Regression
-            loss = space['loss_func'](y_test, y_pred)
-            # Negation of the loss function if required
+            # loss = space['loss_func'](y_test, y_pred)
+            if self.eval_metric=='rmse':
+                loss = mean_squared_error(y_test, y_pred)
+            elif self.eval_metric=='mae':
+                loss = mean_absolute_error(y_test, y_pred)
+            else:
+                raise ValueError('[gridsearch] >Error: [%s] is not a valid [eval_metric] for [%s].' %(self.eval_metric, self.method))
+
+            # Negative loss score if required
             if self.greater_is_better: loss = loss * -1
             # Store results
             out = {'loss': loss, 'status': STATUS_OK, 'model' : model}
@@ -591,13 +626,17 @@ class gridsearch():
         if not hasattr(self, 'model'):
             print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
             return None
+        if self.val_size is None:
+            print('[gridsearch] >No validation set found. Hint: use the parameter [val_size=0.2] first <return>')
+            return None
+        ax = None
 
         title = 'Results on independent validation set'
         if ('_clf' in self.method) and not ('_multi' in self.method):
             if (self.results.get('val_results', None)) is not None:
                 ax = cle.plot(self.results['val_results'], title=title)
                 if return_ax: return ax
-        elif '_reg' in self.method:
+        elif ('_reg' in self.method):
             # fig, ax = plt.subplots(figsize=figsize)
             y_pred = self.predict(self.X_val, model=self.model)[0]
             df = pd.DataFrame(np.c_[self.y_val, y_pred], columns=['y', 'y_pred'])
@@ -684,7 +723,7 @@ class gridsearch():
             getvals = df_summary[param].values
             if len(y_data)>0:
                 # Plot the top n (not the first because that one is plotted in green)
-                ax[i_row][i_col].vlines(getvals[1:top_n], np.min(y_data), np.max(y_data), linewidth=1, colors='k', linestyles='dashed', label='Top ' + str(top_n))
+                ax[i_row][i_col].vlines(getvals[1:top_n], np.min(y_data), np.max(y_data), linewidth=1, colors='k', linestyles='dashed', label='Top ' + str(top_n) + ' models')
                 # Plot the best (without cv)
                 ax[i_row][i_col].vlines(getvals[idx_best], np.min(y_data), np.max(y_data), linewidth=2, colors='g', linestyles='dashed', label='Best (without cv)')
                 # Plot the best (with cv)
@@ -719,7 +758,7 @@ class gridsearch():
             sns.regplot('tid', param, data=df_sum, ax=ax2[i_row][i_col], color=color_params[i, :])
 
             # Scatter top n values
-            ax2[i_row][i_col].scatter(df_summary['tid'].values[1:top_n], df_summary[param].values[1:top_n], s=50, color='k', marker='.', label='Top ' + str(top_n))
+            ax2[i_row][i_col].scatter(df_summary['tid'].values[1:top_n], df_summary[param].values[1:top_n], s=50, color='k', marker='.', label='Top ' + str(top_n) + ' models')
 
             # Scatter best value
             ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best], df_sum[param].values[idx_best], s=100, color='g', marker='*', label='Best (without cv)')
@@ -784,6 +823,7 @@ class gridsearch():
             ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss_mean'].iloc[idx], colors='r', linestyles='dashed')
             best_loss = tmpdf['loss_mean'].iloc[idx]
             title = ('%s (%.0d-fold cv mean %s: %.3g)' %(self.method, self.cv, self.eval_metric, best_loss))
+            ax1.set_xlabel('Model number')
 
         # Plot all other evalution results on the single test-set
         ax1.scatter(tmpdf['tid'].values, tmpdf['loss'].values, s=10, label='All models')
@@ -895,7 +935,8 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         space = {}
         space['model_params'] = xgb_reg_params
         space['fit_params'] = {'eval_metric': eval_metric, 'early_stopping_rounds': 10, 'verbose': False}
-        space['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
+        space['scoring'] = eval_metric
+        # space['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
         return(space)
 
     # LightGBM parameters
@@ -909,25 +950,25 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         }
         space = {}
         space['model_params'] = lgb_reg_params
-        space['fit_params'] = {'eval_metric': 'l2', 'early_stopping_rounds': 10, 'verbose': False }
-        space['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
+        space['fit_params'] = {'eval_metric': 'l2', 'early_stopping_rounds': 10, 'verbose': False}
+        space['scoring'] = eval_metric
+        # space['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
 
         return(space)
 
-    # LightGBM parameters
+    # CatBoost parameters
     if fn_name=='ctb_reg':
-        # CatBoost parameters
         ctb_reg_params = {
             'learning_rate' : hp.quniform('learning_rate', 0.05, 0.31, 0.05),
             'max_depth' : hp.choice('max_depth', np.arange(5, 30, 1, dtype=int)),
             'colsample_bylevel' : hp.choice('colsample_bylevel', np.arange(0.3, 0.8, 0.1)),
             'n_estimators' : hp.choice('n_estimators', range(20, 205, 5)),
-            'eval_metric' : eval_metric,
         }
         space = {}
         space['model_params'] = ctb_reg_params
-        space['fit_params'] = {'early_stopping_rounds': 10, 'verbose': False}
-        space['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
+        space['fit_params'] = {'eval_metric' : eval_metric, 'early_stopping_rounds': 10, 'verbose': False}
+        # space['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
+        space['scoring'] = eval_metric
         return(space)
 
     if 'xgb_clf' in fn_name:
@@ -975,18 +1016,18 @@ def _check_input(X, y, pos_label, method, verbose=3):
     else:
         if np.any(np.isnan(y)): raise ValueError('[gridsearch] >Error: Response variable y can not have nan values.')
 
-    # Set pos_label and y
-    if (pos_label is not None) and ('clf_' in method):
-        if verbose>=3: print('[gridsearch] >[%s] is used to set [y].' %(pos_label))
-        y = y==pos_label
-        pos_label=True
-
     if ('_reg' in method):
         pos_label = None
 
+    # Set pos_label and y
+    if (pos_label is not None) and ('_clf' in method):
+        y = y==pos_label
+        pos_label=True
+        if verbose>=3: print('[gridsearch] >[%s] is used to set [y].' %(pos_label))
+
     # Checks pos_label status in case of method is classification
     if ('_clf' in method) and (pos_label is None) and (str(y.dtype)=='bool'):
-        if verbose>=3: print('[gridsearch] >[pos_label] is set to [True] because of [y] is of type [bool].')
+        if verbose>=3: print('[gridsearch] >[pos_label] is set to [%s] because [y] is of type [bool].' %(pos_label))
         pos_label = True
 
     # Raise ValueError in case of pos_label is not set and not bool.
@@ -1026,7 +1067,7 @@ def _check_input(X, y, pos_label, method, verbose=3):
     return X, y, pos_label
 
 
-def _check_eval_metric(method, eval_metric, greater_is_better):
+def _check_eval_metric(method, eval_metric, greater_is_better, verbose=3):
     # Check the eval_metric
     if (eval_metric is None) and ('_reg' in method):
         eval_metric = 'rmse'
@@ -1036,10 +1077,17 @@ def _check_eval_metric(method, eval_metric, greater_is_better):
         eval_metric = 'auc'
 
     # Check the greater_is_better for evaluation metric
-    if (greater_is_better is None) and ('_reg' in method):
-        greater_is_better = False
-    elif (greater_is_better is None) and ('_clf' in method):
-        greater_is_better = True
+    if greater_is_better is None:
+        if (eval_metric == 'f1'):
+            greater_is_better = True
+        elif (eval_metric == 'auc'):
+            greater_is_better = True
+        elif (eval_metric == 'kappa'):
+            greater_is_better = True
+        elif (eval_metric == 'rmse'):
+            greater_is_better = False
+        elif (eval_metric == 'mae'):
+            greater_is_better = False
 
     # Return
     return eval_metric, greater_is_better
