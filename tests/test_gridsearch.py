@@ -61,8 +61,7 @@ def test_fit():
     max_evals = [None, 10, 25]
     cvs = [None, 1, 5]
     val_sizes = [None, 0.2]
-    methods = ['xgb_reg','lgb_reg']
-    # methods = ['xgb_reg','lgb_reg','ctb_reg']
+    methods = ['xgb_reg','lgb_reg','ctb_reg']
     eval_metrics = ['rmse','mae']
 
     for max_eval in max_evals:
@@ -78,11 +77,11 @@ def test_fit():
                             # use the predictor
                             y_pred, y_proba = gs.predict(X)
                             # Make some plots
-                            # assert gs.plot_params(return_ax=True)
-                            # assert gs.plot(return_ax=True)
-                            # assert gs.treeplot(return_ax=True)
-                            # if val_size is not None:
-                            #     assert gs.plot_validation(return_ax=True)
+                            assert gs.plot_params(return_ax=True)
+                            assert gs.plot(return_ax=True)
+                            assert gs.treeplot(return_ax=True)
+                            if val_size is not None:
+                                assert gs.plot_validation(return_ax=True)
                         except ValueError as err:
                             assert not 'gridsearch' in err.args
                             print(err.args)
