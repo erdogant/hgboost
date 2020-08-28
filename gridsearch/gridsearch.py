@@ -960,13 +960,13 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
     if fn_name=='ctb_reg':
         ctb_reg_params = {
             'learning_rate' : hp.quniform('learning_rate', 0.05, 0.31, 0.05),
-            'max_depth' : hp.choice('max_depth', np.arange(5, 30, 1, dtype=int)),
+            'max_depth' : hp.choice('max_depth', np.arange(2, 16, 1, dtype=int)),
             'colsample_bylevel' : hp.choice('colsample_bylevel', np.arange(0.3, 0.8, 0.1)),
             'n_estimators' : hp.choice('n_estimators', range(20, 205, 5)),
         }
         space = {}
         space['model_params'] = ctb_reg_params
-        space['fit_params'] = {'eval_metric' : eval_metric, 'early_stopping_rounds': 10, 'verbose': False}
+        space['fit_params'] = {'early_stopping_rounds': 10, 'verbose': False}
         # space['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
         space['scoring'] = eval_metric
         return(space)
