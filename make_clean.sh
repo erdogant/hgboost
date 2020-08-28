@@ -12,3 +12,7 @@ rm -rf *.html
 rm -rf *.css
 rm -rf *.dot
 rm -rf *.png
+rm -rf gridsearch/catboost_info
+rm -rf gridsearch/__pycache__
+
+
