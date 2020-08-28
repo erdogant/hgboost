@@ -5,39 +5,39 @@
 Save and Load
 ''''''''''''''
 
-Saving and loading models is desired as the learning proces of a model for ``gridsearch`` can take up to hours.
-In order to accomplish this, we created two functions: function :func:`gridsearch.save` and function :func:`gridsearch.load`
+Saving and loading models is desired as the learning proces of a model for ``hgboost`` can take up to hours.
+In order to accomplish this, we created two functions: function :func:`hgboost.save` and function :func:`hgboost.load`
 Below we illustrate how to save and load models.
 
 
 Saving
 ----------------
 
-Saving a learned model can be done using the function :func:`gridsearch.save`:
+Saving a learned model can be done using the function :func:`hgboost.save`:
 
 .. code:: python
 
-    import gridsearch
+    import hgboost
 
     # Load example data
-    X,y_true = gridsearch.load_example()
+    X,y_true = hgboost.load_example()
 
     # Learn model
-    model = gridsearch.fit_transform(X, y_true, pos_label='bad')
+    model = hgboost.fit_transform(X, y_true, pos_label='bad')
 
     Save model
-    status = gridsearch.save(model, 'learned_model_v1')
+    status = hgboost.save(model, 'learned_model_v1')
 
 
 
 Loading
 ----------------------
 
-Loading a learned model can be done using the function :func:`gridsearch.load`:
+Loading a learned model can be done using the function :func:`hgboost.load`:
 
 .. code:: python
 
-    import gridsearch
+    import hgboost
 
     # Load model
-    model = gridsearch.load(model, 'learned_model_v1')
+    model = hgboost.load(model, 'learned_model_v1')

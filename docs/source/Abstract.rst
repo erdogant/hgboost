@@ -6,16 +6,16 @@ Abstract
 ''''''''
 
 Background
-    gridsearch
+    hgboost
 
 Aim
-    gridsearch
+    hgboost
 
 Results
-    gridsearch
+    hgboost
 
 Business cases
-    gridsearch
+    hgboost
     
 Schematic overview
 '''''''''''''''''''

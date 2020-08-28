@@ -5,4 +5,4 @@
 Documentation
 -------------
 
-:download:`Download documentatie <../figs/gridsearch.pdf>`
+:download:`Download documentatie <../figs/hgboost.pdf>`

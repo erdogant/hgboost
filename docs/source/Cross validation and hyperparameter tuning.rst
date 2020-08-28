@@ -36,18 +36,18 @@ The use of training and testing is set as True by default, but can be changed wi
 You may want to set the boolean value at False ``train_test=False`` if the number of training samples is very low which would lead in a poorly trained model.
 
 
-Gridsearch
+hgboost
 ----------
 
-In ``urldetect`` we incorporated hyperparameter optimization using a gridseach :func:`urldetect._gridsearch`. The goal is to evaluate the value of the combination of parameters in the learning process.
-The use of gridsearch is set True as default by a boolean value ``gridsearch=True`` in the function :func:`urldetect.fit_transform` or :func:`urldetect.fit`.
-You may want to set this value at ``gridsearch=False`` if the number of samples is very low which would lead in a poorly trained model.
+In ``urldetect`` we incorporated hyperparameter optimization using a gridseach :func:`urldetect._hgboost`. The goal is to evaluate the value of the combination of parameters in the learning process.
+The use of hgboost is set True as default by a boolean value ``hgboost=True`` in the function :func:`urldetect.fit_transform` or :func:`urldetect.fit`.
+You may want to set this value at ``hgboost=False`` if the number of samples is very low which would lead in a poorly trained model.
 
 
 Hyperparameter optimization
 ---------------------------
 
-In our gridsearch we evaluate the Term frequency–inverse document frequency (TF-IDF) and the logistic regression parameters.
+In our hgboost we evaluate the Term frequency–inverse document frequency (TF-IDF) and the logistic regression parameters.
 
 .. code:: python
 
@@ -62,5 +62,5 @@ In our gridsearch we evaluate the Term frequency–inverse document frequency (T
 
 We evaluate in total **32** combination of parameters in the learning process.
 To ensure stability, the 5-fold crossvalidation comes into play which leads to a total of **160** fits.
-To speed up the gridsearch, we enable parallel processing. Each fit is scored based on Cohen's kappa coefficient and the parameters of the best fit are used.
+To speed up the hgboost, we enable parallel processing. Each fit is scored based on Cohen's kappa coefficient and the parameters of the best fit are used.
 With 8 cores, running at 2.8GHz (i7-7700HQ) it takes approximately **15** minutes without optimization and up to **>60** minutes to learn an optimized model. An example of the output is shown below:

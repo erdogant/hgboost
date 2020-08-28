@@ -58,7 +58,7 @@ Results
 '''''''
 
 The classification performance can be derived using the function :func:`urldetect.plot`. 
-Results for the malicous URLs, using a 5-fold crossvalidation with gridsearch is as follows:
+Results for the malicous URLs, using a 5-fold crossvalidation with hgboost is as follows:
 
 .. _Figure_1:
 

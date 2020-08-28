@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'gridsearch'
+project = 'hgboost'
 copyright = '2020, Erdogan Taskesen'
 author = 'Erdogan Taskesen'
 
@@ -24,7 +24,7 @@ author = 'Erdogan Taskesen'
 master_doc = 'index'
 
 # The full version, including alpha/beta/rc tags
-release = 'gridsearch'
+release = 'hgboost'
 
 # -- General configuration ---------------------------------------------------
 
@@ -42,7 +42,7 @@ extensions = [
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
 
-pdf_documents = [('index', u'gridsearch', u'gridsearch', u'Erdogan Taskesen'),]
+pdf_documents = [('index', u'hgboost', u'hgboost', u'Erdogan Taskesen'),]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

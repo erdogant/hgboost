@@ -2,7 +2,7 @@ API References
 ------------------------------------------------
 
 
-.. automodule:: gridsearch.gridsearch
+.. automodule:: hgboost.hgboost
     :members:
     :undoc-members:
 

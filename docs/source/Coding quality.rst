@@ -21,7 +21,7 @@ The file structure of the generated package looks like:
 
 .. code-block:: bash
 
-    path/to/gridsearch/
+    path/to/hgboost/
     ├── .editorconfig
     ├── .gitignore
     ├── .pre-commit-config.yml
@@ -34,17 +34,17 @@ The file structure of the generated package looks like:
     ├── LICENSE
     ├── MANIFEST.in
     ├── NOTICE
-    ├── gridsearch
+    ├── hgboost
     │   ├── __init__.py
     │   ├── __version__.py
-    │   └── gridsearch.py
+    │   └── hgboost.py
     ├── README.md
     ├── requirements.txt
     ├── setup.cfg
     ├── setup.py
     └── tests
         ├── __init__.py
-        └── test_gridsearch.py
+        └── test_hgboost.py
 
 
 Style
@@ -59,7 +59,7 @@ Complexity
 ----------
 
 This library has been developed by using measures that help decreasing technical debt.
-Version 0.1.0 of the ``gridsearch`` library scored, according the code analyzer: **VALUE**, for which values > 0 are good and 10 is a maximum score.
+Version 0.1.0 of the ``hgboost`` library scored, according the code analyzer: **VALUE**, for which values > 0 are good and 10 is a maximum score.
 Developing software with low(er) technical dept may take extra development time, but has many advantages:
 
 * Higher quality code
@@ -72,7 +72,7 @@ Unit tests
 ----------
 
 The use of unit tests is essential to garantee a consistent output of developed functions.
-The following tests are secured using :func:`tests.test_gridsearch`:
+The following tests are secured using :func:`tests.test_hgboost`:
 
 * The input are checked.
 * The output values are checked and whether they are encoded properly.
@@ -81,16 +81,16 @@ The following tests are secured using :func:`tests.test_gridsearch`:
 
 .. code-block:: bash
 
-    pytest tests\test_gridsearch.py
+    pytest tests\test_hgboost.py
 
     ====================================== test session starts ======================================
     platform win32 -- Python 3.6.10, pytest-5.4.0, py-1.8.1, pluggy-0.13.1
     collected 3 items
     
-    tests\test_gridsearch.py ...                                                                [100%]
+    tests\test_hgboost.py ...                                                                [100%]
     
     ======================================= warnings summary ========================================
-    tests/test_gridsearch.py::test_plot
+    tests/test_hgboost.py::test_plot
     
     =========================== 3 passed, 1 warning in 1254.97s (0:20:54) ===========================    
 

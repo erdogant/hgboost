@@ -1,9 +1,9 @@
-gridsearch's documentation!
+hgboost's documentation!
 ========================
 
 WORK IN PROGRES!
 
-*gridsearch* is Python package
+*hgboost* is Python package
 
 * Greate package
 
@@ -48,7 +48,7 @@ Content
   
   Documentation
   Coding quality
-  gridsearch.gridsearch
+  hgboost.hgboost
 
 
 
@@ -57,7 +57,7 @@ Quick install
 
 .. code-block:: console
 
-   pip install gridsearch
+   pip install hgboost
 
 
 
@@ -65,18 +65,18 @@ Quick install
 Source code and issue tracker
 ------------------------------
 
-Available on Github, `erdogant/gridsearch <https://github.com/erdogant/gridsearch/>`_.
+Available on Github, `erdogant/hgboost <https://github.com/erdogant/hgboost/>`_.
 Please report bugs, issues and feature extensions there.
 
-Citing *gridsearch*
+Citing *hgboost*
 ----------------
 Here is an example BibTeX entry:
 
-@misc{erdogant2019gridsearch,
-  title={gridsearch},
+@misc{erdogant2019hgboost,
+  title={hgboost},
   author={Erdogan Taskesen},
   year={2019},
-  howpublished={\url{https://github.com/erdogant/gridsearch}}}
+  howpublished={\url{https://github.com/erdogant/hgboost}}}
 
 
 

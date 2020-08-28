@@ -5,7 +5,7 @@
 Examples
 ''''''''''
 
-Learn new model with gridsearch and train-test set
+Learn new model with hgboost and train-test set
 --------------------------------------------------
 
 AAA
@@ -13,16 +13,16 @@ AAA
 .. code:: python
 
     # Import library
-    import gridsearch
+    import hgboost
 
     # Load example data set    
-    X,y_true = gridsearch.load_example()
+    X,y_true = hgboost.load_example()
 
     # Retrieve URLs of malicous and normal urls:
-    model = gridsearch.fit_transform(X, y_true, pos_label='bad', train_test=True, gridsearch=True)
+    model = hgboost.fit_transform(X, y_true, pos_label='bad', train_test=True, hgboost=True)
 
     # The test error will be shown
-    results = gridsearch.plot(model)
+    results = hgboost.plot(model)
 
 
 Learn new model on the entire data set
@@ -34,14 +34,14 @@ BBBB
 .. code:: python
 
     # Import library
-    import gridsearch
+    import hgboost
 
     # Load example data set    
-    X,y_true = gridsearch.load_example()
+    X,y_true = hgboost.load_example()
 
     # Retrieve URLs of malicous and normal urls:
-    model = gridsearch.fit_transform(X, y_true, pos_label='bad', train_test=False, gridsearch=True)
+    model = hgboost.fit_transform(X, y_true, pos_label='bad', train_test=False, hgboost=True)
 
     # The train error will be shown. Such results are heavily biased as the model also learned on this set of data
-    results = gridsearch.plot(model)
+    results = hgboost.plot(model)
 

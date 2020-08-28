@@ -5,7 +5,7 @@
 Algorithm
 '''''''''
 
-The ``gridsearch`` method consists of various parts, namely, AAA BBB and CCC
+The ``hgboost`` method consists of various parts, namely, AAA BBB and CCC
 
 
 AAA
