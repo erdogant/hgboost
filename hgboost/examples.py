@@ -16,14 +16,14 @@
 # plotting ✓
 
 # %%
-from gridsearch import gridsearch
-print(dir(gridsearch))
-# print(gridsearch.__version__)
+from hgboost import hgboost
+print(dir(hgboost))
+# print(hgboost.__version__)
 import numpy as np
 
 # %% classifier
-gs = gridsearch(method='xgb_clf', max_evals=10, cv=5, eval_metric='auc', val_size=0.2, random_state=42)
-# gs = gridsearch(method='xgb_clf', max_evals=25, cv=5, eval_metric='auc', val_size=None, random_state=42)
+gs = hgboost(method='xgb_clf', max_evals=10, cv=5, eval_metric='auc', val_size=0.2, random_state=42)
+# gs = hgboost(method='xgb_clf', max_evals=25, cv=5, eval_metric='auc', val_size=None, random_state=42)
 
 df = gs.import_example()
 y = df['Survived'].values
@@ -48,7 +48,7 @@ gs.plot_validation()
 gs.plot_cv()
 
 # %% multi-classifier
-gs = gridsearch(method='xgb_clf_multi', max_evals=10, cv=5, eval_metric='kappa', val_size=0.2, random_state=42)
+gs = hgboost(method='xgb_clf_multi', max_evals=10, cv=5, eval_metric='kappa', val_size=0.2, random_state=42)
 
 df = gs.import_example()
 y = df['Parch'].values
@@ -70,15 +70,15 @@ gs.plot_validation()
 gs.plot_cv()
 
 # %% Regression
-gs = gridsearch(method='xgb_reg', max_evals=15, cv=5, val_size=0.2, eval_metric='rmse')
-gs = gridsearch(method='ctb_reg', max_evals=15, cv=5, val_size=0.2, eval_metric='mae')
-# gs = gridsearch(method='lgb_reg', max_evals=15, cv=5, val_size=0.2)
-# gs = gridsearch(method='xgb_reg', max_evals=200, cv=5, val_size=None)
-# gs = gridsearch(method='xgb_reg', max_evals=200, cv=None, val_size=0.2)
-# gs = gridsearch(method='xgb_reg', max_evals=200, cv=None, val_size=None)
-# gs = gridsearch(method='xgb_reg')
-# gs = gridsearch(method='lgb_reg')
-# gs = gridsearch(method='ctb_reg')
+gs = hgboost(method='xgb_reg', max_evals=15, cv=5, val_size=0.2, eval_metric='rmse')
+gs = hgboost(method='ctb_reg', max_evals=15, cv=5, val_size=0.2, eval_metric='mae')
+# gs = hgboost(method='lgb_reg', max_evals=15, cv=5, val_size=0.2)
+# gs = hgboost(method='xgb_reg', max_evals=200, cv=5, val_size=None)
+# gs = hgboost(method='xgb_reg', max_evals=200, cv=None, val_size=0.2)
+# gs = hgboost(method='xgb_reg', max_evals=200, cv=None, val_size=None)
+# gs = hgboost(method='xgb_reg')
+# gs = hgboost(method='lgb_reg')
+# gs = hgboost(method='ctb_reg')
 
 df = gs.import_example()
 y = df['Age'].values
@@ -109,7 +109,7 @@ iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris['feature_names'])
 y = iris.target
 
-gs = gridsearch(method='xgb_clf', max_evals=100, eval_metric='auc')
+gs = hgboost(method='xgb_clf', max_evals=100, eval_metric='auc')
 results = gs.fit(X, y==1)
 
 # Plot
@@ -123,7 +123,7 @@ iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris['feature_names'])
 y = iris.target
 
-gs = gridsearch(method='xgb_clf_multi', max_evals=100, eval_metric='mlogloss')
+gs = hgboost(method='xgb_clf_multi', max_evals=100, eval_metric='mlogloss')
 results = gs.fit(X, y)
 gs.treeplot()
 gs.plot()

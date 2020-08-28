@@ -1,6 +1,6 @@
-from gridsearch.gridsearch import gridsearch
+from hgboost.hgboost import hgboost
 
-from gridsearch.gridsearch import (
+from hgboost.hgboost import (
     import_example,
     )
 
@@ -10,7 +10,7 @@ __version__ = '0.1.0'
 
 # module level doc-string
 __doc__ = """
-gridsearch - Determine best model by minimizing xgboost function over a hyperparameter space.
+hgboost - Determine best model by minimizing xgboost function over a hyperparameter space.
 =====================================================================
 
 Description
@@ -35,12 +35,12 @@ The library consists the underneath parts that can be used set:
 
 Example
 -------
->>> import gridsearch as gridsearch
->>> model = gridsearch.fit(X)
->>> fig,ax = gridsearch.plot(model)
+>>> import hgboost as hgboost
+>>> model = hgboost.fit(X)
+>>> fig,ax = hgboost.plot(model)
 
 References
 ----------
-* https://github.com/erdogant/gridsearch
+* https://github.com/erdogant/hgboost
 
 """

@@ -1,4 +1,4 @@
-from gridsearch import gridsearch
+from hgboost import hgboost
 import pandas as pd
 import numpy as np
 
@@ -6,8 +6,8 @@ def test_fit():
     ############################## CLASSIFICATION########################
     # Check whether all combinations of parameters runs like a charm
     #####################################################################
-    from gridsearch import gridsearch
-    gs = gridsearch(method='xgb_clf')
+    from hgboost import hgboost
+    gs = hgboost(method='xgb_clf')
     df = gs.import_example()
     y = df['Parch'].values
     y[y>=3]=3
@@ -26,8 +26,8 @@ def test_fit():
                 for method in methods:
                     for pos_label in pos_labels:
                         # Setup model
-                        gs = gridsearch(method=method, max_evals=max_eval, cv=cv, eval_metric=None, val_size=val_size, verbose=3)
-                        # gs = gridsearch(method=method, max_evals=10, cv=5, eval_metric='auc', val_size=0.2, verbose=3)
+                        gs = hgboost(method=method, max_evals=max_eval, cv=cv, eval_metric=None, val_size=val_size, verbose=3)
+                        # gs = hgboost(method=method, max_evals=10, cv=5, eval_metric='auc', val_size=0.2, verbose=3)
                         # Fit model
                         try:
                             results = gs.fit(X, y, pos_label=pos_label)
@@ -41,15 +41,15 @@ def test_fit():
                             #     ax = gs.plot_validation(return_ax=True)
                             #     assert len(ax)>=2
                         except ValueError as err:
-                            assert not 'gridsearch' in err.args
+                            assert not 'hgboost' in err.args
                             print(err.args)
 
 
     ############################## REGRESSION ###########################
     # Check whether all combinations of parameters runs like a charm
     #####################################################################
-    from gridsearch import gridsearch
-    gs = gridsearch(method='xgb_reg')
+    from hgboost import hgboost
+    gs = hgboost(method='xgb_reg')
     df = gs.import_example()
     y = df['Age'].values
     del df['Age']
@@ -70,7 +70,7 @@ def test_fit():
                 for method in methods:
                     for eval_metric in eval_metrics:
                         # Setup model
-                        gs = gridsearch(method=method, max_evals=max_eval, cv=cv, eval_metric=eval_metric, val_size=val_size, verbose=2)
+                        gs = hgboost(method=method, max_evals=max_eval, cv=cv, eval_metric=eval_metric, val_size=val_size, verbose=2)
                         # Fit model
                         try:
                             results = gs.fit(X, y, pos_label=pos_label)
@@ -83,7 +83,7 @@ def test_fit():
                             if val_size is not None:
                                 assert gs.plot_validation(return_ax=True)
                         except ValueError as err:
-                            assert not 'gridsearch' in err.args
+                            assert not 'hgboost' in err.args
                             print(err.args)
 
     # from sklearn.datasets import make_classification

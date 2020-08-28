@@ -8,7 +8,7 @@ catboost_info/
 # C extensions
 *.so
 
-gridsearch/data/
+hgboost/data/
 
 # Distribution / packaging
 .pylint.*

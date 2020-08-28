@@ -1,12 +1,12 @@
-# gridsearch
+# hgboost
 
-[![Python](https://img.shields.io/pypi/pyversions/gridsearch)](https://img.shields.io/pypi/pyversions/gridsearch)
-[![PyPI Version](https://img.shields.io/pypi/v/gridsearch)](https://pypi.org/project/gridsearch/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/erdogant/gridsearch/blob/master/LICENSE)
-[![Downloads](https://pepy.tech/badge/gridsearch/week)](https://pepy.tech/project/gridsearch/week)
+[![Python](https://img.shields.io/pypi/pyversions/hgboost)](https://img.shields.io/pypi/pyversions/hgboost)
+[![PyPI Version](https://img.shields.io/pypi/v/hgboost)](https://pypi.org/project/hgboost/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/erdogant/hgboost/blob/master/LICENSE)
+[![Downloads](https://pepy.tech/badge/hgboost/week)](https://pepy.tech/project/hgboost/week)
 [![Donate](https://img.shields.io/badge/donate-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)
 
-* gridsearch is Python package
+* hgboost is Python package
 
 ### Contents
 - [Installation](#-installation)
@@ -17,57 +17,57 @@
 - [License](#-copyright)
 
 ### Installation
-* Install gridsearch from PyPI (recommended). gridsearch is compatible with Python 3.6+ and runs on Linux, MacOS X and Windows. 
+* Install hgboost from PyPI (recommended). hgboost is compatible with Python 3.6+ and runs on Linux, MacOS X and Windows. 
 * A new environment is created as following: 
 
 ```python
-conda create -n env_gridsearch python=3.6
-conda activate env_gridsearch
+conda create -n env_hgboost python=3.6
+conda activate env_hgboost
 pip install -r requirements
 ```
 
 ```bash
-pip install gridsearch
+pip install hgboost
 ```
 
-* Alternatively, install gridsearch from the GitHub source:
+* Alternatively, install hgboost from the GitHub source:
 ```bash
 # Directly install from github source
-pip install -e git://github.com/erdogant/gridsearch.git@0.1.0#egg=master
-pip install git+https://github.com/erdogant/gridsearch#egg=master
+pip install -e git://github.com/erdogant/hgboost.git@0.1.0#egg=master
+pip install git+https://github.com/erdogant/hgboost#egg=master
 
 # By cloning
-pip install git+https://github.com/erdogant/gridsearch
-git clone https://github.com/erdogant/gridsearch.git
-cd gridsearch
+pip install git+https://github.com/erdogant/hgboost
+git clone https://github.com/erdogant/hgboost.git
+cd hgboost
 python setup.py install
 ```  
 
-#### Import gridsearch package
+#### Import hgboost package
 ```python
-import gridsearch as gridsearch
+import hgboost as hgboost
 ```
 
 #### Example:
 ```python
-df = pd.read_csv('https://github.com/erdogant/hnet/blob/master/gridsearch/data/example_data.csv')
-model = gridsearch.fit(df)
-G = gridsearch.plot(model)
+df = pd.read_csv('https://github.com/erdogant/hnet/blob/master/hgboost/data/example_data.csv')
+model = hgboost.fit(df)
+G = hgboost.plot(model)
 ```
 <p align="center">
-  <img src="https://github.com/erdogant/gridsearch/blob/master/docs/figs/fig1.png" width="600" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/fig1.png" width="600" />
   
 </p>
 
 
 #### Citation
-Please cite gridsearch in your publications if this is useful for your research. Here is an example BibTeX entry:
+Please cite hgboost in your publications if this is useful for your research. Here is an example BibTeX entry:
 ```BibTeX
-@misc{erdogant2020gridsearch,
-  title={gridsearch},
+@misc{erdogant2020hgboost,
+  title={hgboost},
   author={Erdogan Taskesen},
   year={2019},
-  howpublished={\url{https://github.com/erdogant/gridsearch}},
+  howpublished={\url{https://github.com/erdogant/hgboost}},
 }
 ```
 

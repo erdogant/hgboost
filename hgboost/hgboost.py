@@ -1,8 +1,8 @@
 # --------------------------------------------------
-# Name        : gridsearch.py
+# Name        : hgboost.py
 # Author      : E.Taskesen
 # Contact     : erdogant@gmail.com
-# github      : https://github.com/erdogant/gridsearch
+# github      : https://github.com/erdogant/hgboost
 # Licence     : See licences
 # --------------------------------------------------
 
@@ -32,11 +32,11 @@ from tqdm import tqdm
 
 
 # %%
-class gridsearch():
-    """Create a class gridsearch that is instantiated with the desired method."""
+class hgboost():
+    """Create a class hgboost that is instantiated with the desired method."""
 
     def __init__(self, method, max_evals=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, eval_metric=None, greater_is_better=None, random_state=None, verbose=3):
-        """Initialize gridsearch with user-defined parameters.
+        """Initialize hgboost with user-defined parameters.
 
         Parameters
         ----------
@@ -90,12 +90,12 @@ class gridsearch():
         * https://scikit-learn.org/stable/modules/model_evaluation.html
 
         """
-        if (method is None): raise ValueError('[gridsearch] >Set the method type.')
+        if (method is None): raise ValueError('[hgboost] >Set the method type.')
         if max_evals is None: max_evals = 1
         eval_metric, greater_is_better = _check_eval_metric(method, eval_metric, greater_is_better)
 
         if top_cv_evals is None: top_cv_evals=0
-        if (test_size<=0) or (test_size is None): raise ValueError('[gridsearch] >Error: test_size must be >0 and not None. Note that the final model is learned on the entire dataset.')
+        if (test_size<=0) or (test_size is None): raise ValueError('[hgboost] >Error: test_size must be >0 and not None. Note that the final model is learned on the entire dataset.')
 
         self.method=method
         self.eval_metric=eval_metric
@@ -143,23 +143,23 @@ class gridsearch():
             * val_results: Results on indepedent validation dataset.
 
         """
-        if self.verbose>=3: print('[gridsearch] >Start hyperparameter optimization..')
+        if self.verbose>=3: print('[hgboost] >Start hyperparameter optimization..')
         if verbose is None: verbose = self.verbose
         # Check input parameters
         X, y, self.pos_label = _check_input(X, y, pos_label, self.method, verbose=self.verbose)
 
         if self.verbose>=3:
-            print('[gridsearch] >[method] is set to [%s].' %(self.method))
-            print('[gridsearch] >[eval_metric] is set to [%s].' %(self.eval_metric))
-            print('[gridsearch] >[greater_is_better] is set to [%s].' %(self.greater_is_better))
-            print('[gridsearch] >[pos_label] is set to [%s].' %(str(self.pos_label)))
+            print('[hgboost] >[method] is set to [%s].' %(self.method))
+            print('[hgboost] >[eval_metric] is set to [%s].' %(self.eval_metric))
+            print('[hgboost] >[greater_is_better] is set to [%s].' %(self.greater_is_better))
+            print('[hgboost] >[pos_label] is set to [%s].' %(str(self.pos_label)))
 
         # Set validation set
         self._set_validation_set(X, y)
         # Find best parameters
         self.model, self.results = self.HPOpt(verbose=self.verbose)
         # Fit on all data using best parameters
-        if self.verbose>=3: print('[gridsearch] >Retrain [%s] on the entire dataset with the optimal parameters settings.' %(self.method))
+        if self.verbose>=3: print('[hgboost] >Retrain [%s] on the entire dataset with the optimal parameters settings.' %(self.method))
         self.model.fit(X, y)
         # Return
         return self.results
@@ -174,7 +174,7 @@ class gridsearch():
         * The validation X and y are stored in self.X_val and self.y_val
         """
         # from sklearn.model_selection import cross_val_score, KFold
-        if self.verbose>=3: print('[gridsearch] >Total datset: %s ' %(str(X.shape)))
+        if self.verbose>=3: print('[hgboost] >Total datset: %s ' %(str(X.shape)))
 
         if (self.val_size is not None):
             if '_clf' in self.method:
@@ -240,10 +240,10 @@ class gridsearch():
         # Validation error
         val_results = None
         if self.val_size is not None:
-            if self.verbose>=3: print('[gridsearch] >Evalute best [%s] model on independent validation dataset (%.0f samples, %.2f%%).' %(self.method, len(self.y_val), self.val_size * 100))
+            if self.verbose>=3: print('[hgboost] >Evalute best [%s] model on independent validation dataset (%.0f samples, %.2f%%).' %(self.method, len(self.y_val), self.val_size * 100))
             # Evaluate results
             val_score, val_results = self._eval(self.X_val, self.y_val, model, self.space, verbose=2)
-            if self.verbose>=3: print('[gridsearch] >[%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score['loss']))
+            if self.verbose>=3: print('[hgboost] >[%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score['loss']))
 
         # Remove the model column
         del results_summary['model']
@@ -265,7 +265,7 @@ class gridsearch():
         # Determine maximum folds
         top_cv_evals = np.minimum(results_summary.shape[0], self.top_cv_evals)
         idx = results_summary['loss'].sort_values(ascending=ascending).index[0:top_cv_evals]
-        if self.verbose>=3: print('[gridsearch] >%.0d-fold cross validation for the top %.0d scoring models, Total: %.0f iterations.\n' %(self.cv, len(idx), self.cv * len(idx)))
+        if self.verbose>=3: print('[hgboost] >%.0d-fold cross validation for the top %.0d scoring models, Total: %.0f iterations.\n' %(self.cv, len(idx), self.cv * len(idx)))
 
         # Run over the top-scoring models.
         for i in tqdm(idx):
@@ -312,7 +312,7 @@ class gridsearch():
         # Evaluate results
         out, eval_results = self._eval(self.X_test, self.y_test, model, space, verbose=verbose)
         # Return
-        if self.verbose>=4: print("[gridsearch] >best score: {0}, best iteration: {1}".format(model.best_score, model.best_iteration))
+        if self.verbose>=4: print("[hgboost] >best score: {0}, best iteration: {1}".format(model.best_score, model.best_iteration))
         return out, eval_results
 
     def xgb_reg(self, space):
@@ -365,7 +365,7 @@ class gridsearch():
         df['best'].iloc[idx] = True
 
         # Return
-        if verbose>=3: print('[gridsearch] >Best peforming [%s] model: %s=%g' %(self.method, self.eval_metric, score))
+        if verbose>=3: print('[hgboost] >Best peforming [%s] model: %s=%g' %(self.method, self.eval_metric, score))
         return(df, model)
 
     # Predict
@@ -386,7 +386,7 @@ class gridsearch():
 
         """
         if not hasattr(self, 'model'):
-            print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
+            print('[hgboost] >No model found. Hint: use the .fit() function first <return>')
             return None
         if model is None:
             model = self.model
@@ -434,7 +434,7 @@ class gridsearch():
                 elif self.eval_metric=='f1':
                     loss = f1_score(y_test, y_pred)
                 else:
-                    raise ValueError('[gridsearch] >Error: [%s] is not a valid [eval_metric] for [%s].' %(self.eval_metric, self.method))
+                    raise ValueError('[hgboost] >Error: [%s] is not a valid [eval_metric] for [%s].' %(self.eval_metric, self.method))
                 # Negative loss score if required
                 if self.greater_is_better: loss = loss * -1
                 # Store
@@ -450,7 +450,7 @@ class gridsearch():
                 elif self.eval_metric=='f1':
                     loss = results[self.eval_metric]
                 else:
-                    raise ValueError('[gridsearch] >Error: [%s] is not a valid [eval_metric] for [%s].' %(self.eval_metric, self.method))
+                    raise ValueError('[hgboost] >Error: [%s] is not a valid [eval_metric] for [%s].' %(self.eval_metric, self.method))
 
                 # Negative loss score if required
                 if self.greater_is_better: loss = loss * -1
@@ -464,14 +464,14 @@ class gridsearch():
             elif self.eval_metric=='mae':
                 loss = mean_absolute_error(y_test, y_pred)
             else:
-                raise ValueError('[gridsearch] >Error: [%s] is not a valid [eval_metric] for [%s].' %(self.eval_metric, self.method))
+                raise ValueError('[hgboost] >Error: [%s] is not a valid [eval_metric] for [%s].' %(self.eval_metric, self.method))
 
             # Negative loss score if required
             if self.greater_is_better: loss = loss * -1
             # Store results
             out = {'loss': loss, 'status': STATUS_OK, 'model' : model}
         else:
-            raise ValueError('[gridsearch] >Error: Method %s does not exists.' %(self.method))
+            raise ValueError('[hgboost] >Error: Method %s does not exists.' %(self.method))
 
         return out, results
 
@@ -548,7 +548,7 @@ class gridsearch():
 
         """
         if not hasattr(self, 'model'):
-            print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
+            print('[hgboost] >No model found. Hint: use the .fit() function first <return>')
             return None
         ax = None
         # if num_trees is None:
@@ -577,7 +577,7 @@ class gridsearch():
             Figure axis.
 
         """
-        print('[gridsearch] >%.0d-fold crossvalidation is performed with [%s]' %(self.cv, self.method))
+        print('[hgboost] >%.0d-fold crossvalidation is performed with [%s]' %(self.cv, self.method))
 
         # Run the cross-validations
         cv_results = {}
@@ -624,10 +624,10 @@ class gridsearch():
 
         """
         if not hasattr(self, 'model'):
-            print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
+            print('[hgboost] >No model found. Hint: use the .fit() function first <return>')
             return None
         if self.val_size is None:
-            print('[gridsearch] >No validation set found. Hint: use the parameter [val_size=0.2] first <return>')
+            print('[hgboost] >No validation set found. Hint: use the parameter [val_size=0.2] first <return>')
             return None
         ax = None
 
@@ -797,7 +797,7 @@ class gridsearch():
 
         """
         if not hasattr(self, 'model'):
-            print('[gridsearch] >No model found. Hint: use the .fit() function first <return>')
+            print('[hgboost] >No model found. Hint: use the .fit() function first <return>')
             return None
         ax1, ax2 = None, None
 
@@ -891,7 +891,7 @@ def import_example(data='titanic', url=None, sep=',', verbose=3):
         data = wget.filename_from_url(url)
 
     if url is None:
-        if verbose>=3: print('[gridsearch] >Nothing to download.')
+        if verbose>=3: print('[hgboost] >Nothing to download.')
         return None
 
     curpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
@@ -901,11 +901,11 @@ def import_example(data='titanic', url=None, sep=',', verbose=3):
 
     # Check file exists.
     if not os.path.isfile(PATH_TO_DATA):
-        if verbose>=3: print('[gridsearch] >Downloading [%s] dataset from github source..' %(data))
+        if verbose>=3: print('[hgboost] >Downloading [%s] dataset from github source..' %(data))
         wget.download(url, curpath)
 
     # Import local dataset
-    if verbose>=3: print('[gridsearch] >Import dataset [%s]' %(data))
+    if verbose>=3: print('[hgboost] >Import dataset [%s]' %(data))
     df = pd.read_csv(PATH_TO_DATA, sep=sep)
     # Return
     return df
@@ -918,8 +918,8 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
     # uniform: continuous uniform (floats spaced evenly)
     # loguniform: continuous log uniform (floats spaced evenly on a log scale)
 
-    if eval_metric is None: raise ValueError('[gridsearch] >eval_metric must be provided.')
-    if verbose>=3: print('[gridsearch] >Collecting %s parameters.' %(fn_name))
+    if eval_metric is None: raise ValueError('[hgboost] >eval_metric must be provided.')
+    if verbose>=3: print('[hgboost] >Collecting %s parameters.' %(fn_name))
 
     # XGB parameters
     if fn_name=='xgb_reg':
@@ -997,24 +997,24 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         space['model_params'] = xgb_clf_params
         space['fit_params'] = {'early_stopping_rounds': 10, 'verbose': False}
         space['scoring'] = scoring
-        if verbose>=3: print('[gridsearch] >Number of variables in search space is [%.0d], loss function: [%s].' %(len([*space['model_params']]), eval_metric))
+        if verbose>=3: print('[hgboost] >Number of variables in search space is [%.0d], loss function: [%s].' %(len([*space['model_params']]), eval_metric))
         return(space)
 
 
 def _check_input(X, y, pos_label, method, verbose=3):
     # X should be of type dataframe
     if (type(X) is not pd.DataFrame):
-        raise ValueError('[gridsearch] >Error: dataset X should be of type pd.DataFrame')
+        raise ValueError('[hgboost] >Error: dataset X should be of type pd.DataFrame')
 
     # y should be of type array-like
     if (type(y) is not np.ndarray):
-        raise ValueError('[gridsearch] >Error: Response variable y should be of type numpy array')
+        raise ValueError('[hgboost] >Error: Response variable y should be of type numpy array')
 
     # Check None and np.nan values in string/numeric type
     if 'str' in str(type(y[0])):
-        if any(elem is None for elem in y): raise ValueError('[gridsearch] >Error: Response variable y can not have None values.')
+        if any(elem is None for elem in y): raise ValueError('[hgboost] >Error: Response variable y can not have None values.')
     else:
-        if np.any(np.isnan(y)): raise ValueError('[gridsearch] >Error: Response variable y can not have nan values.')
+        if np.any(np.isnan(y)): raise ValueError('[hgboost] >Error: Response variable y can not have nan values.')
 
     if ('_reg' in method):
         pos_label = None
@@ -1023,45 +1023,45 @@ def _check_input(X, y, pos_label, method, verbose=3):
     if (pos_label is not None) and ('_clf' in method):
         y = y==pos_label
         pos_label=True
-        if verbose>=3: print('[gridsearch] >[%s] is used to set [y].' %(pos_label))
+        if verbose>=3: print('[hgboost] >[%s] is used to set [y].' %(pos_label))
 
     # Checks pos_label status in case of method is classification
     if ('_clf' in method) and (pos_label is None) and (str(y.dtype)=='bool'):
-        if verbose>=3: print('[gridsearch] >[pos_label] is set to [%s] because [y] is of type [bool].' %(pos_label))
+        if verbose>=3: print('[hgboost] >[pos_label] is set to [%s] because [y] is of type [bool].' %(pos_label))
         pos_label = True
 
     # Raise ValueError in case of pos_label is not set and not bool.
     if ('_clf' in method) and (pos_label is None) and (len(np.unique(y))==2) and not (str(y.dtype)=='bool'):
-        raise ValueError('[gridsearch] >Error: In a two-class approach [%s], pos_label needs to be set or of type bool.' %(pos_label))
+        raise ValueError('[hgboost] >Error: In a two-class approach [%s], pos_label needs to be set or of type bool.' %(pos_label))
 
     # Check label for classificaiton and two-class model
     if ('_clf' in method) and (pos_label is not None) and (len(np.unique(y))==2) and not (np.any(np.isin(y.astype(str), str(pos_label)))):
-        raise ValueError('[gridsearch] >Error: y contains values %s but none matches pos_label=%s <return>' %(str(np.unique(y)), pos_label))
+        raise ValueError('[hgboost] >Error: y contains values %s but none matches pos_label=%s <return>' %(str(np.unique(y)), pos_label))
 
     # two-class classifier should have 2 classes
     if ('_clf' in method) and not ('_multi' in method) and (len(np.unique(y))>2) and (pos_label is None):
-        raise ValueError('[gridsearch] >Error: [y] contains more then 2 classes and no [pos_label] is given. Hint: use method=[xgb_clf_multi] for multi-class clasification.')
+        raise ValueError('[hgboost] >Error: [y] contains more then 2 classes and no [pos_label] is given. Hint: use method=[xgb_clf_multi] for multi-class clasification.')
 
     # multi-class method should have >2 classes
     if ('_clf_multi' in method) and (len(np.unique(y))==2):
-        raise ValueError('[gridsearch] >Error: [xgb_clf_multi] requires >2 classes but only 2 classes are detected., Hint: use method="xgb_clf" or set [pos_label].')
+        raise ValueError('[hgboost] >Error: [xgb_clf_multi] requires >2 classes but only 2 classes are detected., Hint: use method="xgb_clf" or set [pos_label].')
 
     if ('_clf_multi' in method):
         pos_label = None
-        if verbose>=3: print('[gridsearch] >[pos_label] is set to [None] because [method] is of type [%s].' %(method))
+        if verbose>=3: print('[hgboost] >[pos_label] is set to [None] because [method] is of type [%s].' %(method))
 
     # Check counts y
     y_counts = np.unique(y, return_counts=True)[1]
     if np.any(y_counts<5) and ('_clf' in method):
-        raise ValueError('[gridsearch] >Error: [y] contains [%.0d] classes with < 5 samples. Each class should have >=5 samples.' %(sum(y_counts<5)))
+        raise ValueError('[hgboost] >Error: [y] contains [%.0d] classes with < 5 samples. Each class should have >=5 samples.' %(sum(y_counts<5)))
     # Check number of classes, should be >1
     if (len(np.unique(y))<=1) and ('_clf' in method):
-        raise ValueError('[gridsearch] >Error: [y] should have >= 2 classes.')
+        raise ValueError('[hgboost] >Error: [y] should have >= 2 classes.')
 
     # Set X
     X.reset_index(drop=True, inplace=True)
     X.columns = X.columns.values.astype(str)
-    if verbose>=4: print('[gridsearch] >Reset index for X.')
+    if verbose>=4: print('[hgboost] >Reset index for X.')
 
     # Return
     return X, y, pos_label

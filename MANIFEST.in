@@ -1,2 +1,2 @@
-include gridsearch/data/*.zip
-include gridsearch/data/*.txt
+include hgboost/data/*.zip
+include hgboost/data/*.txt

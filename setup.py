@@ -2,7 +2,7 @@ import setuptools
 import re
 
 # versioning ------------
-VERSIONFILE="gridsearch/__init__.py"
+VERSIONFILE="hgboost/__init__.py"
 getversion = re.search( r"^__version__ = ['\"]([^'\"]*)['\"]", open(VERSIONFILE, "rt").read(), re.M)
 if getversion:
     new_version = getversion.group(1)
@@ -15,15 +15,15 @@ with open("README.md", "r") as fh:
 setuptools.setup(
      install_requires=['wget','matplotlib','numpy','pandas','tqdm','hyperopt','lightgbm','catboost','xgboost','classeval','treeplot','df2onehot','colourmap','seaborn'],
      python_requires='>=3',
-     name='gridsearch',
+     name='hgboost',
      version=new_version,
      author="Erdogan Taskesen",
      author_email="erdogant@gmail.com",
-     description="Python package gridsearch",
+     description="Python package hgboost",
      long_description=long_description,
      long_description_content_type="text/markdown",
-     url="https://github.com/erdogant/gridsearch",
-	 download_url = 'https://github.com/erdogant/gridsearch/archive/'+new_version+'.tar.gz',
+     url="https://github.com/erdogant/hgboost",
+	 download_url = 'https://github.com/erdogant/hgboost/archive/'+new_version+'.tar.gz',
      packages=setuptools.find_packages(), # Searches throughout all dirs for files to include
      include_package_data=True, # Must be true to include files depicted in MANIFEST.in
      classifiers=[
