@@ -15,33 +15,29 @@
 # early stopping
 # plotting
 
-from hgboost.hgboost import hgboost
-from hgboost.clf import hgboost
-
 # %%
 from hgboost import hgboost
 print(dir(hgboost))
 # print(hgboost.__version__)
 import numpy as np
 
-# %% classifier
-hgb = hgboost(method='xgb_clf', max_evals=10, cv=5, eval_metric='auc', val_size=0.2, random_state=42)
-# hgb = hgboost(method='xgb_clf', max_evals=25, cv=5, eval_metric='auc', val_size=None, random_state=42)
 
+# %% HYPEROPTIMIZED XGBOOST
+hgb = hgboost(max_evals=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
+
+# Import data
 df = hgb.import_example()
 y = df['Survived'].values
 del df['Survived']
 X = hgb.preprocessing(df, verbose=0)
-
 y = y.astype(str)
 y[y=='1']='survived'
 y[y=='0']='dead'
 
-# results = hgb.fit(X, y=='survived')
-results = hgb.fit(X, y, pos_label='survived')
-
-# use the predictor
-y_pred, y_proba = hgb.predict(X)
+# Fit
+results = hgb.xgboost(X, y, pos_label='survived')
+results = hgb.catboost(X, y, pos_label='survived')
+results = hgb.lightboost(X, y, pos_label='survived')
 
 # Make some plots
 hgb.plot_params()
@@ -50,20 +46,22 @@ hgb.treeplot()
 hgb.plot_validation()
 hgb.plot_cv()
 
-# %% multi-classifier
-hgb = hgboost(method='xgb_clf_multi', max_evals=10, cv=5, eval_metric='kappa', val_size=0.2, random_state=42)
+# use the predictor
+y_pred, y_proba = hgb.predict(X)
 
+
+# %% HYPEROPTIMIZED MULTI-XGBOOST
+hgb = hgboost(max_evals=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
+
+# Import data
 df = hgb.import_example()
 y = df['Parch'].values
 y[y>=3]=3
 del df['Parch']
 X = hgb.preprocessing(df, verbose=0)
 
-# Fit
-results = hgb.fit(X, y)
-
-# use the predictor
-y_pred, y_proba = hgb.predict(X)
+# FIT MULTI-CLASS CLASSIFIER
+results = hgb.xgboost(X, y, method='xgb_clf_multi')
 
 # Make some plots
 hgb.plot_params()
@@ -72,37 +70,37 @@ hgb.treeplot()
 hgb.plot_validation()
 hgb.plot_cv()
 
-# %% Regression
-hgb = hgboost(method='xgb_reg', max_evals=15, cv=5, val_size=0.2, eval_metric='rmse')
-hgb = hgboost(method='ctb_reg', max_evals=15, cv=5, val_size=0.2, eval_metric='mae')
-# hgb = hgboost(method='lgb_reg', max_evals=15, cv=5, val_size=0.2)
-# hgb = hgboost(method='xgb_reg', max_evals=200, cv=5, val_size=None)
-# hgb = hgboost(method='xgb_reg', max_evals=200, cv=None, val_size=0.2)
-# hgb = hgboost(method='xgb_reg', max_evals=200, cv=None, val_size=None)
-# hgb = hgboost(method='xgb_reg')
-# hgb = hgboost(method='lgb_reg')
-# hgb = hgboost(method='ctb_reg')
+# use the predictor
+y_pred, y_proba = hgb.predict(X)
 
+
+# %% HYPEROPTIMIZED REGRESSION-XGBOOST
+hgb = hgboost(max_evals=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
+
+# Import data
 df = hgb.import_example()
 y = df['Age'].values
 del df['Age']
 I = ~np.isnan(y)
 X = hgb.preprocessing(df, verbose=0)
-y = y[I]
 X = X.loc[I,:]
+y = y[I]
 
 # Fit
-results = hgb.fit(X, y)
+results = hgb.xgboost_reg(X, y, eval_metric='mae')
+results = hgb.catboost_reg(X, y, eval_metric='mae')
+results = hgb.lightboost_reg(X, y, eval_metric='mae')
 
-# Prdict
-y_pred, y_proba = hgb.predict(X)
-
-# Plot
+# Make some plots
 hgb.plot_params()
 hgb.plot()
 hgb.treeplot()
 hgb.plot_validation()
 hgb.plot_cv()
+
+# use the predictor
+y_pred, y_proba = hgb.predict(X)
+
 
 # %% CLASSIFICATION TWO-CLASS #####
 from sklearn import datasets

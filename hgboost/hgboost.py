@@ -32,21 +32,14 @@ from tqdm import tqdm
 
 
 # %%
-class hgboost():
+class hgboost:
     """Create a class hgboost that is instantiated with the desired method."""
 
-    def __init__(self, method, max_evals=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, eval_metric=None, greater_is_better=None, random_state=None, verbose=3):
+    def __init__(self, max_evals=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3):
         """Initialize hgboost with user-defined parameters.
 
         Parameters
         ----------
-        method : String,
-            Classifier.
-            * 'xgb_clf': XGboost two-class classifier
-            * 'xgb_clf_multi': XGboost multi-class classifier
-            * 'xgb_reg': XGboost regressor
-            * 'lgb_reg': LGBM Regressor
-            * 'ctb_reg': CatBoost Regressor
         max_evals : int, (default : 100)
             Search space is created on the number of evaluations.
         threshold : float, (default : 0.5)
@@ -59,20 +52,6 @@ class hgboost():
             Splitting train/test set with test_size=0.2 and train = 1-test_size.
         val_size : float, (default : 0.2)
             Setup the validation set. This part is kept entirely seperate from the test-size.
-        eval_metric : str, (default : None)
-            Evaluation metric for the regressor of classification model.
-            * 'auc' : area under ROC curve (two-class classification : default)
-            * 'kappa' : (multi-classification : default)
-            * 'rmse' : root mean squared error (regression: default)
-            * 'mae' : mean absolute error. (regression)
-            * 'f1' : F1 score (two and multi-class Classifiction)
-            * 'logloss' : for binary logarithmic loss and multi-class log loss (cross entropy) (TODO)
-        greater_is_better : bool, (default : depending on method: _clf or _reg)
-            If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-            * auc :  True
-            * kappa : True
-            * rmse : False
-            * mae : False
         random_state : int, (default : None)
             Fix the random state for validation set and test set. Note that is not used for the crossvalidation.
         verbose : int, (default : 3)
@@ -90,16 +69,10 @@ class hgboost():
         * https://scikit-learn.org/stable/modules/model_evaluation.html
 
         """
-        if (method is None): raise ValueError('[hgboost] >Set the method type.')
         if max_evals is None: max_evals = 1
-        eval_metric, greater_is_better = _check_eval_metric(method, eval_metric, greater_is_better)
-
         if top_cv_evals is None: top_cv_evals=0
         if (test_size<=0) or (test_size is None): raise ValueError('[hgboost] >Error: test_size must be >0 and not None. Note that the final model is learned on the entire dataset.')
 
-        self.method=method
-        self.eval_metric=eval_metric
-        self.greater_is_better=greater_is_better
         self.max_evals=max_evals
         self.top_cv_evals=top_cv_evals
         self.threshold = threshold
@@ -110,7 +83,7 @@ class hgboost():
         self.random_state = random_state
         self.verbose = verbose
 
-    def fit(self, X, y, pos_label=None, verbose=None):
+    def fit(self, X, y, pos_label=None):
         """Learn best performing model.
 
         Description
@@ -129,9 +102,6 @@ class hgboost():
             Response variable.
         pos_label : string/int.
             In case of classification (_clf), the model will be fitted on the pos_label that is in y.
-        verbose : int, (default : 3)
-            Print progress to screen.
-            0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE
 
         Returns
         -------
@@ -144,15 +114,16 @@ class hgboost():
 
         """
         if self.verbose>=3: print('[hgboost] >Start hyperparameter optimization..')
-        if verbose is None: verbose = self.verbose
-        # Check input parameters
+        # Check input data
         X, y, self.pos_label = _check_input(X, y, pos_label, self.method, verbose=self.verbose)
 
+        # Print to screen
         if self.verbose>=3:
-            print('[hgboost] >[method] is set to [%s].' %(self.method))
-            print('[hgboost] >[eval_metric] is set to [%s].' %(self.eval_metric))
-            print('[hgboost] >[greater_is_better] is set to [%s].' %(self.greater_is_better))
-            print('[hgboost] >[pos_label] is set to [%s].' %(str(self.pos_label)))
+            print('[hgboost] >method: %s' %(self.method))
+            print('[hgboost] >eval_metric: %s' %(self.eval_metric))
+            print('[hgboost] >greater_is_better: %s' %(self.greater_is_better))
+            if self.pos_label is not None:
+                print('[hgboost] >pos_label: %s' %(str(self.pos_label)))
 
         # Set validation set
         self._set_validation_set(X, y)
@@ -161,6 +132,263 @@ class hgboost():
         # Fit on all data using best parameters
         if self.verbose>=3: print('[hgboost] >Retrain [%s] on the entire dataset with the optimal parameters settings.' %(self.method))
         self.model.fit(X, y)
+        # Return
+        return self.results
+
+    def _classification(self, X, y, eval_metric, greater_is_better, params):
+        # Gather for method, the default metric and greater is better.
+        self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
+        # Import search space for the specific function
+        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric)
+        self.space = params
+        # Fit model
+        self.results = self.fit(X, y, pos_label=self.pos_label)
+        # Return
+        return self.results
+
+    def _regression(self, X, y, eval_metric, greater_is_better, params):
+        # Gather for method, the default metric and greater is better.
+        self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
+        # Import search space for the specific function
+        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric)
+        self.space = params
+        # Fit model
+        self.results = self.fit(X, y)
+
+    def xgboost_reg(self, X, y, eval_metric=None, greater_is_better=None, params='default'):
+        """Xgboost Regression with parameter hyperoptimization.
+
+        Parameters
+        ----------
+        X : pd.DataFrame
+            Input dataset.
+        y : array-like
+            Response variable.
+        eval_metric : str, (default : None)
+            Evaluation metric for the regressor model.
+            * 'rmse' : root mean squared error.
+            * 'mae' : mean absolute error.
+        greater_is_better : bool
+            If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
+        params : dict, (default : 'default')
+            Hyper parameters.
+
+        Returns
+        -------
+        results : dict
+            * best_params: Best performing parameters.
+            * summary: Summary of the models with the loss and other variables.
+            * trials: All model results.
+            * model: Best performing model.
+            * val_results: Results on indepedent validation dataset.
+
+        """
+        # Method
+        self.method='xgb_reg'
+        # Run method
+        self._regression(X, y, eval_metric, greater_is_better, params)
+        # Return
+        return self.results
+
+    def lightboost_reg(self, X, y, eval_metric=None, greater_is_better=None, params='default'):
+        """Light Regression with parameter hyperoptimization.
+
+        Parameters
+        ----------
+        X : pd.DataFrame
+            Input dataset.
+        y : array-like
+            Response variable.
+        eval_metric : str, (default : None)
+            Evaluation metric for the regressor model.
+            * 'rmse' : root mean squared error.
+            * 'mae' : mean absolute error.
+        greater_is_better : bool
+            If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
+        params : dict, (default : 'default')
+            Hyper parameters.
+
+        Returns
+        -------
+        results : dict
+            * best_params: Best performing parameters.
+            * summary: Summary of the models with the loss and other variables.
+            * trials: All model results.
+            * model: Best performing model.
+            * val_results: Results on indepedent validation dataset.
+
+        """
+        # Method
+        self.method='lgb_reg'
+        # Run method
+        self._regression(X, y, eval_metric, greater_is_better, params)
+        # Return
+        return self.results
+
+    def catboost_reg(self, X, y, eval_metric=None, greater_is_better=None, params='default'):
+        """Catboost Regression with parameter hyperoptimization.
+
+        Parameters
+        ----------
+        X : pd.DataFrame
+            Input dataset.
+        y : array-like
+            Response variable.
+        eval_metric : str, (default : None)
+            Evaluation metric for the regressor model.
+            * 'rmse' : root mean squared error.
+            * 'mae' : mean absolute error.
+        greater_is_better : bool
+            If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
+        params : dict, (default : 'default')
+            Hyper parameters.
+
+        Returns
+        -------
+        results : dict
+            * best_params: Best performing parameters.
+            * summary: Summary of the models with the loss and other variables.
+            * trials: All model results.
+            * model: Best performing model.
+            * val_results: Results on indepedent validation dataset.
+
+        """
+        # Method
+        self.method='ctb_reg'
+        # Run method
+        self._regression(X, y, eval_metric, greater_is_better, params)
+        # Return
+        return self.results
+
+    def xgboost(self, X, y, pos_label=None, method='xgb_clf', eval_metric=None, greater_is_better=None, params='default'):
+        """Catboost Classification with parameter hyperoptimization.
+
+        Parameters
+        ----------
+        X : pd.DataFrame
+            Input dataset.
+        y : array-like
+            Response variable.
+        pos_label : string/int.
+            Fit the model on the pos_label that that is in [y].
+        method : String, (default : 'auto')
+            * 'xgb_clf': XGboost two-class classifier
+            * 'xgb_clf_multi': XGboost multi-class classifier
+        eval_metric : str, (default : None)
+            Evaluation metric for the regressor of classification model.
+            * 'auc' : area under ROC curve (two-class classification : default)
+            * 'kappa' : (multi-classification : default)
+        greater_is_better : bool
+            If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
+            * auc :  True -> two-class
+            * kappa : True -> multi-class
+
+        Returns
+        -------
+        results : dict
+            * best_params: Best performing parameters.
+            * summary: Summary of the models with the loss and other variables.
+            * trials: All model results.
+            * model: Best performing model.
+            * val_results: Results on indepedent validation dataset.
+
+        """
+        # self.method = method
+        # # Gather for method, the default metric and greater is better.
+        # self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
+        # # Import search space for the specific function
+        # if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric)
+        # self.space = params
+        # # Fit model
+        # self.results = self.fit(X, y, pos_label=pos_label)
+        # # Return
+        # return self.results
+
+        self.method = method
+        self.pos_label = pos_label
+        # Run method
+        self._classification(X, y, eval_metric, greater_is_better, params)
+        # Return
+        return self.results
+
+    def catboost(self, X, y, pos_label=None, eval_metric=None, greater_is_better=None, params='default'):
+        """Catboost Classification with parameter hyperoptimization.
+
+        Parameters
+        ----------
+        X : pd.DataFrame
+            Input dataset.
+        y : array-like
+            Response variable.
+        pos_label : string/int.
+            Fit the model on the pos_label that that is in [y].
+        eval_metric : str, (default : None)
+            Evaluation metric for the regressor of classification model.
+            * 'auc' : area under ROC curve (two-class classification : default)
+        greater_is_better : bool
+            If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
+            * auc :  True -> two-class
+
+        Returns
+        -------
+        results : dict
+            * best_params: Best performing parameters.
+            * summary: Summary of the models with the loss and other variables.
+            * trials: All model results.
+            * model: Best performing model.
+            * val_results: Results on indepedent validation dataset.
+
+        """
+        # self.method = 'ctb_clf'
+        # # Gather for method, the default metric and greater is better.
+        # self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
+        # # Import search space for the specific function
+        # if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric)
+        # self.space = params
+        # # Fit model
+        # self.results = self.fit(X, y, pos_label=pos_label)
+        # # Return
+        # return self.results
+        self.method = 'ctb_clf'
+        self.pos_label = pos_label
+        # Run method
+        self._classification(X, y, eval_metric, greater_is_better, params)
+        # Return
+        return self.results
+
+
+    def lightboost(self, X, y, pos_label=None, eval_metric=None, greater_is_better=None, params='default'):
+        """Lightboost Classification with parameter hyperoptimization.
+
+        Parameters
+        ----------
+        X : pd.DataFrame
+            Input dataset.
+        y : array-like
+            Response variable.
+        pos_label : string/int.
+            Fit the model on the pos_label that that is in [y].
+        eval_metric : str, (default : None)
+            Evaluation metric for the regressor of classification model.
+            * 'auc' : area under ROC curve (two-class classification : default)
+        greater_is_better : bool
+            If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
+            * auc :  True -> two-class
+
+        Returns
+        -------
+        results : dict
+            * best_params: Best performing parameters.
+            * summary: Summary of the models with the loss and other variables.
+            * trials: All model results.
+            * model: Best performing model.
+            * val_results: Results on indepedent validation dataset.
+
+        """
+        self.method = 'lgb_clf'
+        self.pos_label = pos_label
+        # Run method
+        self._classification(X, y, eval_metric, greater_is_better, params)
         # Return
         return self.results
 
@@ -173,7 +401,6 @@ class hgboost():
         * The new data is stored in self.X and self.y
         * The validation X and y are stored in self.X_val and self.y_val
         """
-        # from sklearn.model_selection import cross_val_score, KFold
         if self.verbose>=3: print('[hgboost] >Total datset: %s ' %(str(X.shape)))
 
         if (self.val_size is not None):
@@ -218,8 +445,6 @@ class hgboost():
         """
         # Import the desired model-function for the classification/regression
         fn = getattr(self, self.method)
-        # Import search space for the specific function
-        self.space = _get_params(self.method, eval_metric=self.eval_metric)
 
         # Split train-test set
         if '_clf' in self.method:
@@ -332,6 +557,16 @@ class hgboost():
 
     def xgb_clf(self, space):
         clf = xgb.XGBClassifier(**space['model_params'])
+        out, _ = self._train_model(clf, space)
+        return out
+
+    def ctb_clf(self, space):
+        clf = ctb.CatBoostClassifier(**space['model_params'])
+        out, _ = self._train_model(clf, space)
+        return out
+
+    def lgb_clf(self, space):
+        clf = lgb.LGBMClassifier(**space['model_params'])
         out, _ = self._train_model(clf, space)
         return out
 
@@ -571,13 +806,13 @@ class hgboost():
 
         """
         print('[hgboost] >%.0d-fold crossvalidation is performed with [%s]' %(self.cv, self.method))
-
+        ax = None
         # Run the cross-validations
         cv_results = {}
         for i in tqdm(np.arange(0, self.cv)):
             name = 'cross ' + str(i)
             # Split train-test set
-            if '_clf' in self.method:
+            if ('_clf' in self.method) and not ('_multi' in self.method):
                 _, X_test, _, y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=None, shuffle=True, stratify=self.y)
                 # Evaluate model
                 _, cl_results = self._eval(X_test, y_test, self.model, self.space, verbose=0)
@@ -588,7 +823,7 @@ class hgboost():
                 cv_results[name] = pd.DataFrame(np.c_[y_test, y_pred], columns=['y', 'y_pred'])
 
         # Make plots
-        if '_clf' in self.method:
+        if ('_clf' in self.method) and not ('_multi' in self.method):
             ax = cle.plot_cross(cv_results, title=('%.0d-fold crossvalidation results on best-performing %s' %(self.cv, self.method)), figsize=figsize)
         elif '_reg' in self.method:
             fig, ax = plt.subplots(figsize=figsize)
@@ -840,7 +1075,6 @@ class hgboost():
         if return_ax:
             return ax1, ax2
 
-
 # %% Import example dataset from github.
 def import_example(data='titanic', url=None, sep=',', verbose=3):
     """Import example dataset from github source.
@@ -949,7 +1183,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
 
         return(space)
 
-    # CatBoost parameters
+    # CatBoost regression parameters
     if fn_name=='ctb_reg':
         ctb_reg_params = {
             'learning_rate' : hp.quniform('learning_rate', 0.05, 0.31, 0.05),
@@ -964,10 +1198,51 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         space['scoring'] = eval_metric
         return(space)
 
+    # CatBoost classification parameters
+    if fn_name=='ctb_clf':
+        ctb_clf_params = {
+            'learning_rate' : hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.31), base = 10, num = 1000)),
+            # 'learning_rate' : hp.quniform('learning_rate', 0.001, 0.31, 0.01),
+            'depth' : hp.choice('max_depth', np.arange(2, 16, 1, dtype=int)),
+            'iterations' : hp.choice('iterations', np.arange(100, 1000, 100)),
+            'l2_leaf_reg' : hp.choice('l2_leaf_reg', np.arange(1, 100, 2)),
+            'border_count' : hp.choice('border_count', np.arange(5, 200, 1)),
+            'thread_count' : 4,
+        }
+        space = {}
+        space['model_params'] = ctb_clf_params
+        space['fit_params'] = {'early_stopping_rounds': 10, 'verbose': False}
+        space['scoring'] = eval_metric
+        return(space)
+
+    # LightBoost classification parameters
+    if fn_name=='lgb_clf':
+        lgb_clf_params = {
+            'learning_rate' : hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.5), base = 10, num = 1000)),
+            'max_depth' : hp.choice('max_depth', np.arange(5, 75, 1)),
+            'boosting_type' : hp.choice('boosting_type', ['gbdt','goss','dart']),
+            'num_leaves' : hp.choice('num_leaves', np.arange(100, 1000, 100)),
+            'n_estimators' : hp.choice('n_estimators', np.arange(20, 205, 5)),
+            'subsample_for_bin' : hp.choice('subsample_for_bin', np.arange(20000, 300000, 20000)),
+            'min_child_samples' : hp.choice('min_child_weight', np.arange(20, 500, 5)),
+            'reg_alpha' : hp.quniform('reg_alpha', 0, 1, 0.01),
+            'reg_lambda' : hp.quniform('reg_lambda', 0, 1, 0.01),
+            'colsample_bytree' : hp.quniform('colsample_bytree', 0.6, 1, 0.01),
+            'subsample' : hp.quniform('subsample', 0.5, 1, 100),
+            'bagging_fraction' : hp.choice('bagging_fraction', np.arange(0.2, 1, 0.2)),
+            'is_unbalance' : hp.choice('is_unbalance', [True, False]),
+        }
+        space = {}
+        space['model_params'] = lgb_clf_params
+        space['fit_params'] = {'early_stopping_rounds': 10, 'verbose': False}
+        space['scoring'] = eval_metric
+        return(space)
+
     if 'xgb_clf' in fn_name:
         xgb_clf_params = {
-            'learning_rate' : hp.quniform('learning_rate', 0.01, 0.5, 0.01),
-            'max_depth' : hp.choice('max_depth', range(5, 30, 1)),
+            'learning_rate' : hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.5), base = 10, num = 1000)),
+            # 'learning_rate' : hp.quniform('learning_rate', 0.01, 0.5, 0.01),
+            'max_depth' : hp.choice('max_depth', range(5, 75, 1)),
             'min_child_weight' : hp.quniform('min_child_weight', 1, 10, 1),
             'gamma' : hp.choice('gamma', [0.5, 1, 1.5, 2, 5]),
             'subsample' : hp.quniform('subsample', 0.1, 1, 0.01),
@@ -994,7 +1269,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         return(space)
 
 
-def _check_input(X, y, pos_label, method, verbose=3):
+def _check_input(X, y, pos_label, method, verbose=4):
     # X should be of type dataframe
     if (type(X) is not pd.DataFrame):
         raise ValueError('[hgboost] >Error: dataset X should be of type pd.DataFrame')
@@ -1016,12 +1291,12 @@ def _check_input(X, y, pos_label, method, verbose=3):
     if (pos_label is not None) and ('_clf' in method):
         y = y==pos_label
         pos_label=True
-        if verbose>=3: print('[hgboost] >[%s] is used to set [y].' %(pos_label))
+        if verbose>=4: print('[hgboost] >[%s] is used to set [y].' %(pos_label))
 
     # Checks pos_label status in case of method is classification
     if ('_clf' in method) and (pos_label is None) and (str(y.dtype)=='bool'):
-        if verbose>=3: print('[hgboost] >[pos_label] is set to [%s] because [y] is of type [bool].' %(pos_label))
         pos_label = True
+        if verbose>=4: print('[hgboost] >[pos_label] is set to [%s] because [y] is of type [bool].' %(pos_label))
 
     # Raise ValueError in case of pos_label is not set and not bool.
     if ('_clf' in method) and (pos_label is None) and (len(np.unique(y))==2) and not (str(y.dtype)=='bool'):
@@ -1033,7 +1308,7 @@ def _check_input(X, y, pos_label, method, verbose=3):
 
     # two-class classifier should have 2 classes
     if ('_clf' in method) and not ('_multi' in method) and (len(np.unique(y))>2) and (pos_label is None):
-        raise ValueError('[hgboost] >Error: [y] contains more then 2 classes and no [pos_label] is given. Hint: use method=[xgb_clf_multi] for multi-class clasification.')
+        raise ValueError('[hgboost] >Error: [y] contains more then 2 classes and no [pos_label] is given. Hint: use method="xgb_clf_multi" for multi-class clasification.')
 
     # multi-class method should have >2 classes
     if ('_clf_multi' in method) and (len(np.unique(y))==2):
@@ -1041,7 +1316,7 @@ def _check_input(X, y, pos_label, method, verbose=3):
 
     if ('_clf_multi' in method):
         pos_label = None
-        if verbose>=3: print('[hgboost] >[pos_label] is set to [None] because [method] is of type [%s].' %(method))
+        if verbose>=4: print('[hgboost] >[pos_label] is set to [None] because [method] is of type [%s].' %(method))
 
     # Check counts y
     y_counts = np.unique(y, return_counts=True)[1]
