@@ -551,13 +551,6 @@ class hgboost():
             print('[hgboost] >No model found. Hint: use the .fit() function first <return>')
             return None
         ax = None
-        # if num_trees is None:
-        #     if hasattr(self.model, 'best_iteration'):
-        #         num_trees = self.model.best_iteration
-        #     elif hasattr(self.model, 'best_iteration_'):
-        #         num_trees = self.model.best_iteration_
-        #     else:
-        #         num_trees = 0
         # Plot the tree
         ax = tree.plot(self.model, num_trees=num_trees, plottype=plottype, figsize=figsize, verbose=verbose)
         # Return

@@ -6,14 +6,17 @@
 
 # Objective is to demonstrate:
 
-# regression ✓
-# binary classification ✓
-# multiclass classification ✓
-# cross-validation ✓
-# hyperparameter searching ✓
-# feature importance ✓
-# early stopping ✓
-# plotting ✓
+# regression
+# binary classification
+# multiclass classification
+# cross-validation
+# hyperparameter searching
+# feature importance
+# early stopping
+# plotting
+
+from hgboost.hgboost import hgboost
+from hgboost.clf import hgboost
 
 # %%
 from hgboost import hgboost
@@ -22,84 +25,84 @@ print(dir(hgboost))
 import numpy as np
 
 # %% classifier
-gs = hgboost(method='xgb_clf', max_evals=10, cv=5, eval_metric='auc', val_size=0.2, random_state=42)
-# gs = hgboost(method='xgb_clf', max_evals=25, cv=5, eval_metric='auc', val_size=None, random_state=42)
+hgb = hgboost(method='xgb_clf', max_evals=10, cv=5, eval_metric='auc', val_size=0.2, random_state=42)
+# hgb = hgboost(method='xgb_clf', max_evals=25, cv=5, eval_metric='auc', val_size=None, random_state=42)
 
-df = gs.import_example()
+df = hgb.import_example()
 y = df['Survived'].values
 del df['Survived']
-X = gs.preprocessing(df, verbose=0)
+X = hgb.preprocessing(df, verbose=0)
 
 y = y.astype(str)
 y[y=='1']='survived'
 y[y=='0']='dead'
 
-# results = gs.fit(X, y=='survived')
-results = gs.fit(X, y, pos_label='survived')
+# results = hgb.fit(X, y=='survived')
+results = hgb.fit(X, y, pos_label='survived')
 
 # use the predictor
-y_pred, y_proba = gs.predict(X)
+y_pred, y_proba = hgb.predict(X)
 
 # Make some plots
-gs.plot_params()
-gs.plot()
-gs.treeplot()
-gs.plot_validation()
-gs.plot_cv()
+hgb.plot_params()
+hgb.plot()
+hgb.treeplot()
+hgb.plot_validation()
+hgb.plot_cv()
 
 # %% multi-classifier
-gs = hgboost(method='xgb_clf_multi', max_evals=10, cv=5, eval_metric='kappa', val_size=0.2, random_state=42)
+hgb = hgboost(method='xgb_clf_multi', max_evals=10, cv=5, eval_metric='kappa', val_size=0.2, random_state=42)
 
-df = gs.import_example()
+df = hgb.import_example()
 y = df['Parch'].values
 y[y>=3]=3
 del df['Parch']
-X = gs.preprocessing(df, verbose=0)
+X = hgb.preprocessing(df, verbose=0)
 
 # Fit
-results = gs.fit(X, y)
+results = hgb.fit(X, y)
 
 # use the predictor
-y_pred, y_proba = gs.predict(X)
+y_pred, y_proba = hgb.predict(X)
 
 # Make some plots
-gs.plot_params()
-gs.plot()
-gs.treeplot()
-gs.plot_validation()
-gs.plot_cv()
+hgb.plot_params()
+hgb.plot()
+hgb.treeplot()
+hgb.plot_validation()
+hgb.plot_cv()
 
 # %% Regression
-gs = hgboost(method='xgb_reg', max_evals=15, cv=5, val_size=0.2, eval_metric='rmse')
-gs = hgboost(method='ctb_reg', max_evals=15, cv=5, val_size=0.2, eval_metric='mae')
-# gs = hgboost(method='lgb_reg', max_evals=15, cv=5, val_size=0.2)
-# gs = hgboost(method='xgb_reg', max_evals=200, cv=5, val_size=None)
-# gs = hgboost(method='xgb_reg', max_evals=200, cv=None, val_size=0.2)
-# gs = hgboost(method='xgb_reg', max_evals=200, cv=None, val_size=None)
-# gs = hgboost(method='xgb_reg')
-# gs = hgboost(method='lgb_reg')
-# gs = hgboost(method='ctb_reg')
+hgb = hgboost(method='xgb_reg', max_evals=15, cv=5, val_size=0.2, eval_metric='rmse')
+hgb = hgboost(method='ctb_reg', max_evals=15, cv=5, val_size=0.2, eval_metric='mae')
+# hgb = hgboost(method='lgb_reg', max_evals=15, cv=5, val_size=0.2)
+# hgb = hgboost(method='xgb_reg', max_evals=200, cv=5, val_size=None)
+# hgb = hgboost(method='xgb_reg', max_evals=200, cv=None, val_size=0.2)
+# hgb = hgboost(method='xgb_reg', max_evals=200, cv=None, val_size=None)
+# hgb = hgboost(method='xgb_reg')
+# hgb = hgboost(method='lgb_reg')
+# hgb = hgboost(method='ctb_reg')
 
-df = gs.import_example()
+df = hgb.import_example()
 y = df['Age'].values
 del df['Age']
 I = ~np.isnan(y)
-X = gs.preprocessing(df, verbose=0)
+X = hgb.preprocessing(df, verbose=0)
 y = y[I]
 X = X.loc[I,:]
 
 # Fit
-results = gs.fit(X, y)
+results = hgb.fit(X, y)
 
 # Prdict
-y_pred, y_proba = gs.predict(X)
+y_pred, y_proba = hgb.predict(X)
 
 # Plot
-gs.plot_params()
-gs.plot()
-gs.treeplot()
-gs.plot_validation()
-gs.plot_cv()
+hgb.plot_params()
+hgb.plot()
+hgb.treeplot()
+hgb.plot_validation()
+hgb.plot_cv()
 
 # %% CLASSIFICATION TWO-CLASS #####
 from sklearn import datasets
@@ -109,22 +112,22 @@ iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris['feature_names'])
 y = iris.target
 
-gs = hgboost(method='xgb_clf', max_evals=100, eval_metric='auc')
-results = gs.fit(X, y==1)
+hgb = hgboost(method='xgb_clf', max_evals=100, eval_metric='auc')
+results = hgb.fit(X, y==1)
 
 # Plot
-gs.plot_params()
-gs.plot()
-gs.treeplot()
-gs.plot_validation()
+hgb.plot_params()
+hgb.plot()
+hgb.treeplot()
+hgb.plot_validation()
 
 # %% CLASSIFICATION MULTI-CLASS #####
 iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris['feature_names'])
 y = iris.target
 
-gs = hgboost(method='xgb_clf_multi', max_evals=100, eval_metric='mlogloss')
-results = gs.fit(X, y)
-gs.treeplot()
-gs.plot()
-gs.plot_validation()
+hgb = hgboost(method='xgb_clf_multi', max_evals=100, eval_metric='mlogloss')
+results = hgb.fit(X, y)
+hgb.treeplot()
+hgb.plot()
+hgb.plot_validation()
