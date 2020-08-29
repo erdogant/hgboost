@@ -23,7 +23,7 @@ import numpy as np
 
 
 # %% HYPEROPTIMIZED XGBOOST
-hgb = hgboost(max_evals=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
+hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
 
 # Import data
 df = hgb.import_example()
@@ -51,7 +51,7 @@ y_pred, y_proba = hgb.predict(X)
 
 
 # %% HYPEROPTIMIZED MULTI-XGBOOST
-hgb = hgboost(max_evals=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
+hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
 
 # Import data
 df = hgb.import_example()
@@ -75,7 +75,7 @@ y_pred, y_proba = hgb.predict(X)
 
 
 # %% HYPEROPTIMIZED REGRESSION-XGBOOST
-hgb = hgboost(max_evals=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
+hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
 
 # Import data
 df = hgb.import_example()
@@ -110,7 +110,7 @@ iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris['feature_names'])
 y = iris.target
 
-hgb = hgboost(method='xgb_clf', max_evals=100, eval_metric='auc')
+hgb = hgboost(method='xgb_clf', max_eval=100, eval_metric='auc')
 results = hgb.fit(X, y==1)
 
 # Plot
@@ -124,7 +124,7 @@ iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris['feature_names'])
 y = iris.target
 
-hgb = hgboost(method='xgb_clf_multi', max_evals=100, eval_metric='mlogloss')
+hgb = hgboost(method='xgb_clf_multi', max_eval=100, eval_metric='mlogloss')
 results = hgb.fit(X, y)
 hgb.treeplot()
 hgb.plot()
