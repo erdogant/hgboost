@@ -3,6 +3,8 @@
 # https://scikit-learn.org/stable/auto_examples/model_selection/plot_cv_indices.html#sphx-glr-auto-examples-model-selection-plot-cv-indices-py
 # https://github.com/WillKoehrsen/hyperparameter-optimization/blob/master/Bayesian%20Hyperparameter%20Optimization%20of%20Gradient%20Boosting%20Machine.ipynb
 # https://www.kaggle.com/henrylidgley/xgboost-with-hyperopt-tuning
+# https://towardsdatascience.com/tree-boosted-mixed-effects-models-4df610b624cb
+# https://machinelearningmastery.com/gradient-boosting-with-scikit-learn-xgboost-lightgbm-and-catboost/
 
 # Objective is to demonstrate:
 
@@ -23,7 +25,7 @@ import numpy as np
 
 
 # %% HYPEROPTIMIZED XGBOOST
-hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
+hgb = hgboost(max_eval=500, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
 
 # Import data
 df = hgb.import_example()

@@ -114,7 +114,6 @@ class hgboost:
             * val_results: Results on indepedent validation dataset.
 
         """
-        if self.verbose>=3: print('[hgboost] >Start hyperparameter optimization..')
         # Check input data
         X, y, self.pos_label = _check_input(X, y, pos_label, self.method, verbose=self.verbose)
 
@@ -123,8 +122,6 @@ class hgboost:
             print('[hgboost] >method: %s' %(self.method))
             print('[hgboost] >eval_metric: %s' %(self.eval_metric))
             print('[hgboost] >greater_is_better: %s' %(self.greater_is_better))
-            if self.pos_label is not None:
-                print('[hgboost] >pos_label: %s' %(str(self.pos_label)))
 
         # Set validation set
         self._set_validation_set(X, y)
@@ -184,6 +181,7 @@ class hgboost:
             * val_results: Results on indepedent validation dataset.
 
         """
+        if self.verbose>=3: print('[hgboost] >Start hgboost regression..')
         # Method
         self.method='xgb_reg'
         # Run method
@@ -219,6 +217,7 @@ class hgboost:
             * val_results: Results on indepedent validation dataset.
 
         """
+        if self.verbose>=3: print('[hgboost] >Start hgboost regression..')
         # Method
         self.method='lgb_reg'
         # Run method
@@ -254,6 +253,7 @@ class hgboost:
             * val_results: Results on indepedent validation dataset.
 
         """
+        if self.verbose>=3: print('[hgboost] >Start hgboost regression..')
         # Method
         self.method='ctb_reg'
         # Run method
@@ -294,17 +294,7 @@ class hgboost:
             * val_results: Results on indepedent validation dataset.
 
         """
-        # self.method = method
-        # # Gather for method, the default metric and greater is better.
-        # self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
-        # # Import search space for the specific function
-        # if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric)
-        # self.space = params
-        # # Fit model
-        # self.results = self._fit(X, y, pos_label=pos_label)
-        # # Return
-        # return self.results
-
+        if self.verbose>=3: print('[hgboost] >Start hgboost classification..')
         self.method = method
         self.pos_label = pos_label
         # Run method
@@ -340,16 +330,7 @@ class hgboost:
             * val_results: Results on indepedent validation dataset.
 
         """
-        # self.method = 'ctb_clf'
-        # # Gather for method, the default metric and greater is better.
-        # self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
-        # # Import search space for the specific function
-        # if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric)
-        # self.space = params
-        # # Fit model
-        # self.results = self._fit(X, y, pos_label=pos_label)
-        # # Return
-        # return self.results
+        if self.verbose>=3: print('[hgboost] >Start hgboost classification..')
         self.method = 'ctb_clf'
         self.pos_label = pos_label
         # Run method
@@ -385,6 +366,7 @@ class hgboost:
             * val_results: Results on indepedent validation dataset.
 
         """
+        if self.verbose>=3: print('[hgboost] >Start hgboost classification..')
         self.method = 'lgb_clf'
         self.pos_label = pos_label
         # Run method
@@ -443,8 +425,9 @@ class hgboost:
             * val_results: Results on indepedent validation dataset.
 
         """
+        if self.verbose>=3: print('[hgboost] >Hyperparameter optimization..')
         # Import the desired model-function for the classification/regression
-        disable = (True if (self.verbose==0 or self.verbose>3) else False)
+        disable = (False if (self.verbose<3) else True)
         fn = getattr(self, self.method)
 
         # Split train-test set
@@ -762,7 +745,7 @@ class hgboost:
         """
         return import_example(data=data, url=url, sep=sep, verbose=verbose)
 
-    def treeplot(self, num_trees=None, plottype='horizontal', figsize=(15, 25), return_ax=False, verbose=3):
+    def treeplot(self, num_trees=None, plottype='horizontal', figsize=(20, 25), return_ax=False, verbose=3):
         """Tree plot.
 
         Parameters
@@ -1293,9 +1276,9 @@ def _check_input(X, y, pos_label, method, verbose=4):
 
     # Set pos_label and y
     if (pos_label is not None) and ('_clf' in method):
+        if verbose>=4: print('[hgboost] >pos_label is used to set [%s].' %(pos_label))
         y = y==pos_label
         pos_label=True
-        if verbose>=4: print('[hgboost] >[%s] is used to set [y].' %(pos_label))
 
     # Checks pos_label status in case of method is classification
     if ('_clf' in method) and (pos_label is None) and (str(y.dtype)=='bool'):

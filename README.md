@@ -3,44 +3,31 @@
 [![Python](https://img.shields.io/pypi/pyversions/hgboost)](https://img.shields.io/pypi/pyversions/hgboost)
 [![PyPI Version](https://img.shields.io/pypi/v/hgboost)](https://pypi.org/project/hgboost/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/erdogant/hgboost/blob/master/LICENSE)
-[![Downloads](https://pepy.tech/badge/hgboost/week)](https://pepy.tech/project/hgboost/week)
-[![Donate](https://img.shields.io/badge/donate-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)
+[![Downloads](https://pepy.tech/badge/hgboost/month)](https://pepy.tech/project/hgboost/month)
 
-* hgboost is Python package
+* hgboost is Python package to minimize a xgboost, catboost or lightboost over a hyperparameter space by using cross-validation and evaluting the results on an indepdendent validation set.
+hgboost can learn a model for classification, such as two-class or multi-class, and regression.
 
-### Contents
-- [Installation](#-installation)
-- [Requirements](#-Requirements)
-- [Contribute](#-contribute)
-- [Citation](#-citation)
-- [Maintainers](#-maintainers)
-- [License](#-copyright)
 
-### Installation
+### Installation Environment
 * Install hgboost from PyPI (recommended). hgboost is compatible with Python 3.6+ and runs on Linux, MacOS X and Windows. 
-* A new environment is created as following: 
+* A new environment is recommended and created as following: 
 
 ```python
 conda create -n env_hgboost python=3.6
 conda activate env_hgboost
-pip install -r requirements
 ```
+
+### Install newest version hgboost from pypi
 
 ```bash
 pip install hgboost
 ```
 
-* Alternatively, install hgboost from the GitHub source:
-```bash
-# Directly install from github source
-pip install -e git://github.com/erdogant/hgboost.git@0.1.0#egg=master
-pip install git+https://github.com/erdogant/hgboost#egg=master
+### Install from github-source
 
-# By cloning
-pip install git+https://github.com/erdogant/hgboost
-git clone https://github.com/erdogant/hgboost.git
-cd hgboost
-python setup.py install
+```bash
+pip install git+https://github.com/erdogant/hgboost#egg=master
 ```  
 
 #### Import hgboost package
@@ -48,16 +35,138 @@ python setup.py install
 import hgboost as hgboost
 ```
 
-#### Example:
+#### Classification example for xgboost, catboost and lightboost:
+
 ```python
-df = pd.read_csv('https://github.com/erdogant/hnet/blob/master/hgboost/data/example_data.csv')
-model = hgboost.fit(df)
-G = hgboost.plot(model)
+
+# Load libray
+from hgboost import hgboost
+
+# Initizalization
+hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
+
 ```
+
+```python
+
+# Import data
+df = hgb.import_example()
+y = df['Survived'].values
+y = y.astype(str)
+y[y=='1']='survived'
+y[y=='0']='dead'
+
+# Preprocessing by encoding variables
+del df['Survived']
+X = hgb.preprocessing(df)
+
+```
+
+```python
+
+# Fit catboost by hyperoptimization and cross-validation
+results = hgb.catboost(X, y, pos_label='survived')
+
+# Fit lightboost by hyperoptimization and cross-validation
+results = hgb.lightboost(X, y, pos_label='survived')
+
+```
+
+```python
+
+# Fit xgboost by hyperoptimization and cross-validation
+results = hgb.xgboost(X, y, pos_label='survived')
+
+# [hgboost] >Start hgboost classification..
+# [hgboost] >Collecting xgb_clf parameters.
+# [hgboost] >Number of variables in search space is [11], loss function: [auc].
+# [hgboost] >method: xgb_clf
+# [hgboost] >eval_metric: auc
+# [hgboost] >greater_is_better: True
+# [hgboost] >pos_label: True
+# [hgboost] >Total datset: (891, 204) 
+# [hgboost] >Hyperparameter optimization..
+#  100% |----| 500/500 [04:39<05:21,  1.33s/trial, best loss: -0.8800619834710744]
+# [hgboost] >Best peforming [xgb_clf] model: auc=0.881198
+# [hgboost] >5-fold cross validation for the top 10 scoring models, Total nr. tests: 50
+# 100%|██████████| 10/10 [00:42<00:00,  4.27s/it]
+# [hgboost] >Evalute best [xgb_clf] model on independent validation dataset (179 samples, 20.00%).
+# [hgboost] >[auc] on independent validation dataset: -0.832
+# [hgboost] >Retrain [xgb_clf] on the entire dataset with the optimal parameters settings.
+
+```
+
+
+```python
+
+# Plot searched parameter space 
+hgb.plot_params()
+
+```
+
 <p align="center">
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/fig1.png" width="600" />
-  
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_params_clf_1.png" width="600" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_params_clf_2.png" width="600" />
 </p>
+
+
+```python
+
+# Plot summary results
+hgb.plot()
+
+```
+
+<p align="center">
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_clf.png" width="600" />
+</p>
+
+
+```python
+
+# Plot the best tree
+hgb.treeplot()
+
+```
+
+<p align="center">
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/treeplot_clf_1.png" width="600" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/treeplot_clf_2.png" width="600" />
+</p>
+
+
+```python
+
+# Plot the validation results
+hgb.plot_validation()
+
+```
+
+<p align="center">
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_1.png" width="600" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_2.png" width="200" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_3.png" width="600" />
+</p>
+
+
+```python
+
+# Plot the cross-validation results
+hgb.plot_cv()
+
+```
+
+<p align="center">
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_cv_clf.png" width="600" />
+</p>
+
+
+```python
+
+# use the learned model to make new predictions.
+y_pred, y_proba = hgb.predict(X)
+
+```
 
 
 #### Citation
