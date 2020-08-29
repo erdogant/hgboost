@@ -35,12 +35,12 @@ from tqdm import tqdm
 class hgboost:
     """Create a class hgboost that is instantiated with the desired method."""
 
-    def __init__(self, max_eval=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3):
+    def __init__(self, max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3):
         """Initialize hgboost with user-defined parameters.
 
         Parameters
         ----------
-        max_eval : int, (default : 100)
+        max_eval : int, (default : 250W)
             Search space is created on the number of evaluations.
         threshold : float, (default : 0.5)
             Classification threshold. In case of two-class model this is 0.5
@@ -126,7 +126,7 @@ class hgboost:
         # Set validation set
         self._set_validation_set(X, y)
         # Find best parameters
-        self.model, self.results = self.HPOpt(verbose=self.verbose)
+        self.model, self.results = self._HPOpt(verbose=self.verbose)
         # Fit on all data using best parameters
         if self.verbose>=3: print('[hgboost] >Retrain [%s] on the entire dataset with the optimal parameters settings.' %(self.method))
         self.model.fit(X, y)
@@ -396,7 +396,7 @@ class hgboost:
             self.X_val = None
             self.y_val = None
 
-    def HPOpt(self, verbose=3):
+    def _HPOpt(self, verbose=3):
         """Hyperoptimization of the search space.
 
         Description
@@ -440,7 +440,7 @@ class hgboost:
         trials=Trials()
         best_params = fmin(fn=fn, space=self.space, algo=self.algo, max_evals=self.max_eval, trials=trials, show_progressbar=disable)
         # Summary results
-        results_summary, model = self.to_df(trials, verbose=self.verbose)
+        results_summary, model = self._to_df(trials, verbose=self.verbose)
 
         # Cross-validation over the optimized models.
         if self.cv is not None:
@@ -561,7 +561,7 @@ class hgboost:
         return out
 
     # Transform results into dataframe
-    def to_df(self, trials, verbose=3):
+    def _to_df(self, trials, verbose=3):
         # Combine params with scoring results
         df_params = pd.DataFrame(trials.vals)
         df_scoring = pd.DataFrame(trials.results)
