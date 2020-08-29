@@ -35,12 +35,12 @@ from tqdm import tqdm
 class hgboost:
     """Create a class hgboost that is instantiated with the desired method."""
 
-    def __init__(self, max_evals=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3):
+    def __init__(self, max_eval=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3):
         """Initialize hgboost with user-defined parameters.
 
         Parameters
         ----------
-        max_evals : int, (default : 100)
+        max_eval : int, (default : 100)
             Search space is created on the number of evaluations.
         threshold : float, (default : 0.5)
             Classification threshold. In case of two-class model this is 0.5
@@ -69,11 +69,12 @@ class hgboost:
         * https://scikit-learn.org/stable/modules/model_evaluation.html
 
         """
-        if max_evals is None: max_evals = 1
+        if (threshold is None) or (threshold <= 0): raise ValueError('[hgboost] >Error: [threshold] must be >0 and not [None]')
+        if (max_eval is None) or (max_eval <= 0): max_eval = 1
         if top_cv_evals is None: top_cv_evals=0
-        if (test_size<=0) or (test_size is None): raise ValueError('[hgboost] >Error: test_size must be >0 and not None. Note that the final model is learned on the entire dataset.')
+        if (test_size is None) or (test_size <= 0): raise ValueError('[hgboost] >Error: test_size must be >0 and not [None] Note: the final model is learned on the entire dataset. [test_size] may help you getting a more robust model.')
 
-        self.max_evals=max_evals
+        self.max_eval=max_eval
         self.top_cv_evals=top_cv_evals
         self.threshold = threshold
         self.test_size=test_size
@@ -83,7 +84,7 @@ class hgboost:
         self.random_state = random_state
         self.verbose = verbose
 
-    def fit(self, X, y, pos_label=None):
+    def _fit(self, X, y, pos_label=None):
         """Learn best performing model.
 
         Description
@@ -139,10 +140,10 @@ class hgboost:
         # Gather for method, the default metric and greater is better.
         self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
         # Import search space for the specific function
-        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric)
+        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, verbose=self.verbose)
         self.space = params
         # Fit model
-        self.results = self.fit(X, y, pos_label=self.pos_label)
+        self.results = self._fit(X, y, pos_label=self.pos_label)
         # Return
         return self.results
 
@@ -150,10 +151,10 @@ class hgboost:
         # Gather for method, the default metric and greater is better.
         self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
         # Import search space for the specific function
-        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric)
+        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, verbose=self.verbose)
         self.space = params
         # Fit model
-        self.results = self.fit(X, y)
+        self.results = self._fit(X, y)
 
     def xgboost_reg(self, X, y, eval_metric=None, greater_is_better=None, params='default'):
         """Xgboost Regression with parameter hyperoptimization.
@@ -300,7 +301,7 @@ class hgboost:
         # if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric)
         # self.space = params
         # # Fit model
-        # self.results = self.fit(X, y, pos_label=pos_label)
+        # self.results = self._fit(X, y, pos_label=pos_label)
         # # Return
         # return self.results
 
@@ -346,7 +347,7 @@ class hgboost:
         # if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric)
         # self.space = params
         # # Fit model
-        # self.results = self.fit(X, y, pos_label=pos_label)
+        # self.results = self._fit(X, y, pos_label=pos_label)
         # # Return
         # return self.results
         self.method = 'ctb_clf'
@@ -355,7 +356,6 @@ class hgboost:
         self._classification(X, y, eval_metric, greater_is_better, params)
         # Return
         return self.results
-
 
     def lightboost(self, X, y, pos_label=None, eval_metric=None, greater_is_better=None, params='default'):
         """Lightboost Classification with parameter hyperoptimization.
@@ -444,6 +444,7 @@ class hgboost:
 
         """
         # Import the desired model-function for the classification/regression
+        disable = (True if (self.verbose==0 or self.verbose>3) else False)
         fn = getattr(self, self.method)
 
         # Split train-test set
@@ -454,7 +455,7 @@ class hgboost:
 
         # Hyperoptimization to find best performing model. Set the trials which is the object where all the HPopt results are stored.
         trials=Trials()
-        best_params = fmin(fn=fn, space=self.space, algo=self.algo, max_evals=self.max_evals, trials=trials, show_progressbar=True)
+        best_params = fmin(fn=fn, space=self.space, algo=self.algo, max_evals=self.max_eval, trials=trials, show_progressbar=disable)
         # Summary results
         results_summary, model = self.to_df(trials, verbose=self.verbose)
 
@@ -490,10 +491,11 @@ class hgboost:
         # Determine maximum folds
         top_cv_evals = np.minimum(results_summary.shape[0], self.top_cv_evals)
         idx = results_summary['loss'].sort_values(ascending=ascending).index[0:top_cv_evals]
-        if self.verbose>=3: print('[hgboost] >%.0d-fold cross validation for the top %.0d scoring models, Total: %.0f iterations.\n' %(self.cv, len(idx), self.cv * len(idx)))
+        if self.verbose>=3: print('[hgboost] >%.0d-fold cross validation for the top %.0d scoring models, Total nr. tests: %.0f' %(self.cv, len(idx), self.cv * len(idx)))
+        disable = (True if (self.verbose==0 or self.verbose>3) else False)
 
         # Run over the top-scoring models.
-        for i in tqdm(idx):
+        for i in tqdm(idx, disable=disable):
             scores = []
             # Run over the cross-validations
             for k in np.arange(0, self.cv):
@@ -621,8 +623,8 @@ class hgboost:
 
         """
         if not hasattr(self, 'model'):
-            print('[hgboost] >No model found. Hint: use the .fit() function first <return>')
-            return None
+            if self.verbose>2: print('[hgboost] >Warning: No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
+            return None, None
         if model is None:
             model = self.model
 
@@ -783,7 +785,7 @@ class hgboost:
 
         """
         if not hasattr(self, 'model'):
-            print('[hgboost] >No model found. Hint: use the .fit() function first <return>')
+            print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return None
         ax = None
         # Plot the tree
@@ -806,10 +808,11 @@ class hgboost:
 
         """
         print('[hgboost] >%.0d-fold crossvalidation is performed with [%s]' %(self.cv, self.method))
+        disable = (True if (self.verbose==0 or self.verbose>3) else False)
         ax = None
         # Run the cross-validations
         cv_results = {}
-        for i in tqdm(np.arange(0, self.cv)):
+        for i in tqdm(np.arange(0, self.cv), disable=disable):
             name = 'cross ' + str(i)
             # Split train-test set
             if ('_clf' in self.method) and not ('_multi' in self.method):
@@ -852,7 +855,7 @@ class hgboost:
 
         """
         if not hasattr(self, 'model'):
-            print('[hgboost] >No model found. Hint: use the .fit() function first <return>')
+            print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return None
         if self.val_size is None:
             print('[hgboost] >No validation set found. Hint: use the parameter [val_size=0.2] first <return>')
@@ -1025,7 +1028,7 @@ class hgboost:
 
         """
         if not hasattr(self, 'model'):
-            print('[hgboost] >No model found. Hint: use the .fit() function first <return>')
+            print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return None
         ax1, ax2 = None, None
 
@@ -1074,6 +1077,7 @@ class hgboost:
 
         if return_ax:
             return ax1, ax2
+
 
 # %% Import example dataset from github.
 def import_example(data='titanic', url=None, sep=',', verbose=3):
@@ -1308,11 +1312,11 @@ def _check_input(X, y, pos_label, method, verbose=4):
 
     # two-class classifier should have 2 classes
     if ('_clf' in method) and not ('_multi' in method) and (len(np.unique(y))>2) and (pos_label is None):
-        raise ValueError('[hgboost] >Error: [y] contains more then 2 classes and no [pos_label] is given. Hint: use method="xgb_clf_multi" for multi-class clasification.')
+        raise ValueError('[hgboost] >Error: [y] should contain exactly 2 unique classes. Hint: use method="xgb_clf_multi"')
 
     # multi-class method should have >2 classes
-    if ('_clf_multi' in method) and (len(np.unique(y))==2):
-        raise ValueError('[hgboost] >Error: [xgb_clf_multi] requires >2 classes but only 2 classes are detected., Hint: use method="xgb_clf" or set [pos_label].')
+    if ('_clf_multi' in method) and (len(np.unique(y))<=2):
+        raise ValueError('[hgboost] >Error: [xgb_clf_multi] requires >2 classes. Hint: use method="xgb_clf"')
 
     if ('_clf_multi' in method):
         pos_label = None
@@ -1356,6 +1360,8 @@ def _check_eval_metric(method, eval_metric, greater_is_better, verbose=3):
             greater_is_better = False
         elif (eval_metric == 'mae'):
             greater_is_better = False
+        else:
+            if verbose>=2: print('[hgboost] >[%s] is not a implemented option. [greater_is_better] is set to %s' %(eval_metric, str(greater_is_better)))
 
     # Return
     return eval_metric, greater_is_better
