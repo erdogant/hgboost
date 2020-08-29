@@ -10,15 +10,16 @@ __version__ = '0.1.0'
 
 # module level doc-string
 __doc__ = """
-hgboost - Determine best model by minimizing xgboost function over a hyperparameter space.
+hgboost - Python package to minimize a function from the model xgboost, catboost or lightboost over a hyperparameter space for both classification and regression.
 =====================================================================
 
 Description
 -----------
-Determine best model by minimizing xgboost function over a hyperparameter space.
-Explore a function over a hyperparameter space according to a given algorithm,
-allowing up to a certain number of function evaluations.
-The library consists the underneath parts that can be used set:
+hgboost is a Python package to minimize a function from the model xgboost,
+catboost or lightboost over a hyperparameter space by using cross-validation
+and evaluting the results on an indepdendent validation set. hgboost can be
+applied for classification, such as two-class or multi-class, and regression challanges.
+The library consists the underneath parts:
     * regression
     * binary classification
     * multiclass classification
@@ -35,9 +36,65 @@ The library consists the underneath parts that can be used set:
 
 Example
 -------
->>> import hgboost as hgboost
->>> model = hgboost.fit(X)
->>> fig,ax = hgboost.plot(model)
+>>> from hgboost import hgboost
+
+>>> ######## CLASSIFICATION ########
+
+>>> # Initialize
+>>> hgb = hgboost(max_eval=500, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, verbose=3)
+
+>>> # Import data
+>>> df = hgb.import_example()
+>>> y = df['Survived'].values
+>>> del df['Survived']
+>>> X = hgb.preprocessing(df, verbose=0)
+>>> y = y.astype(str)
+>>> y[y=='1']='survived'
+>>> y[y=='0']='dead'
+
+>>> # Fit a classification model
+>>> results = hgb.xgboost(X, y, pos_label='survived')
+>>> results = hgb.catboost(X, y, pos_label='survived')
+>>> results = hgb.lightboost(X, y, pos_label='survived')
+
+>>> # Make some plots
+>>> hgb.plot_params()
+>>> hgb.plot()
+>>> hgb.treeplot()
+>>> hgb.plot_validation()
+>>> hgb.plot_cv()
+
+# use the predictor on new data
+>>> y_pred, y_proba = hgb.predict(X)
+
+>>> ######## REGRESSION ########
+
+>>> # Initialize
+>>> hgb = hgboost(max_eval=500, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, verbose=3)
+
+>>> # Import data
+>>> df = hgb.import_example()
+>>> y = df['Age'].values
+>>> del df['Age']
+>>> I = ~np.isnan(y)
+>>> X = hgb.preprocessing(df, verbose=0)
+>>> X = X.loc[I,:]
+>>> y = y[I]
+
+>>> # Fit
+>>> results = hgb.xgboost_reg(X, y, eval_metric='mae')
+>>> results = hgb.catboost_reg(X, y, eval_metric='mae')
+>>> results = hgb.lightboost_reg(X, y, eval_metric='mae')
+
+>>> # Make some plots
+>>> hgb.plot_params()
+>>> hgb.plot()
+>>> hgb.treeplot()
+>>> hgb.plot_validation()
+>>> hgb.plot_cv()
+
+>>> # use the predictor
+>>> y_pred, y_proba = hgb.predict(X)
 
 References
 ----------
