@@ -15,7 +15,7 @@ AAA
 .. code:: python
 
     # Example URL:
-    url = 'ahrenhei.without-transfer.ru/nethost.exe'
+    xxx
     
 
 

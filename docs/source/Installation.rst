@@ -11,16 +11,16 @@ A quick example how to learn a model on a given dataset.
 .. code:: python
 
     # Import library
-    import hgboost
+    from hgboost import hgboost
+    
+    # Initialize with default settings
+    hgb = hgboost()
 
-    # Retrieve URLs of malicous and normal urls:
-    X, y = hgboost.load_example()
+    # Find best model on the data
+    results = hgb.xgboost(X, y, pos_label)
 
-    # Learn model on the data
-    model = hgboost.fit_transform(X, y, pos_label='bad')
-
-    # Plot the model performance
-    results = hgboost.plot(model)
+    # Plot
+    ax = hgb.plot()
 
 
 Installation
@@ -30,12 +30,20 @@ Create environment
 ------------------
 
 
-If desired, install ``hgboost`` from an isolated Python environment using conda:
+It is recommended to install ``hgboost`` from an isolated Python environment. Using Conda this can be done as following:
 
 .. code-block:: python
 
     conda create -n env_hgboost python=3.6
     conda activate env_hgboost
+
+
+
+Install directly from github source:
+
+.. code-block:: console
+
+    pip install git+https://github.com/erdogant/hgboost
 
 
 Install via ``pip``:
@@ -44,8 +52,3 @@ Install via ``pip``:
 
     # The installation from pypi is disabled:
     pip install hgboost
-
-    # Install directly from github
-    pip install git+https://github.com/erdogant/hgboost
-
-
