@@ -5,8 +5,8 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/erdogant/hgboost/blob/master/LICENSE)
 [![Downloads](https://pepy.tech/badge/hgboost/month)](https://pepy.tech/project/hgboost/month)
 
-* hgboost is Python package to minimize a xgboost, catboost or lightboost over a hyperparameter space by using cross-validation and evaluting the results on an indepdendent validation set.
-hgboost can learn a model for classification, such as two-class or multi-class, and regression.
+``hgboost`` is Python package to minimize a function from the model xgboost, catboost or lightboost over a hyperparameter space by using cross-validation and evaluting the results on an indepdendent validation set.
+``hgboost`` can be applied for classification, such as two-class or multi-class, and regression challanges.
 
 
 ### Installation Environment
