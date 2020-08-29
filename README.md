@@ -63,16 +63,11 @@ X = hgb.preprocessing(df)
 ```
 
 ```python
-
 # Fit catboost by hyperoptimization and cross-validation
 results = hgb.catboost(X, y, pos_label='survived')
 
 # Fit lightboost by hyperoptimization and cross-validation
 results = hgb.lightboost(X, y, pos_label='survived')
-
-```
-
-```python
 
 # Fit xgboost by hyperoptimization and cross-validation
 results = hgb.xgboost(X, y, pos_label='survived')
@@ -144,7 +139,7 @@ hgb.plot_validation()
 
 <p align="center">
   <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_1.png" width="600" />
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_2.png" width="200" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_2.png" width="600" />
   <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_3.png" width="600" />
 </p>
 
