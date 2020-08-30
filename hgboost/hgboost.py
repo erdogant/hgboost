@@ -128,6 +128,7 @@ class hgboost:
         # Fit on all data using best parameters
         if self.verbose>=3: print('[hgboost] >Retrain [%s] on the entire dataset with the optimal parameters settings.' %(self.method))
         self.model.fit(X, y)
+        if self.verbose>=3: print('[hgboost] >Fin!')
         # Return
         return self.results
 
