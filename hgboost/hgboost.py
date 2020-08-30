@@ -128,7 +128,6 @@ class hgboost:
         # Fit on all data using best parameters
         if self.verbose>=3: print('[hgboost] >Retrain [%s] on the entire dataset with the optimal parameters settings.' %(self.method))
         self.model.fit(X, y)
-        if self.verbose>=3: print('[hgboost] >Fin!')
         # Return
         return self.results
 
@@ -140,8 +139,8 @@ class hgboost:
         self.space = params
         # Fit model
         self.results = self._fit(X, y, pos_label=self.pos_label)
-        # Return
-        return self.results
+        # Fin
+        if self.verbose>=3: print('[hgboost] >Fin!')
 
     def _regression(self, X, y, eval_metric, greater_is_better, params):
         # Gather for method, the default metric and greater is better.
@@ -151,6 +150,8 @@ class hgboost:
         self.space = params
         # Fit model
         self.results = self._fit(X, y)
+        # Fin
+        if self.verbose>=3: print('[hgboost] >Fin!')
 
     def xgboost_reg(self, X, y, eval_metric='rmse', greater_is_better=False, params='default'):
         """Xgboost Regression with parameter hyperoptimization.
