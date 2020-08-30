@@ -19,7 +19,7 @@ setuptools.setup(
      version=new_version,
      author="Erdogan Taskesen",
      author_email="erdogant@gmail.com",
-     description="hgboost is a Python package to minimize a function from the model xgboost, catboost or lightboost over a hyperparameter space for both classification and regression.",
+     description="hgboost is a python package for hyperparameter optimization for xgboost, catboost or lightboost for both classification and regression tasks.",
      long_description=long_description,
      long_description_content_type="text/markdown",
      url="https://github.com/erdogant/hgboost",

@@ -201,9 +201,8 @@ The optimal set of parameters are determined by bayesian hyperoptimization using
 <strong>hyperoptimization</strong> for which the loss is evaluated using by means of a train/test-set with k-fold cross-validation.
 In addition, the final optimized model is evaluated on an independent validation set.</p>
 </dd>
-<dt>Results</dt><dd><p><code class="docutils literal notranslate"><span class="pre">hgboost</span></code> is Python package that minimizes the function for <strong>xgboost</strong>, <strong>catboost</strong> and <strong>lightboost</strong> over a hyperparameter space
-using k-fold cross-validation and evaluting the results on an indepdendent validation set.</p>
-<p>There are many implementations of gradient boosting, some efficently uses the GPU, whereas others have specific interfaces.
+<dt>Results</dt><dd><p><code class="docutils literal notranslate"><span class="pre">hgboost</span></code> is a python package for hyperparameter optimization for xgboost, catboost or lightboost using cross-validation, and evaluating the results on an independent validation set.
+There are many implementations of gradient boosting, some efficently uses the GPU, whereas others have specific interfaces.
 For this library <code class="docutils literal notranslate"><span class="pre">hgboost</span></code>, we incorporated the <em>eXtreme Gradient Boosting</em> <code class="docutils literal notranslate"><span class="pre">xgboost</span></code> [2], <em>Light Gradient Boosting Machine</em> <code class="docutils literal notranslate"><span class="pre">LightGBM</span></code> [3],
 and <em>Category Gradient Boosting</em> <code class="docutils literal notranslate"><span class="pre">catboost</span></code> [4].</p>
 </dd>
