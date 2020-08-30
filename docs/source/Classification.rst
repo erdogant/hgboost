@@ -5,10 +5,9 @@
 Classification
 ''''''''''''''''''''''''''
 
-The ``hgboost`` method consists 3 classification methods: ``xgboost``, ``catboost``, ``lightboost``.
+The ``hgboost`` method consists 3 **classification** methods: ``xgboost``, ``catboost``, ``lightboost``.
 Each algorithm provides hyperparameters that must very likely be tuned for a specific dataset.
-Note that it is not recommended to use the default set of parameters. Although there are many hyperparameters to tune, some
-are more important the others. Some important parameters are lised below:
+Although there are many hyperparameters to tune, some are more important the others. The parameters used in ``hgboost`` are lised below:
 
 Parameters
     * The number of trees or estimators.
@@ -22,7 +21,7 @@ Parameters
 xgboost
 ---------
 
-The specific list of parameters used for xgboost:
+The specific list of parameters used for xgboost: func:`hgboost.hgboost.hgboost.xgboost`
 
 .. code:: python
 
@@ -36,7 +35,7 @@ The specific list of parameters used for xgboost:
     'colsample_bytree'  : hp.quniform('colsample_bytree', 0.1, 1.0, 0.01)
     'scale_pos_weight'  : np.arange(0, 0.5, 1)
     'booster'           : 'gbtree'
-    'early_stopping_rounds' : 10
+    'early_stopping_rounds' : 25
 
     # In case of two-class classification
     objective = 'binary:logistic'
@@ -47,7 +46,7 @@ The specific list of parameters used for xgboost:
 catboost
 -------------
 
-The specific list of parameters used for catboost:
+The specific list of parameters used for catboost: func:`hgboost.hgboost.catboost`
 
 .. code:: python
 
@@ -57,13 +56,13 @@ The specific list of parameters used for catboost:
     'l2_leaf_reg'       : hp.choice('l2_leaf_reg', np.arange(1, 100, 2))
     'border_count'      : hp.choice('border_count', np.arange(5, 200, 1))
     'thread_count'      : 4
-    'early_stopping_rounds' : 10
+    'early_stopping_rounds' : 25
 
 
 lightboost
 --------------------------
 
-The specific list of parameters used for lightboost:
+The specific list of parameters used for lightboost: func:`hgboost.hgboost.lightboost`
 
 .. code:: python
 
@@ -81,7 +80,5 @@ The specific list of parameters used for lightboost:
     'subsample'         : hp.quniform('subsample', 0.5, 1, 100)
     'bagging_fraction'  : hp.choice('bagging_fraction', np.arange(0.2, 1, 0.2))
     'is_unbalance'      : hp.choice('is_unbalance', [True, False])
-    'early_stopping_rounds' : 10
+    'early_stopping_rounds' : 25
 
-**References**
-    * [1] https://machinelearningmastery.com/gradient-boosting-with-scikit-learn-xgboost-lightgbm-and-catboost/

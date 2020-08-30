@@ -7,8 +7,7 @@ Regression
 
 The ``hgboost`` method consists 3 **regression** methods: ``xgboost_reg``, ``catboost_reg``, ``lightboost_reg``.
 Each algorithm provides hyperparameters that must very likely be tuned for a specific dataset.
-Note that it is not recommended to use the default set of parameters. Although there are many hyperparameters to tune, some
-are more important the others. Some important parameters are lised below:
+Although there are many hyperparameters to tune, some are more important the others. The parameters used in ``hgboost`` are lised below:
 
 Parameters
     * The number of trees or estimators.
@@ -34,7 +33,7 @@ The specific list of parameters used for xgboost:
     'reg_lambda'        : hp.choice('reg_lambda', [0.1, 1.0, 5.0, 10.0, 50.0, 100.0])
     'subsample'         : hp.uniform('subsample', 0.5, 1)
     'n_estimators'      : hp.choice('n_estimators', range(20, 205, 5))
-    'early_stopping_rounds' : 10
+    'early_stopping_rounds' : 25
 
 
 catboost
@@ -65,5 +64,5 @@ The specific list of parameters used for lightboost:
     'subsample'         : hp.uniform('subsample', 0.8, 1),
     'n_estimators'      : hp.choice('n_estimators', range(20, 205, 5)),
     'eval_metric'       : 'l2'
-    'early_stopping_rounds' : 10
+    'early_stopping_rounds' : 25
 

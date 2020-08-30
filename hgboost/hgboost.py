@@ -151,7 +151,7 @@ class hgboost:
         # Fit model
         self.results = self._fit(X, y)
 
-    def xgboost_reg(self, X, y, eval_metric=None, greater_is_better=None, params='default'):
+    def xgboost_reg(self, X, y, eval_metric='rmse', greater_is_better=False, params='default'):
         """Xgboost Regression with parameter hyperoptimization.
 
         Parameters
@@ -160,11 +160,11 @@ class hgboost:
             Input dataset.
         y : array-like
             Response variable.
-        eval_metric : str, (default : None)
+        eval_metric : str, (default : 'rmse')
             Evaluation metric for the regressor model.
             * 'rmse' : root mean squared error.
             * 'mae' : mean absolute error.
-        greater_is_better : bool
+        greater_is_better : bool (default : False)
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
         params : dict, (default : 'default')
             Hyper parameters.
@@ -187,7 +187,7 @@ class hgboost:
         # Return
         return self.results
 
-    def lightboost_reg(self, X, y, eval_metric=None, greater_is_better=None, params='default'):
+    def lightboost_reg(self, X, y, eval_metric='rmse', greater_is_better=False, params='default'):
         """Light Regression with parameter hyperoptimization.
 
         Parameters
@@ -196,11 +196,11 @@ class hgboost:
             Input dataset.
         y : array-like
             Response variable.
-        eval_metric : str, (default : None)
+        eval_metric : str, (default : 'rmse')
             Evaluation metric for the regressor model.
             * 'rmse' : root mean squared error.
             * 'mae' : mean absolute error.
-        greater_is_better : bool
+        greater_is_better : bool (default : False)
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
         params : dict, (default : 'default')
             Hyper parameters.
@@ -223,7 +223,7 @@ class hgboost:
         # Return
         return self.results
 
-    def catboost_reg(self, X, y, eval_metric=None, greater_is_better=None, params='default'):
+    def catboost_reg(self, X, y, eval_metric='rmse', greater_is_better=False, params='default'):
         """Catboost Regression with parameter hyperoptimization.
 
         Parameters
@@ -232,11 +232,11 @@ class hgboost:
             Input dataset.
         y : array-like
             Response variable.
-        eval_metric : str, (default : None)
+        eval_metric : str, (default : 'rmse')
             Evaluation metric for the regressor model.
             * 'rmse' : root mean squared error.
             * 'mae' : mean absolute error.
-        greater_is_better : bool
+        greater_is_better : bool (default : False)
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
         params : dict, (default : 'default')
             Hyper parameters.
@@ -302,7 +302,7 @@ class hgboost:
         # Return
         return self.results
 
-    def catboost(self, X, y, pos_label=None, eval_metric=None, greater_is_better=None, params='default'):
+    def catboost(self, X, y, pos_label=None, eval_metric='auc', greater_is_better=True, params='default'):
         """Catboost Classification with parameter hyperoptimization.
 
         Parameters
@@ -313,10 +313,10 @@ class hgboost:
             Response variable.
         pos_label : string/int.
             Fit the model on the pos_label that that is in [y].
-        eval_metric : str, (default : None)
+        eval_metric : str, (default : 'auc')
             Evaluation metric for the regressor of classification model.
             * 'auc' : area under ROC curve (two-class classification : default)
-        greater_is_better : bool
+        greater_is_better : bool (default : True)
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
             * auc :  True -> two-class
 
@@ -338,7 +338,7 @@ class hgboost:
         # Return
         return self.results
 
-    def lightboost(self, X, y, pos_label=None, eval_metric=None, greater_is_better=None, params='default'):
+    def lightboost(self, X, y, pos_label=None, eval_metric='auc', greater_is_better=True, params='default'):
         """Lightboost Classification with parameter hyperoptimization.
 
         Parameters
@@ -349,10 +349,10 @@ class hgboost:
             Response variable.
         pos_label : string/int.
             Fit the model on the pos_label that that is in [y].
-        eval_metric : str, (default : None)
+        eval_metric : str, (default : 'auc')
             Evaluation metric for the regressor of classification model.
             * 'auc' : area under ROC curve (two-class classification : default)
-        greater_is_better : bool
+        greater_is_better : bool (default : True)
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
             * auc :  True -> two-class
 

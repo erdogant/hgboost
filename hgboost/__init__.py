@@ -20,15 +20,15 @@ catboost or lightboost over a hyperparameter space by using cross-validation
 and evaluting the results on an indepdendent validation set. hgboost can be
 applied for classification, such as two-class or multi-class, and regression challanges.
 The library consists the underneath parts:
-    * regression
-    * binary classification
+    * Regression
+    * Binary classification
     * multiclass classification
-    * cross-validation
+    * K-fold cross-validation
     * Independent validation dataset
-    * hyperparameter searching
-    * feature importance
-    * early stopping
-    * plotting
+    * Hyperparameter searching
+    * Feature importance
+    * Early stopping
+    * Plotting
         - parameter space
         - validation set
         - summary

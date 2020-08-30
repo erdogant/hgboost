@@ -20,47 +20,31 @@ Training and testing
 The model *sees* and *learns* from the data. To ensure stability in the model and results, we devide the data set into three parts with different sizes, namely: train-set, test-set and validation-set.
 Each set has a different role, and is explained below.
 
-Train dataset
-    80% of the data is used to fit the model. The model sees and learns from this data.
-
 Validation dataset
-    The training data set is also split into 80% train and 20% validation set to evaluate the learned model and provide an unbiased evaluation of a model fit after tuning model hyperparameters.
-    Evalution is performed in a 5-fold crossvalidation approach.
-
-Test dataset
-    20% of all the data is used only once the model is completely trained (using the train and validation sets).
+    20% of all the data is used when the ``hgboost`` determined the best model  using the train and test sets.
     This will provide an unbiased result of the final model fit on the training dataset.
 
+Train dataset
+    After excluding the validation set, we take 80% of the data to fit the model. The model sees and learns from this data.
 
-The use of training and testing is set as True by default, but can be changed with a boolean value ``train_test=True`` in the function :func:`urldetect.fit_transform` or :func:`urldetect.fit`.
-You may want to set the boolean value at False ``train_test=False`` if the number of training samples is very low which would lead in a poorly trained model.
+Test dataset
+    The remaining 20% of the data training data is to evaluate the learned model and provides an unbiased evaluation of a model fit after tuning model hyperparameters.
+    Evalution is performed in a 5-fold crossvalidation approach.
 
 
-hgboost
-----------
-
-In ``urldetect`` we incorporated hyperparameter optimization using a gridseach :func:`urldetect._hgboost`. The goal is to evaluate the value of the combination of parameters in the learning process.
-The use of hgboost is set True as default by a boolean value ``hgboost=True`` in the function :func:`urldetect.fit_transform` or :func:`urldetect.fit`.
-You may want to set this value at ``hgboost=False`` if the number of samples is very low which would lead in a poorly trained model.
+The use of a validation set is optional. When setting ``val_size=None`` in :func:`hgboost.hgboost.hgboost`, there are more samples included in the train/testset for parameter hyperoptimizatoin.
+The use of the test set is not optional. The test_size should be larger then 0 :func:`hgboost.hgboost.hgboost` to make sure we derive a robust model.
+Note that ``val_size`` can be set to very low sizes but keep in mind that this would lead in a poorly (over)trained models.
 
 
 Hyperparameter optimization
 ---------------------------
 
-In our hgboost we evaluate the Term frequency–inverse document frequency (TF-IDF) and the logistic regression parameters.
+In ``hgboost`` we incorporated hyperparameter optimization using a ``hyperopt``. The goal is to evaluate the value of the combination of parameters in the learning process.
 
-.. code:: python
+We evaluate in total thousands of parameter combinations in the learning process.
+To ensure stability, the k-fold crossvalidation comes into play which leads to even more evaluations. To keep the computation costs low, we can decide to only cross-validate the top k detected models
+using the parameter ``top_cv_evals=10`` in :func:`hgboost.hgboost.hgboost`. By default, we enable parallel processing.
+Each fit is scored based on the desired evaluation metric and the parameters of the best fit are used.
 
-    param_grid = {
-        'TfidfVectorizer__sublinear_tf': [True, False],
-        'TfidfVectorizer__min_df': [5],
-        'TfidfVectorizer__max_df': [0.5, 0.7],
-        'TfidfVectorizer__norm': ['l1','l2'],
-        'TfidfVectorizer__ngram_range': [(1,2),(1,3)],
-    }
-
-
-We evaluate in total **32** combination of parameters in the learning process.
-To ensure stability, the 5-fold crossvalidation comes into play which leads to a total of **160** fits.
-To speed up the hgboost, we enable parallel processing. Each fit is scored based on Cohen's kappa coefficient and the parameters of the best fit are used.
-With 8 cores, running at 2.8GHz (i7-7700HQ) it takes approximately **15** minutes without optimization and up to **>60** minutes to learn an optimized model. An example of the output is shown below:
+The specific list of parameter used for tuning are lised in section **classification** and **regression**.

@@ -32,6 +32,9 @@ df = hgb.import_example()
 y = df['Survived'].values
 del df['Survived']
 X = hgb.preprocessing(df, verbose=0)
+
+results = hgb.xgboost(X, y, pos_label=1, eval_metric='f1')
+
 y = y.astype(str)
 y[y=='1']='survived'
 y[y=='0']='dead'

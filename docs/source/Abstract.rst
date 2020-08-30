@@ -7,21 +7,34 @@ Abstract
 
 Background
     Gradient boosting is a powerful ensemble machine learning algorithm for predictive modeling that can be applied on tabular data.
-    There are many implementations of gradient boosting, some efficently uses the GPU, whereas others have specific interfaces.
-    For this library ``hgboost``, we incorporated the *eXtreme Gradient Boosting* ``xgboost``[1], *Light Gradient Boosting Machine* ``LightGBM``[2],
-    and *Category Gradient Boosting* ``catboost``[3].
+    Creating predictions with models such as xgboost are often used in data science projects.
+    But without having good knowledge of the data in combination with the model parameters, this can quickly result in a poor/overtrained model.
+    By controlling parameters such as the "early stopping rounds" can certainly be helpful.
 
-Aim
-    The aim of the gradient boosting algorithm is to fit a boosted decision trees by minimizing an error gradient. However, there are many
-    parameters that can be tuned, for which a combination of parameter can result in more accurate predictions. Searching across
+    Parameters that can be tuned, for which a combination of parameter can result in more accurate predictions. Searching across
     the combination of parameters is often performed with gridsearches. A gridsearch comes with high computational costs, and can easily result
-    in overtrained models. The aim of ``hgboost`` is too determine the most robust model by efficiently searching across the parameter space using
+    in overtrained models as the search space can easily consist tens of thousands combinations to evaluate.
+
+    Luckily we have optimizations models, such as ``hyperopt`` [1], that can do the heavy lifting using bayesian optimization. 
+    But there is more to it because an optimized gridsearch approach may still result in overtrained models.
+    It is wise to carefully split your data into an independent evaluation set, a train, and test set, and then doing a cross validation with the hyper optimization. 
+    
+Aim
+    The aim of this library is to determine the most robust gradient boosting model model by evaluating the results on an indepdendent validation set for which the parameters are determined
+    by bayesian hyperoptimization in a k-fold cross-validation approach using indepdendent train/testsets.
+    ``hgboost`` can be applied for classification tasks, such as two-class or multi-class, and regression tasks using xgboost, catboost or lightboost.
+
+    The aim of the gradient boosting algorithm is to fit a boosted decision trees by minimizing an error gradient. However, there are manyThe aim of ``hgboost`` is too determine the most robust model by efficiently searching across the parameter space using
     **hyperoptimization** for which the loss is evaluated using by means of a train/test-set with k-fold cross-validation.
     In addition, the final optimized model is evaluated on an independent validation set.
     
 Results
-    ``hgboost`` is Python package that minimizes the function from the model xgboost, catboost and lightboost over a hyperparameter space
+    ``hgboost`` is Python package that minimizes the function from the model **xgboost**, **catboost** and **lightboost** over a hyperparameter space
     by using k-fold cross-validation and evaluting the results on an indepdendent validation set.
+
+    There are many implementations of gradient boosting, some efficently uses the GPU, whereas others have specific interfaces.
+    For this library ``hgboost``, we incorporated the *eXtreme Gradient Boosting* ``xgboost`` [2], *Light Gradient Boosting Machine* ``LightGBM`` [3],
+    and *Category Gradient Boosting* ``catboost`` [4].
 
     
 Schematic overview
@@ -36,6 +49,7 @@ The schematic overview of our approach is as following:
 
 References
 -----------
-    * [1] https://github.com/dmlc/xgboost
-    * [2] https://github.com/microsoft/LightGBM
-    * [3] https://github.com/catboost/catboost
+    * [1] http://hyperopt.github.io/hyperopt/
+    * [2] https://github.com/dmlc/xgboost
+    * [3] https://github.com/microsoft/LightGBM
+    * [4] https://github.com/catboost/catboost

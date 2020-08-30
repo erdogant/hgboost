@@ -38,9 +38,17 @@ LightGBM uses histogram-based algorithms, which bucket continuous feature (attri
 This speeds up training and reduces memory usage. It is designed to be distributed and efficient, and is also described with many advantages, such as 
 Fast training, high efficiency, Low memory usage, better accuracy, support of parallel and GPU learning, and capable of handling large-scale data [3].
 
+hyperopt
+---------
+
+The method ``hyperopt`` is incorporated in this library ``hgboost`` for automated hyperparameter optimization, with the goal of providing practical tools that replace hand-tuning with a reproducible and unbiased optimization process.
+The approach is to expose the underlying expression graph of how a performance metric (e.g. classification accuracy on validation examples) is computed from hyperparameters that
+govern not only how individual processing steps are applied, but even which processing steps are included.
+A hyperparameter optimization algorithm transforms this graph into a program for optimizing that performance metric [4].
 
 
 **References**
     * [1] https://xgboost.ai/
     * [2] https://catboost.ai/
     * [3] https://lightgbm.readthedocs.io/
+    * [4] http://hyperopt.github.io/hyperopt/
