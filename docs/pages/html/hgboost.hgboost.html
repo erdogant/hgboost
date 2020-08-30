@@ -190,13 +190,13 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Input dataset.</p></li>
-<li><p><strong>y</strong> (<em>array-like</em>) – Response variable.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame.</em>) – Input dataset.</p></li>
+<li><p><strong>y</strong> (<em>array-like.</em>) – Response variable.</p></li>
 <li><p><strong>pos_label</strong> (<em>string/int.</em>) – Fit the model on the pos_label that that is in [y].</p></li>
-<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'auc'</em><em>)</em>) – Evaluation metric for the regressor of classification model.
+<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'auc'</em><em>)</em><em></em>) – Evaluation metric for the regressor of classification model.
 * ‘auc’ : area under ROC curve (two-class classification : default)</p></li>
-<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : True</em><em>)</em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-* auc :  True -&gt; two-class</p></li>
+<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : True</em><em>)</em><em></em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
+* auc :  two-class</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -211,7 +211,7 @@
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
+<dd class="field-odd"><p>dict.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -223,13 +223,18 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Input dataset.</p></li>
-<li><p><strong>y</strong> (<em>array-like</em>) – Response variable.</p></li>
-<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'rmse'</em><em>)</em>) – Evaluation metric for the regressor model.
-* ‘rmse’ : root mean squared error.
-* ‘mae’ : mean absolute error.</p></li>
-<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : False</em><em>)</em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.</p></li>
-<li><p><strong>params</strong> (<em>dict</em><em>, </em><em>(</em><em>default : 'default'</em><em>)</em>) – Hyper parameters.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame.</em>) – Input dataset.</p></li>
+<li><p><strong>y</strong> (<em>array-like.</em>) – Response variable.</p></li>
+<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'rmse'</em><em>)</em><em></em>) – <dl class="simple">
+<dt>Evaluation metric for the regressor model.</dt><dd><ul>
+<li><p>’rmse’ : root mean squared error.</p></li>
+<li><p>’mae’ : mean absolute error.</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : False</em><em>)</em><em></em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><em>(</em><em>default : 'default'</em><em>)</em><em></em>) – Hyper parameters.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -244,7 +249,7 @@
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
+<dd class="field-odd"><p>dict.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -332,13 +337,13 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Input dataset.</p></li>
-<li><p><strong>y</strong> (<em>array-like</em>) – Response variable.</p></li>
-<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'rmse'</em><em>)</em>) – Evaluation metric for the regressor model.
+<li><p><strong>X</strong> (<em>pd.DataFrame.</em>) – Input dataset.</p></li>
+<li><p><strong>y</strong> (<em>array-like.</em>) – Response variable.</p></li>
+<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'rmse'</em><em>)</em><em></em>) – Evaluation metric for the regressor model.
 * ‘rmse’ : root mean squared error.
 * ‘mae’ : mean absolute error.</p></li>
-<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : False</em><em>)</em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.</p></li>
-<li><p><strong>params</strong> (<em>dict</em><em>, </em><em>(</em><em>default : 'default'</em><em>)</em>) – Hyper parameters.</p></li>
+<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : False</em><em>)</em><em></em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><em>(</em><em>default : 'default'</em><em>)</em><em></em>) – Hyper parameters.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -523,20 +528,20 @@ Green will depic the best detected parameter and red demonstrates the top n para
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Input dataset.</p></li>
-<li><p><strong>y</strong> (<em>array-like</em>) – Response variable.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame.</em>) – Input dataset.</p></li>
+<li><p><strong>y</strong> (<em>array-like.</em>) – Response variable.</p></li>
 <li><p><strong>pos_label</strong> (<em>string/int.</em>) – Fit the model on the pos_label that that is in [y].</p></li>
-<li><p><strong>method</strong> (<em>String</em><em>, </em><em>(</em><em>default : 'auto'</em><em>)</em>) – <ul>
+<li><p><strong>method</strong> (<em>String</em><em>, </em><em>(</em><em>default : 'auto'</em><em>)</em><em></em>) – <ul>
 <li><p>‘xgb_clf’: XGboost two-class classifier</p></li>
 <li><p>’xgb_clf_multi’: XGboost multi-class classifier</p></li>
 </ul>
 </p></li>
-<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : None</em><em>)</em>) – Evaluation metric for the regressor of classification model.
+<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : None</em><em>)</em><em></em>) – Evaluation metric for the regressor of classification model.
 * ‘auc’ : area under ROC curve (default for two-class)
 * ‘kappa’ : (default for multi-class)
 * ‘f1’ : F1-score
 * ‘logloss’</p></li>
-<li><p><strong>greater_is_better</strong> (<em>bool</em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
+<li><p><strong>greater_is_better</strong> (<em>bool.</em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
 * auc :  True -&gt; two-class
 * kappa : True -&gt; multi-class</p></li>
 </ul>
@@ -553,7 +558,7 @@ Green will depic the best detected parameter and red demonstrates the top n para
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
+<dd class="field-odd"><p>dict.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -565,13 +570,18 @@ Green will depic the best detected parameter and red demonstrates the top n para
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Input dataset.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame.</em>) – Input dataset.</p></li>
 <li><p><strong>y</strong> (<em>array-like</em>) – Response variable.</p></li>
-<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'rmse'</em><em>)</em>) – Evaluation metric for the regressor model.
-* ‘rmse’ : root mean squared error.
-* ‘mae’ : mean absolute error.</p></li>
-<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : False</em><em>)</em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.</p></li>
-<li><p><strong>params</strong> (<em>dict</em><em>, </em><em>(</em><em>default : 'default'</em><em>)</em>) – Hyper parameters.</p></li>
+<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'rmse'</em><em>)</em><em></em>) – <dl class="simple">
+<dt>Evaluation metric for the regressor model.</dt><dd><ul>
+<li><p>’rmse’ : root mean squared error.</p></li>
+<li><p>’mae’ : mean absolute error.</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : False</em><em>)</em><em></em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><em>(</em><em>default : 'default'</em><em>)</em><em></em>) – Hyper parameters.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

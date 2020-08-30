@@ -97,7 +97,7 @@ class hgboost:
         ----------
         X : pd.DataFrame
             Input dataset.
-        y : array-like
+        y : array-like.
             Response variable.
         pos_label : string/int.
             In case of classification (_clf), the model will be fitted on the pos_label that is in y.
@@ -156,17 +156,17 @@ class hgboost:
 
         Parameters
         ----------
-        X : pd.DataFrame
+        X : pd.DataFrame.
             Input dataset.
         y : array-like
             Response variable.
-        eval_metric : str, (default : 'rmse')
+        eval_metric : str, (default : 'rmse').
             Evaluation metric for the regressor model.
-            * 'rmse' : root mean squared error.
-            * 'mae' : mean absolute error.
-        greater_is_better : bool (default : False)
+                * 'rmse' : root mean squared error.
+                * 'mae' : mean absolute error.
+        greater_is_better : bool (default : False).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-        params : dict, (default : 'default')
+        params : dict, (default : 'default').
             Hyper parameters.
 
         Returns
@@ -192,17 +192,17 @@ class hgboost:
 
         Parameters
         ----------
-        X : pd.DataFrame
+        X : pd.DataFrame.
             Input dataset.
-        y : array-like
+        y : array-like.
             Response variable.
-        eval_metric : str, (default : 'rmse')
+        eval_metric : str, (default : 'rmse').
             Evaluation metric for the regressor model.
             * 'rmse' : root mean squared error.
             * 'mae' : mean absolute error.
-        greater_is_better : bool (default : False)
+        greater_is_better : bool (default : False).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-        params : dict, (default : 'default')
+        params : dict, (default : 'default').
             Hyper parameters.
 
         Returns
@@ -228,22 +228,22 @@ class hgboost:
 
         Parameters
         ----------
-        X : pd.DataFrame
+        X : pd.DataFrame.
             Input dataset.
-        y : array-like
+        y : array-like.
             Response variable.
-        eval_metric : str, (default : 'rmse')
+        eval_metric : str, (default : 'rmse').
             Evaluation metric for the regressor model.
-            * 'rmse' : root mean squared error.
-            * 'mae' : mean absolute error.
-        greater_is_better : bool (default : False)
+                * 'rmse' : root mean squared error.
+                * 'mae' : mean absolute error.
+        greater_is_better : bool (default : False).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-        params : dict, (default : 'default')
+        params : dict, (default : 'default').
             Hyper parameters.
 
         Returns
         -------
-        results : dict
+        results : dict.
             * best_params: Best performing parameters.
             * summary: Summary of the models with the loss and other variables.
             * trials: All model results.
@@ -264,29 +264,29 @@ class hgboost:
 
         Parameters
         ----------
-        X : pd.DataFrame
+        X : pd.DataFrame.
             Input dataset.
-        y : array-like
+        y : array-like.
             Response variable.
         pos_label : string/int.
             Fit the model on the pos_label that that is in [y].
-        method : String, (default : 'auto')
+        method : String, (default : 'auto').
             * 'xgb_clf': XGboost two-class classifier
             * 'xgb_clf_multi': XGboost multi-class classifier
-        eval_metric : str, (default : None)
+        eval_metric : str, (default : None).
             Evaluation metric for the regressor of classification model.
             * 'auc' : area under ROC curve (default for two-class)
             * 'kappa' : (default for multi-class)
             * 'f1' : F1-score
             * 'logloss'
-        greater_is_better : bool
+        greater_is_better : bool.
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
             * auc :  True -> two-class
             * kappa : True -> multi-class
 
         Returns
         -------
-        results : dict
+        results : dict.
             * best_params: Best performing parameters.
             * summary: Summary of the models with the loss and other variables.
             * trials: All model results.
@@ -307,22 +307,22 @@ class hgboost:
 
         Parameters
         ----------
-        X : pd.DataFrame
+        X : pd.DataFrame.
             Input dataset.
-        y : array-like
+        y : array-like.
             Response variable.
         pos_label : string/int.
             Fit the model on the pos_label that that is in [y].
-        eval_metric : str, (default : 'auc')
+        eval_metric : str, (default : 'auc').
             Evaluation metric for the regressor of classification model.
             * 'auc' : area under ROC curve (two-class classification : default)
-        greater_is_better : bool (default : True)
+        greater_is_better : bool (default : True).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-            * auc :  True -> two-class
+            * auc :  two-class
 
         Returns
         -------
-        results : dict
+        results : dict.
             * best_params: Best performing parameters.
             * summary: Summary of the models with the loss and other variables.
             * trials: All model results.
