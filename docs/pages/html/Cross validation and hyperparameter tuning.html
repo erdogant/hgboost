@@ -1,0 +1,277 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Cross validation and hyperparameter tuning &mdash; hgboost hgboost documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Classification" href="Classification.html" />
+    <link rel="prev" title="Algorithms" href="Algorithms.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> hgboost
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Background</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html#schematic-overview">Schematic overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html#installation">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Methods</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Algorithms.html">Algorithms</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Cross validation and hyperparameter tuning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#training-and-testing">Training and testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hyperparameter-optimization">Hyperparameter optimization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Classification.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Regression.html">Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Save and Load</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html">Classification Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html#regression-examples">Regression Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html#plots">Plots</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Code Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hgboost.hgboost.html">API References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">hgboost</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Cross validation and hyperparameter tuning</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/Cross validation and hyperparameter tuning.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <hr class="docutils" id="code-directive" />
+<div class="section" id="cross-validation-and-hyperparameter-tuning">
+<h1>Cross validation and hyperparameter tuning<a class="headerlink" href="#cross-validation-and-hyperparameter-tuning" title="Permalink to this headline">¶</a></h1>
+<p><em>Cross validation</em> and <em>hyperparameter tuning</em> are two tasks that we do together in the data pipeline.
+<em>Cross validation</em> is the process of training learners using one set of data and testing it using a different set. We set a default of <strong>5-fold crossvalidation</strong> to evalute our results.
+<em>Parameter tuning</em> is the process of selecting the values for a model’s parameters that maximize the accuracy of the model.</p>
+<div class="figure align-default" id="grid-search-cross-validation">
+<img alt="_images/grid_search_cross_validation.png" src="_images/grid_search_cross_validation.png" />
+</div>
+<div class="section" id="training-and-testing">
+<h2>Training and testing<a class="headerlink" href="#training-and-testing" title="Permalink to this headline">¶</a></h2>
+<p>The model <em>sees</em> and <em>learns</em> from the data. To ensure stability in the model and results, we devide the data set into three parts with different sizes, namely: train-set, test-set and validation-set.
+Each set has a different role, and is explained below.</p>
+<dl class="simple">
+<dt>Validation dataset</dt><dd><p>20% of all the data is used when the <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> determined the best model  using the train and test sets.
+This will provide an unbiased result of the final model fit on the training dataset.</p>
+</dd>
+<dt>Train dataset</dt><dd><p>After excluding the validation set, we take 80% of the data to fit the model. The model sees and learns from this data.</p>
+</dd>
+<dt>Test dataset</dt><dd><p>The remaining 20% of the data training data is to evaluate the learned model and provides an unbiased evaluation of a model fit after tuning model hyperparameters.
+Evalution is performed in a 5-fold crossvalidation approach.</p>
+</dd>
+</dl>
+<p>The use of a validation set is optional. When setting <code class="docutils literal notranslate"><span class="pre">val_size=None</span></code> in <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost" title="hgboost.hgboost.hgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code></a>, there are more samples included in the train/testset for parameter hyperoptimizatoin.
+The use of the test set is not optional. The test_size should be larger then 0 <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost" title="hgboost.hgboost.hgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code></a> to make sure we derive a robust model.
+Note that <code class="docutils literal notranslate"><span class="pre">val_size</span></code> can be set to very low sizes but keep in mind that this would lead in a poorly (over)trained models.</p>
+</div>
+<div class="section" id="hyperparameter-optimization">
+<h2>Hyperparameter optimization<a class="headerlink" href="#hyperparameter-optimization" title="Permalink to this headline">¶</a></h2>
+<p>In <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> we incorporated hyperparameter optimization using a <code class="docutils literal notranslate"><span class="pre">hyperopt</span></code>. The goal is to evaluate the value of the combination of parameters in the learning process.</p>
+<p>We evaluate in total thousands of parameter combinations in the learning process.
+To ensure stability, the k-fold crossvalidation comes into play which leads to even more evaluations. To keep the computation costs low, we can decide to only cross-validate the top k detected models
+using the parameter <code class="docutils literal notranslate"><span class="pre">top_cv_evals=10</span></code> in <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost" title="hgboost.hgboost.hgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code></a>. By default, we enable parallel processing.
+Each fit is scored based on the desired evaluation metric and the parameters of the best fit are used.</p>
+<p>The specific list of parameter used for tuning are lised in section <strong>classification</strong> and <strong>regression</strong>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Classification.html" class="btn btn-neutral float-right" title="Classification" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Algorithms.html" class="btn btn-neutral float-left" title="Algorithms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Erdogan Taskesen
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

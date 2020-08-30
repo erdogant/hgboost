@@ -1,0 +1,287 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Algorithms &mdash; hgboost hgboost documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Cross validation and hyperparameter tuning" href="Cross%20validation%20and%20hyperparameter%20tuning.html" />
+    <link rel="prev" title="Quickstart" href="Installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> hgboost
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Background</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html#schematic-overview">Schematic overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html#installation">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Methods</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#xgboost">xgboost</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#catboost">catboost</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lightboost">lightboost</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hyperopt">hyperopt</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Cross%20validation%20and%20hyperparameter%20tuning.html">Cross validation and hyperparameter tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Classification.html">Classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Regression.html">Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Save and Load</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html">Classification Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html#regression-examples">Regression Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html#plots">Plots</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Code Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hgboost.hgboost.html">API References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">hgboost</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Algorithms</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/Algorithms.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <hr class="docutils" id="code-directive" />
+<div class="section" id="algorithms">
+<h1>Algorithms<a class="headerlink" href="#algorithms" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> method consists three methods, <code class="docutils literal notranslate"><span class="pre">xgboost</span></code>, <code class="docutils literal notranslate"><span class="pre">catboost</span></code>, <code class="docutils literal notranslate"><span class="pre">lightboost</span></code>.</p>
+<div class="section" id="xgboost">
+<h2>xgboost<a class="headerlink" href="#xgboost" title="Permalink to this headline">¶</a></h2>
+<p>Gradient boosting is also known as gradient tree boosting, stochastic gradient boosting (an extension), and gradient boosting machines, or GBM for short.
+Ensembles are constructed from decision tree models. Trees are added one at a time to the ensemble and fit to correct the prediction errors made by prior models.
+This is a type of ensemble machine learning model referred to as boosting. Models are fit using any arbitrary differentiable loss function and gradient descent optimization algorithm.
+This gives the technique its name, “gradient boosting,” as the loss gradient is minimized as the model is fit, much like a neural network [1].</p>
+</div>
+<div class="section" id="catboost">
+<h2>catboost<a class="headerlink" href="#catboost" title="Permalink to this headline">¶</a></h2>
+<p>CatBoost is a high-performance open source library for gradient boosting on decision trees.
+It is developed by Yandex researchers and engineers, and is used for search,
+recommendation systems, personal assistant, self-driving cars, weather prediction and many other tasks. It is in open-source and can be used by anyone.
+It is desribed that <em>CatBoost</em> provides great results with default parameter and will therefore have reduce time spent on parameter tuning [2].
+Another advantage that is described is that CatBoost allows you to use non-numeric factors, instead of having to pre-process your data or spend time and effort turning it to numbers [2].</p>
+<p>Although it is described that default settings would be OK-ish, I’m not so sure about that. In addition, finding the optimzal parameters is no issues using <code class="docutils literal notranslate"><span class="pre">hgboost</span></code>.</p>
+</div>
+<div class="section" id="lightboost">
+<h2>lightboost<a class="headerlink" href="#lightboost" title="Permalink to this headline">¶</a></h2>
+<p>LightGBM is a gradient boosting framework that uses tree based learning algorithms.
+Many boosting tools use pre-sort-based algorithms for decision tree learning. It is a simple solution, but not easy to optimize.
+LightGBM uses histogram-based algorithms, which bucket continuous feature (attribute) values into discrete bins.
+This speeds up training and reduces memory usage. It is designed to be distributed and efficient, and is also described with many advantages, such as
+Fast training, high efficiency, Low memory usage, better accuracy, support of parallel and GPU learning, and capable of handling large-scale data [3].</p>
+</div>
+<div class="section" id="hyperopt">
+<h2>hyperopt<a class="headerlink" href="#hyperopt" title="Permalink to this headline">¶</a></h2>
+<p>The method <code class="docutils literal notranslate"><span class="pre">hyperopt</span></code> is incorporated in this library <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> for automated hyperparameter optimization, with the goal of providing practical tools that replace hand-tuning with a reproducible and unbiased optimization process.
+The approach is to expose the underlying expression graph of how a performance metric (e.g. classification accuracy on validation examples) is computed from hyperparameters that
+govern not only how individual processing steps are applied, but even which processing steps are included.
+A hyperparameter optimization algorithm transforms this graph into a program for optimizing that performance metric [4].</p>
+<dl class="simple">
+<dt><strong>References</strong></dt><dd><ul class="simple">
+<li><p>[1] <a class="reference external" href="https://xgboost.ai/">https://xgboost.ai/</a></p></li>
+<li><p>[2] <a class="reference external" href="https://catboost.ai/">https://catboost.ai/</a></p></li>
+<li><p>[3] <a class="reference external" href="https://lightgbm.readthedocs.io/">https://lightgbm.readthedocs.io/</a></p></li>
+<li><p>[4] <a class="reference external" href="http://hyperopt.github.io/hyperopt/">http://hyperopt.github.io/hyperopt/</a></p></li>
+</ul>
+</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Cross%20validation%20and%20hyperparameter%20tuning.html" class="btn btn-neutral float-right" title="Cross validation and hyperparameter tuning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Installation.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Erdogan Taskesen
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

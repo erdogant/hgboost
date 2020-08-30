@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 catboost_info/
-docs/pages/
+# docs/pages/
 
 # C extensions
 *.so
