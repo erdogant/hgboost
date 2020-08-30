@@ -45,7 +45,7 @@ def catboost():
     # Evaluate across all paramters
     out = run_over_all_input_parameters(X, y, max_evals, cvs, val_sizes, methods, pos_labels, test_sizes, top_cv_evals, thresholds, eval_metrics)
 
-    
+
 def lightboost():
     ############################## CLASSIFICATION########################
     # Check whether all combinations of parameters runs like a charm
