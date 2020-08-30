@@ -38,17 +38,15 @@ It is recommended to install ``hgboost`` from an isolated Python environment. Us
     conda activate env_hgboost
 
 
+Install via ``pip`` (recommended):
 
-Install directly from github source:
+.. code-block:: console
+
+    pip install hgboost
+
+
+Install directly from github source (beta versions):
 
 .. code-block:: console
 
     pip install git+https://github.com/erdogant/hgboost
-
-
-Install via ``pip``:
-
-.. code-block:: console
-
-    # The installation from pypi is disabled:
-    pip install hgboost
