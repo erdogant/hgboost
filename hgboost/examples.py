@@ -23,9 +23,8 @@ print(dir(hgboost))
 # print(hgboost.__version__)
 import numpy as np
 
-
 # %% HYPEROPTIMIZED XGBOOST
-hgb = hgboost(max_eval=500, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+hgb = hgboost(max_eval=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=5)
 
 # Import data
 df = hgb.import_example()

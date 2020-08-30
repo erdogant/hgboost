@@ -6,6 +6,11 @@ Contributors: https://github.com/erdogant/hgboost
 import warnings
 warnings.filterwarnings("ignore")
 
+import classeval as cle
+from df2onehot import df2onehot
+import treeplot as tree
+import colourmap
+
 import os
 import numpy as np
 import pandas as pd
@@ -21,12 +26,8 @@ import xgboost as xgb
 import catboost as ctb
 from hyperopt import fmin, tpe, STATUS_OK, STATUS_FAIL, Trials, hp
 
-import classeval as cle
-from df2onehot import df2onehot
-import treeplot as tree
-import colourmap
 from tqdm import tqdm
-
+import time
 
 # %%
 class hgboost:
@@ -274,8 +275,10 @@ class hgboost:
             * 'xgb_clf_multi': XGboost multi-class classifier
         eval_metric : str, (default : None)
             Evaluation metric for the regressor of classification model.
-            * 'auc' : area under ROC curve (two-class classification : default)
-            * 'kappa' : (multi-classification : default)
+            * 'auc' : area under ROC curve (default for two-class)
+            * 'kappa' : (default for multi-class)
+            * 'f1' : F1-score
+            * 'logloss'
         greater_is_better : bool
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
             * auc :  True -> two-class
@@ -514,7 +517,8 @@ class hgboost:
         # Evaluate results
         out, eval_results = self._eval(self.X_test, self.y_test, model, space, verbose=verbose)
         # Return
-        if self.verbose>=4: print("[hgboost] >best score: {0}, best iteration: {1}".format(model.best_score, model.best_iteration))
+        # The model.best_score is the default eval_metric from eval_set in the fit function. The default depends on the selected method.
+        # if self.verbose>=4: print("[hgboost] >best score: {0}, best iteration: {1}".format(model.best_score, model.best_iteration))
         return out, eval_results
 
     def xgb_reg(self, space):
@@ -633,7 +637,6 @@ class hgboost:
             # Compute probability
             y_proba = model.predict_proba(X_test)
             # y_score = model.decision_function(self.X_test)
-            # auc_mean = cross_val_score(model, self.X, self.y, cv=self.cv)
 
             # multi-class classification
             if ('_clf_multi' in self.method):
@@ -650,24 +653,30 @@ class hgboost:
                 # Negative loss score if required
                 if self.greater_is_better: loss = loss * -1
                 # Store
-                out = {'loss': loss, 'status': STATUS_OK, 'model': model}
+                out = {'loss': loss, 'status': STATUS_OK, 'eval_time': time.time(), 'model': model}
             else:
                 # Two-class classification
-                results = cle.eval(y_test, y_proba[:, 1], y_pred=y_pred, threshold=self.threshold, pos_label=self.pos_label, verbose=verbose)
+                results = cle.eval(y_test, y_proba[:, 1], y_pred=y_pred, threshold=self.threshold, pos_label=self.pos_label, verbose=0)
+                # results = cle.ROC.eval(y_test, y_proba[:, 1], threshold=self.threshold, pos_label=self.pos_label, verbose=verbose)
 
                 if self.eval_metric=='kappa':
                     loss = results[self.eval_metric]
+                elif self.eval_metric=='logloss':
+                    loss = log_loss(y_test, y_pred)
                 elif self.eval_metric=='auc':
                     loss = results[self.eval_metric]
                 elif self.eval_metric=='f1':
                     loss = results[self.eval_metric]
+                elif self.eval_metric=='auc_cv':
+                    loss = np.mean(cross_val_score(model, self.X_train, self.y_train, cv=self.cv))
                 else:
                     raise ValueError('[hgboost] >Error: [%s] is not a valid [eval_metric] for [%s].' %(self.eval_metric, self.method))
 
                 # Negative loss score if required
                 if self.greater_is_better: loss = loss * -1
                 # Store
-                out = {'loss': loss, 'auc': results['auc'], 'kappa': results['kappa'], 'f1': results['f1'], 'status': STATUS_OK, 'model' : model}
+                out = {'loss': loss, 'eval_time': time.time(), 'status': STATUS_OK, 'model' : model}
+                # out = {'loss': loss, 'eval_time': time.time(), 'auc': results['auc'], 'kappa': results['kappa'], 'f1': results['f1'], 'status': STATUS_OK, 'model' : model}
         elif '_reg' in self.method:
             # Regression
             # loss = space['loss_func'](y_test, y_pred)
@@ -681,10 +690,11 @@ class hgboost:
             # Negative loss score if required
             if self.greater_is_better: loss = loss * -1
             # Store results
-            out = {'loss': loss, 'status': STATUS_OK, 'model' : model}
+            out = {'loss': loss, 'eval_time': time.time(), 'status': STATUS_OK, 'model' : model}
         else:
             raise ValueError('[hgboost] >Error: Method %s does not exists.' %(self.method))
 
+        if self.verbose>=5: print('[hgboost] >[%s] - [%s] - loss: %s' %(self.method, self.eval_metric, loss))
         return out, results
 
     def preprocessing(self, df, y_min=2, perc_min_num=0.8, verbose=None):
@@ -1123,7 +1133,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
     # quniform : discrete uniform (integers spaced evenly)
     # uniform: continuous uniform (floats spaced evenly)
     # loguniform: continuous log uniform (floats spaced evenly on a log scale)
-
+    early_stopping_rounds = 25
     if eval_metric is None: raise ValueError('[hgboost] >eval_metric must be provided.')
     if verbose>=3: print('[hgboost] >Collecting %s parameters.' %(fn_name))
 
@@ -1140,9 +1150,8 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         }
         space = {}
         space['model_params'] = xgb_reg_params
-        space['fit_params'] = {'eval_metric': eval_metric, 'early_stopping_rounds': 10, 'verbose': False}
-        space['scoring'] = eval_metric
-        # space['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
+        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': False}
+        # space['fit_params'] = {'eval_metric': eval_metric, 'early_stopping_rounds': 10, 'verbose': False}
         return(space)
 
     # LightGBM parameters
@@ -1156,9 +1165,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         }
         space = {}
         space['model_params'] = lgb_reg_params
-        space['fit_params'] = {'eval_metric': 'l2', 'early_stopping_rounds': 10, 'verbose': False}
-        space['scoring'] = eval_metric
-        # space['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
+        space['fit_params'] = {'eval_metric': 'l2', 'early_stopping_rounds': early_stopping_rounds, 'verbose': False}
 
         return(space)
 
@@ -1172,9 +1179,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         }
         space = {}
         space['model_params'] = ctb_reg_params
-        space['fit_params'] = {'early_stopping_rounds': 10, 'verbose': False}
-        # space['loss_func'] = lambda y, pred: np.sqrt(mean_squared_error(y, pred))
-        space['scoring'] = eval_metric
+        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': False}
         return(space)
 
     # CatBoost classification parameters
@@ -1189,8 +1194,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         }
         space = {}
         space['model_params'] = ctb_clf_params
-        space['fit_params'] = {'early_stopping_rounds': 10, 'verbose': False}
-        space['scoring'] = eval_metric
+        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': False}
         return(space)
 
     # LightBoost classification parameters
@@ -1212,8 +1216,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         }
         space = {}
         space['model_params'] = lgb_clf_params
-        space['fit_params'] = {'early_stopping_rounds': 10, 'verbose': False}
-        space['scoring'] = eval_metric
+        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': False}
         return(space)
 
     if 'xgb_clf' in fn_name:
@@ -1229,19 +1232,18 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         }
 
         if fn_name=='xgb_clf':
-            xgb_clf_params['eval_metric'] = hp.choice('eval_metric', ['error', eval_metric])
+            # xgb_clf_params['eval_metric'] = hp.choice('eval_metric', ['error', eval_metric])
             xgb_clf_params['objective'] = 'binary:logistic'
             xgb_clf_params['scale_pos_weight'] = hp.choice('scale_pos_weight', [0, 0.5, 1])
-            scoring = eval_metric
 
         if fn_name=='xgb_clf_multi':
             xgb_clf_params['objective']='multi:softprob'
-            scoring='kappa'  # Note that this variable is not used.
+            # scoring='kappa'
 
         space = {}
         space['model_params'] = xgb_clf_params
-        space['fit_params'] = {'early_stopping_rounds': 10, 'verbose': False}
-        space['scoring'] = scoring
+        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': False}
+
         if verbose>=3: print('[hgboost] >Number of variables in search space is [%.0d], loss function: [%s].' %(len([*space['model_params']]), eval_metric))
         return(space)
 

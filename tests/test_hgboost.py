@@ -18,7 +18,7 @@ def xgboost():
     pos_labels = [None, 0, 2, 'value not in y']
     top_cv_evals = [None, 1, 20]
     thresholds = [None, 0.5]
-    eval_metrics = [None]
+    eval_metrics = [None,'f1']
     
     # Evaluate across all paramters
     out = run_over_all_input_parameters(X, y, max_evals, cvs, val_sizes, methods, pos_labels, test_sizes, top_cv_evals, thresholds, eval_metrics)
@@ -39,7 +39,7 @@ def catboost():
     pos_labels = [None, 0, 2, 'value not in y']
     top_cv_evals = [None, 1, 20]
     thresholds = [None, 0.5]
-    eval_metrics = [None]
+    eval_metrics = [None,'f1']
     methods = ['ctb_clf']
 
     # Evaluate across all paramters
@@ -61,7 +61,7 @@ def lightboost():
     pos_labels = [None, 0, 2, 'value not in y']
     top_cv_evals = [None, 1, 20]
     thresholds = [None, 0.5]
-    eval_metrics = [None]
+    eval_metrics = [None,'f1']
     methods = ['lgb_clf']
 
     # Evaluate across all paramters
