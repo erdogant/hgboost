@@ -10,7 +10,7 @@ __version__ = '0.1.0'
 
 # module level doc-string
 __doc__ = """
-hgboost - Python package for hyperparameter optimization for xgboost, catboost or lightboost for both classification and regression tasks.
+hgboost - Python package for hyperparameter optimization for xgboost, catboost and lightboost for both classification and regression tasks.
 =====================================================================
 
 Description
