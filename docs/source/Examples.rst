@@ -322,3 +322,54 @@ catboost_reg
 
     # Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
     y_pred, y_proba = hgb.predict(X)
+
+
+Plots
+''''''''''''''''''''''''
+
+For each model, the following 5 plots can be created:
+
+
+plot_params
+-------------------
+
+.. code:: python
+
+    # Plot the parameter space
+    hgb.plot_params()
+
+
+plot
+-------------------
+
+.. code:: python
+
+    # Plot the summary results
+    hgb.plot()
+
+
+treeplot
+-------------------
+
+.. code:: python
+
+    # Plot the best performing tree
+    hgb.treeplot()
+
+
+plot_validation
+-------------------
+
+.. code:: python
+
+    # Plot results on the validation set
+    hgb.plot_validation()
+
+
+plot_cv
+-------------------
+
+.. code:: python
+
+    # Plot results on the cross-validation
+    hgb.plot_cv()
