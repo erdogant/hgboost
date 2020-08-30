@@ -5,6 +5,7 @@
 # https://www.kaggle.com/henrylidgley/xgboost-with-hyperopt-tuning
 # https://towardsdatascience.com/tree-boosted-mixed-effects-models-4df610b624cb
 # https://machinelearningmastery.com/gradient-boosting-with-scikit-learn-xgboost-lightgbm-and-catboost/
+# http://hyperopt.github.io/hyperopt/getting-started/minimizing_functions/
 
 # Objective is to demonstrate:
 
