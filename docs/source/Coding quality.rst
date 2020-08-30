@@ -74,9 +74,24 @@ Unit tests
 The use of unit tests is essential to garantee a consistent output of developed functions.
 The following tests are secured using :func:`tests.test_hgboost`:
 
-* The input are checked.
+* The input parameters are checked.
 * The output values are checked and whether they are encoded properly.
 * The check of whether parameters are handled correctly.
+
+For each method, i.e. xgboost(_reg), catboost(_reg), lightboost(_reg) I assessed the correct working using all combinations of input parameters.
+Each input parameters can also have multiple states so I created the underneath set that results in 2304 different combinations.
+All errors are captured bij ``hgboost`` and (hopefully) a understandable error is described.
+
+Parameters combined:
+    max_evals = [None, 10]
+    cvs = [None, 5, 11]
+    val_sizes = [None, 0.2]
+    test_sizes = [None, 0.2]
+    methods = ['xgb_clf', 'xgb_clf_multi']
+    pos_labels = [None, 0, 2, 'value not in y']
+    top_cv_evals = [None, 1, 20]
+    thresholds = [None, 0.5]
+    eval_metrics = [None,'f1']
 
 
 .. code-block:: bash

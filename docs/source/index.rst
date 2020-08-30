@@ -1,10 +1,10 @@
 hgboost's documentation!
 ========================
 
-``hgboost`` is Python package to minimize a function from the model xgboost, catboost or lightboost over a hyperparameter space by using cross-validation and evaluting the results on an indepdendent validation set.
+``hgboost`` is Python package to minimize the function for xgboost, catboost or lightboost over a hyperparameter space by using cross-validation, and evaluating the results on an indepdendent validation set.
 ``hgboost`` can be applied for classification and regression tasks.
 
-hgboost is fun because:
+``hgboost`` is fun because:
 
     * 1. Hyperoptimization of the Parameter-space using bayesian approach.
     * 2. Determines the best scoring model(s) using k-fold cross validation.
@@ -54,7 +54,6 @@ Content
   :maxdepth: 1
   :caption: Code Documentation
   
-  Documentation
   Coding quality
   hgboost.hgboost
 

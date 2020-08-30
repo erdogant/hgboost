@@ -9,13 +9,13 @@ To measure the goodness of fit we use various evaluation metrics to check the cl
 The performance is computed using the evaluation metric ``eval_metric`` in :func:`hgboost.hgboost.hgboost`.
 
 Default ``eval_metric`` are as following:
-    * 'rmse'  : func:`hgboost.hgboost.lightboost_reg`
-    * 'rmse'  : func:`hgboost.hgboost.catboost_reg`
-    * 'rmse'  : func:`hgboost.hgboost.xgboost_reg`
-    * 'auc'   : func:`hgboost.hgboost.xgboost` (two-class)
-    * 'kappa' : func:`hgboost.hgboost.xgboost` (multi-class)
-    * 'auc'   : func:`hgboost.hgboost.lightboost`
-    * 'auc'   : func:`hgboost.hgboost.catboost`
+    * 'rmse'  : lightboost_reg  :func:`hgboost.hgboost.hgboost.lightboost_reg`
+    * 'rmse'  : catboost_reg    :func:`hgboost.hgboost.hgboost.catboost_reg`
+    * 'rmse'  : xgboost_reg     :func:`hgboost.hgboost.hgboost.xgboost_reg`
+    * 'auc'   : xgboost         :func:`hgboost.hgboost.hgboost.xgboost` (two-class)
+    * 'kappa' : xgboost         :func:`hgboost.hgboost.hgboost.xgboost` (multi-class)
+    * 'auc'   : lightboost      :func:`hgboost.hgboost.hgboost.lightboost`
+    * 'auc'   : catboost        :func:`hgboost.hgboost.hgboost.catboost`
 
 The performance of the model can deviate based on the ``threshold`` being used but the theshold this will not affect the learning process.
 After learning a model, and predicting new samples with it, each sample will get a probability belowing to the class.

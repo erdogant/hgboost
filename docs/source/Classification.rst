@@ -21,7 +21,7 @@ Parameters
 xgboost
 ---------
 
-The specific list of parameters used for xgboost: func:`hgboost.hgboost.hgboost.xgboost`
+The specific list of parameters used for xgboost: :func:`hgboost.hgboost.hgboost.xgboost`
 
 .. code:: python
 
@@ -46,7 +46,7 @@ The specific list of parameters used for xgboost: func:`hgboost.hgboost.hgboost.
 catboost
 -------------
 
-The specific list of parameters used for catboost: func:`hgboost.hgboost.catboost`
+The specific list of parameters used for catboost: :func:`hgboost.hgboost.hgboost.catboost`
 
 .. code:: python
 
@@ -62,7 +62,7 @@ The specific list of parameters used for catboost: func:`hgboost.hgboost.catboos
 lightboost
 --------------------------
 
-The specific list of parameters used for lightboost: func:`hgboost.hgboost.lightboost`
+The specific list of parameters used for lightboost: :func:`hgboost.hgboost.hgboost.lightboost`
 
 .. code:: python
 

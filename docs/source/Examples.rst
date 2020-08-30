@@ -8,6 +8,8 @@ Classification Examples
 xgboost two-class
 -------------------
 
+Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
+
 .. code:: python
 
     # Import library
@@ -52,6 +54,8 @@ xgboost two-class
 
 xgboost multi-class
 ---------------------
+
+Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
 
 .. code:: python
 
@@ -98,6 +102,8 @@ xgboost multi-class
 catboost
 -------------
 
+Function documentation can be found here :func:`hgboost.hgboost.hgboost.catboost`
+
 .. code:: python
 
     # Import library
@@ -141,6 +147,8 @@ catboost
 
 lightboost
 -------------
+
+Function documentation can be found here :func:`hgboost.hgboost.hgboost.lightboost`
 
 .. code:: python
 
@@ -189,6 +197,8 @@ Regression Examples
 xgboost_reg
 -------------------
 
+Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost_reg`
+
 .. code:: python
 
     # Import library
@@ -235,6 +245,8 @@ xgboost_reg
 lightboost_reg
 -------------------
 
+Function documentation can be found here :func:`hgboost.hgboost.hgboost.lightboost_reg`
+
 .. code:: python
 
     # Import library
@@ -280,6 +292,8 @@ lightboost_reg
 
 catboost_reg
 -------------------
+
+Function documentation can be found here :func:`hgboost.hgboost.hgboost.catboost_reg`
 
 .. code:: python
 
@@ -340,6 +354,8 @@ Figure 2 depicts the iterations performed for hyper-optimization per parameter. 
 In both figures, the parameters for all fitted models are plotted together with the **best** performing models with and without the **k-fold crossvalidation**.
 In addition, we also plot the top n performing models. The top performing models can be usefull to deeper examine the used parameter.
 
+Function documentation can be found here :func:`hgboost.hgboost.hgboost.plot_params`
+
 .. code:: python
 
     # Plot the parameter space
@@ -366,6 +382,7 @@ plot summary
 This figure exists out of two subfigures. The top figure depicts all evaluated models with the loss score.
 The **best** performing models with and without the **k-fold crossvalidation** are depicted together with the top n performing models.
 The bottom figure depicts the train and test-error.
+Function documentation can be found here :func:`hgboost.hgboost.hgboost.plot`
 
 .. code:: python
 
@@ -385,6 +402,8 @@ The bottom figure depicts the train and test-error.
 
 treeplot
 -------------------
+
+Function documentation can be found here :func:`hgboost.hgboost.hgboost.treeplot`
 
 .. code:: python
 
@@ -406,6 +425,8 @@ treeplot
 
 plot_validation
 -------------------
+
+Function documentation can be found here :func:`hgboost.hgboost.hgboost.plot_validation`
 
 .. code:: python
 
@@ -436,6 +457,8 @@ plot_validation
 
 plot_cv
 -------------------
+
+Function documentation can be found here :func:`hgboost.hgboost.hgboost.plot_cv`
 
 .. code:: python
 
