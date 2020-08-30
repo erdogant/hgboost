@@ -22,6 +22,13 @@
 
 * API Documentation: https://erdogant.github.io/hgboost/
 
+**Schematic overview of hgboost**
+
+<p align="center">
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/schematic_overview.png" width="600" />
+</p>
+
+
 ### Installation Environment
 * Install hgboost from PyPI (recommended). hgboost is compatible with Python 3.6+ and runs on Linux, MacOS X and Windows. 
 * A new environment is recommended and created as following: 
