@@ -8,6 +8,9 @@
 ``hgboost`` is Python package to minimize a function from the model xgboost, catboost or lightboost over a hyperparameter space by using cross-validation and evaluting the results on an indepdendent validation set.
 ``hgboost`` can be applied for classification, such as two-class or multi-class, and regression tasks.
 
+**Documentation**
+
+* API Documentation: https://erdogant.github.io/hgboost/
 
 ### Installation Environment
 * Install hgboost from PyPI (recommended). hgboost is compatible with Python 3.6+ and runs on Linux, MacOS X and Windows. 
