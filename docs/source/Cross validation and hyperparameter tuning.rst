@@ -9,9 +9,9 @@ Cross validation and hyperparameter tuning
 *Cross validation* is the process of training learners using one set of data and testing it using a different set. We set a default of **5-fold crossvalidation** to evalute our results.
 *Parameter tuning* is the process of selecting the values for a model’s parameters that maximize the accuracy of the model.
 
-.. _five-fold_cross_validation:
+.. _grid_search_cross_validation:
 
-.. figure:: ../figs/five-fold_cross_validation.png
+.. figure:: ../figs/grid_search_cross_validation.png
 
  
 Training and testing

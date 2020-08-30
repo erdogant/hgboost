@@ -26,7 +26,9 @@ Content
   :maxdepth: 1
   :caption: Methods
 
-  Algorithm
+  Algorithms
+  Classification
+  Regression
   Cross validation and hyperparameter tuning
   Performance
   Save and Load
@@ -69,10 +71,10 @@ Citing *hgboost*
 ----------------
 Here is an example BibTeX entry:
 
-@misc{erdogant2019hgboost,
+@misc{erdogant2020hgboost,
   title={hgboost},
   author={Erdogan Taskesen},
-  year={2019},
+  year={2020},
   howpublished={\url{https://github.com/erdogant/hgboost}}}
 
 

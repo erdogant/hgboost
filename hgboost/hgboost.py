@@ -1,10 +1,7 @@
-# --------------------------------------------------
-# Name        : hgboost.py
-# Author      : E.Taskesen
-# Contact     : erdogant@gmail.com
-# github      : https://github.com/erdogant/hgboost
-# Licence     : See licences
-# --------------------------------------------------
+"""hgboost: Hyperoptimization Gradient Boosting library.
+
+Contributors: https://github.com/erdogant/hgboost
+"""
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -14,11 +11,11 @@ import numpy as np
 import pandas as pd
 import wget
 
-from sklearn.metrics import mean_squared_error, cohen_kappa_score
+from sklearn.metrics import mean_squared_error, cohen_kappa_score, mean_absolute_error, log_loss, roc_auc_score, f1_score
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from sklearn.model_selection import train_test_split, StratifiedKFold
+from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
 import lightgbm as lgb
 import xgboost as xgb
 import catboost as ctb
@@ -126,7 +123,7 @@ class hgboost:
         # Set validation set
         self._set_validation_set(X, y)
         # Find best parameters
-        self.model, self.results = self._HPOpt(verbose=self.verbose)
+        self.model, self.results = self._HPOpt()
         # Fit on all data using best parameters
         if self.verbose>=3: print('[hgboost] >Retrain [%s] on the entire dataset with the optimal parameters settings.' %(self.method))
         self.model.fit(X, y)
@@ -396,7 +393,7 @@ class hgboost:
             self.X_val = None
             self.y_val = None
 
-    def _HPOpt(self, verbose=3):
+    def _HPOpt(self):
         """Hyperoptimization of the search space.
 
         Description
@@ -406,12 +403,6 @@ class hgboost:
         according to a given algorithm, allowing up to a certain number of
         function evaluations.  As points are explored, they are accumulated in
         "trials".
-
-        Parameters
-        ----------
-        verbose : int, (default: 3)
-            Print progress to screen.
-            0: NONE, 1: ERROR, 2: WARNING, 3: INFO, 4: DEBUG, 5: TRACE
 
         Returns
         -------
@@ -517,8 +508,9 @@ class hgboost:
         verbose = 2 if self.verbose<=3 else 3
         # Evaluation is determine for both training and testing set. These results can plotted after finishing.
         eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)]
-        # Make fit with stopping-rule to avoid overfitting.
+        # Make fit with stopping-rule to avoid overfitting. Directly perform evaluation with the eval_set.
         model.fit(self.X_train, self.y_train, eval_set=eval_set, **space['fit_params'])
+        # auc_mean = cross_val_score(model, self.X, self.y, cv=self.cv)
         # Evaluate results
         out, eval_results = self._eval(self.X_test, self.y_test, model, space, verbose=verbose)
         # Return
@@ -632,7 +624,6 @@ class hgboost:
         When you want to optimize auc or f1, you simply need to negate the score.
         The negation is fixed with the parameter: greater_is_better=False
         """
-        from sklearn.metrics import mean_squared_error, mean_absolute_error, log_loss, roc_auc_score, f1_score
         results = None
         # Make prediction
         y_pred = model.predict(X_test)
@@ -642,6 +633,7 @@ class hgboost:
             # Compute probability
             y_proba = model.predict_proba(X_test)
             # y_score = model.decision_function(self.X_test)
+            # auc_mean = cross_val_score(model, self.X, self.y, cv=self.cv)
 
             # multi-class classification
             if ('_clf_multi' in self.method):
@@ -1189,7 +1181,6 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
     if fn_name=='ctb_clf':
         ctb_clf_params = {
             'learning_rate' : hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.31), base = 10, num = 1000)),
-            # 'learning_rate' : hp.quniform('learning_rate', 0.001, 0.31, 0.01),
             'depth' : hp.choice('max_depth', np.arange(2, 16, 1, dtype=int)),
             'iterations' : hp.choice('iterations', np.arange(100, 1000, 100)),
             'l2_leaf_reg' : hp.choice('l2_leaf_reg', np.arange(1, 100, 2)),
@@ -1228,7 +1219,6 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
     if 'xgb_clf' in fn_name:
         xgb_clf_params = {
             'learning_rate' : hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.5), base = 10, num = 1000)),
-            # 'learning_rate' : hp.quniform('learning_rate', 0.01, 0.5, 0.01),
             'max_depth' : hp.choice('max_depth', range(5, 75, 1)),
             'min_child_weight' : hp.quniform('min_child_weight', 1, 10, 1),
             'gamma' : hp.choice('gamma', [0.5, 1, 1.5, 2, 5]),

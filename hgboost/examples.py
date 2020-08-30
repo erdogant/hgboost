@@ -37,7 +37,7 @@ y[y=='1']='survived'
 y[y=='0']='dead'
 
 # Fit
-results = hgb.xgboost(X, y, pos_label='survived')
+results = hgb.xgboost(X, y, pos_label='survived', eval_metric='f1')
 results = hgb.catboost(X, y, pos_label='survived')
 results = hgb.lightboost(X, y, pos_label='survived')
 
