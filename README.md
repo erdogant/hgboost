@@ -1,4 +1,4 @@
-# hgboost
+# hgboost - Hyperoptimized Gradient Boosting
 
 [![Python](https://img.shields.io/pypi/pyversions/hgboost)](https://img.shields.io/pypi/pyversions/hgboost)
 [![PyPI Version](https://img.shields.io/pypi/v/hgboost)](https://pypi.org/project/hgboost/)
