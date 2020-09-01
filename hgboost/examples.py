@@ -25,35 +25,44 @@ print(dir(hgboost))
 import numpy as np
 
 # %% HYPEROPTIMIZED XGBOOST
-hgb = hgboost(max_eval=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=5)
+hgb_xgb = hgboost(max_eval=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+hgb_cat = hgboost(max_eval=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+hgb_light = hgboost(max_eval=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
 
 # Import data
-df = hgb.import_example()
+df = hgb_xgb.import_example()
 y = df['Survived'].values
 del df['Survived']
-X = hgb.preprocessing(df, verbose=0)
-
-results = hgb.xgboost(X, y, pos_label=1, eval_metric='f1')
-
-y = y.astype(str)
-y[y=='1']='survived'
-y[y=='0']='dead'
+X = hgb_xgb.preprocessing(df, verbose=0)
 
 # Fit
-results = hgb.xgboost(X, y, pos_label='survived', eval_metric='f1')
-results = hgb.catboost(X, y, pos_label='survived')
-results = hgb.lightboost(X, y, pos_label='survived')
+results = hgb_xgb.xgboost(X, y, pos_label=1)
+results = hgb_cat.catboost(X, y, pos_label=1)
+results = hgb_light.lightboost(X, y, pos_label=1)
 
 # Make some plots
-hgb.plot_params()
-hgb.plot()
-hgb.treeplot()
-hgb.plot_validation()
-hgb.plot_cv()
+hgb_xgb.plot_params()
+hgb_xgb.plot()
+hgb_xgb.treeplot()
+hgb_xgb.plot_validation()
+hgb_xgb.plot_cv()
 
 # use the predictor
-y_pred, y_proba = hgb.predict(X)
+y_pred, y_proba = hgb_xgb.predict(X)
+y_pred, y_proba = hgb_cat.predict(X)
+y_pred, y_proba = hgb_light.predict(X)
 
+# %% ENSEMBLE
+
+from sklearn.ensemble import VotingClassifier
+from sklearn.model_selection import cross_val_score
+
+# Make voting classifier 
+hgbe = VotingClassifier([('xgboost', hgb_xgb.model), ('catboost', hgb_cat.model), ('lightboost', hgb_light.model)], voting='soft')
+hgbe.fit(X, y)
+hgbe.predict(X)
+# Cross validation
+cross_val_score(hgbe, X, y).mean()
 
 # %% HYPEROPTIMIZED MULTI-XGBOOST
 hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
