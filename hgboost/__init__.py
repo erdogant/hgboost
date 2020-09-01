@@ -10,15 +10,14 @@ __version__ = '0.1.0'
 
 # module level doc-string
 __doc__ = """
-hgboost - Python package for hyperparameter optimization for xgboost, catboost and lightboost for both classification and regression tasks.
+hgboost - Hyperoptimized Gradient Boosting
 =====================================================================
 
 Description
 -----------
-hgboost is a Python package to minimize a function from the model xgboost,
-catboost or lightboost over a hyperparameter space by using cross-validation
-and evaluting the results on an indepdendent validation set. hgboost can be
-applied for classification, such as two-class or multi-class, and regression challanges.
+hgboost is a python package for hyperparameter optimization for xgboost, 
+catboost and lightboost using cross-validation, and evaluating the results
+on an independent validation set. hgboost can be applied for classification and regression tasks.
 The library consists the underneath parts:
     * Regression
     * Binary classification
