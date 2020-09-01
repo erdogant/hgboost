@@ -1,4 +1,4 @@
-.. _code_directive:
+read.. _code_directive:
 
 -------------------------------------
 

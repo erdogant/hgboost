@@ -1,7 +1,7 @@
 hgboost's documentation!
 ========================
 
-``hgboost`` is a python package for hyperparameter optimization for xgboost, catboost and lightboost using cross-validation, and evaluating the results on an independent validation set.
+``hgboost`` is short for Hyperoptimized Gradient Boosting and is a python package for hyperparameter optimization for xgboost, catboost and lightboost using cross-validation, and evaluating the results on an independent validation set.
 ``hgboost`` can be applied for classification and regression tasks.
 
 ``hgboost`` is fun because:
