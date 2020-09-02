@@ -17,6 +17,7 @@ import pandas as pd
 import wget
 
 from sklearn.metrics import mean_squared_error, cohen_kappa_score, mean_absolute_error, log_loss, roc_auc_score, f1_score
+from sklearn.ensemble import VotingClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -83,7 +84,7 @@ class hgboost:
         self.verbose = verbose
 
     def _fit(self, X, y, pos_label=None):
-        """Learn best performing model.
+        """Fit the best performing model.
 
         Description
         -----------
@@ -262,7 +263,7 @@ class hgboost:
         return self.results
 
     def xgboost(self, X, y, pos_label=None, method='xgb_clf', eval_metric=None, greater_is_better=None, params='default'):
-        """Catboost Classification with parameter hyperoptimization.
+        """Xgboost Classification with parameter hyperoptimization.
 
         Parameters
         ----------
@@ -376,6 +377,109 @@ class hgboost:
         # Return
         return self.results
 
+    def ensemble(self, X, y, pos_label=None, method=['xgb_clf', 'ctb_clf', 'lgb_clf'], eval_metric='auc', greater_is_better=True, voting='soft'):
+        """Ensemble Classification with parameter hyperoptimization.
+
+        Description
+        -----------
+        Fit best model for xgboost, catboost and lightboost, and then combine the individual models to a new one.
+
+        Parameters
+        ----------
+        X : pd.DataFrame
+            Input dataset.
+        y : array-like
+            Response variable.
+        pos_label : string/int.
+            Fit the model on the pos_label that that is in [y].
+        method : String, (default : ['xgb_clf','ctb_clf','lgb_clf']).
+            The models to be used for the ensemble classifier.
+            * 'xgb_clf': XGboost
+            * 'ctb_clf': Catboost
+            * 'lgb_clf': Lightboost
+        eval_metric : str, (default : 'auc')
+            Evaluation metric for the regressor of classification model.
+            * 'auc' : area under ROC curve (two-class classification : default)
+        greater_is_better : bool (default : True)
+            If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
+            * auc :  True -> two-class
+
+        Returns
+        -------
+        results : dict
+            * best_params: Best performing parameters.
+            * summary: Summary of the models with the loss and other variables.
+            * trials: All model results.
+            * model: Best performing model.
+            * val_results: Results on indepedent validation dataset.
+        """
+
+        import copy
+        if self.verbose>=3: print('[hgboost] >Start ensemble classification..')
+        # Store parameters in object
+        self.voting = voting
+        self.method = 'ensemble_clf'
+
+        # Check input data
+        X, y, self.pos_label = _check_input(X, y, pos_label, self.method, verbose=self.verbose)
+        # Gather for method, the default metric and greater is better.
+        self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
+        # Create independent validation set.
+        X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=self.val_size, random_state=self.random_state, shuffle=True, stratify=y)
+
+        # Setup xgboost model
+        models = []
+        if np.any(np.isin(method, 'xgb_clf')):
+            hgbX = copy.copy(self)
+            hgbX.method = 'xgb_clf'
+            hgbX._classification(X_train, y_train, eval_metric, greater_is_better, 'default')
+            hgbX.results['summary']['method'] = 'xgb_clf'
+            models.append(('xgboost', hgbX.model))
+
+        # Setup catboost model
+        if np.any(np.isin(method, 'ctb_clf')):
+            hgbC = copy.copy(self)
+            hgbC.method = 'ctb_clf'
+            hgbC._classification(X_train, y_train, eval_metric, greater_is_better, 'default')
+            hgbC.results['summary']['method']= 'ctb_clf'
+            models.append(('catboost', hgbC.model))
+
+        # Setup lightboost model
+        if np.any(np.isin(method, 'lgb_clf')):
+            hgbL = copy.copy(self)
+            hgbL.method = 'lgb_clf'
+            hgbL._classification(X_train, y_train, eval_metric, greater_is_better, 'default')
+            hgbL.results['summary']['method'] = 'lgb_clf'
+            models.append(('lightboost', hgbL.model))
+
+        # Create the ensemble classifier
+        if self.verbose>=3: print('[hgboost] >Fit ensemble classifier with [%s] voting..' %(self.voting))
+        hgbE = VotingClassifier(models, voting=voting)
+        hgbE.fit(X, y==pos_label)
+        self.model = hgbE
+
+        # Validation error
+        val_results = None
+        if self.val_size is not None:
+            if self.verbose>=3: print('[hgboost] >Evalute [ensemble] model on independent validation dataset (%.0f samples, %.2g%%).' %(len(y_val), self.val_size * 100))
+            # Evaluate results on the same validation set
+            val_score, val_results = self._eval(X_val, y_val, hgbE, verbose=2)
+            val_score_X, _ = self._eval(X_val, y_val, hgbX.model, verbose=2)
+            val_score_C, _ = self._eval(X_val, y_val, hgbC.model, verbose=2)
+            val_score_L, _ = self._eval(X_val, y_val, hgbL.model, verbose=2)
+            if self.verbose>=3: print('[hgboost] >[Ensemble]   [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score['loss']))
+            if self.verbose>=3: print('[hgboost] >[XGboost]    [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_X['loss']))
+            if self.verbose>=3: print('[hgboost] >[Catboost]   [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_C['loss']))
+            if self.verbose>=3: print('[hgboost] >[Lightboost] [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_L['loss']))
+
+        self.results = {}
+        self.results['val_results'] = val_results
+        self.results['model'] = hgbE
+        self.results['summary'] = pd.concat([hgbX.results['summary'], hgbC.results['summary'], hgbL.results['summary']])
+
+        # Return
+        return self.results
+
     def _set_validation_set(self, X, y):
         """Set the validation set.
 
@@ -445,9 +549,9 @@ class hgboost:
         # Validation error
         val_results = None
         if self.val_size is not None:
-            if self.verbose>=3: print('[hgboost] >Evalute best [%s] model on independent validation dataset (%.0f samples, %.2f%%).' %(self.method, len(self.y_val), self.val_size * 100))
+            if self.verbose>=3: print('[hgboost] >Evalute best [%s] model on independent validation dataset (%.0f samples, %.2g%%).' %(self.method, len(self.y_val), self.val_size * 100))
             # Evaluate results
-            val_score, val_results = self._eval(self.X_val, self.y_val, model, self.space, verbose=2)
+            val_score, val_results = self._eval(self.X_val, self.y_val, model, verbose=2)
             if self.verbose>=3: print('[hgboost] >[%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score['loss']))
 
         # Remove the model column
@@ -517,7 +621,7 @@ class hgboost:
         model.fit(self.X_train, self.y_train, eval_set=eval_set, **space['fit_params'])
         # auc_mean = cross_val_score(model, self.X, self.y, cv=self.cv)
         # Evaluate results
-        out, eval_results = self._eval(self.X_test, self.y_test, model, space, verbose=verbose)
+        out, eval_results = self._eval(self.X_test, self.y_test, model, verbose=verbose)
         # Return
         # The model.best_score is the default eval_metric from eval_set in the fit function. The default depends on the selected method.
         # if self.verbose>=4: print("[hgboost] >best score: {0}, best iteration: {1}".format(model.best_score, model.best_iteration))
@@ -621,7 +725,7 @@ class hgboost:
         # Return
         return y_pred, y_proba
 
-    def _eval(self, X_test, y_test, model, space, verbose=3):
+    def _eval(self, X_test, y_test, model, verbose=3):
         """Classifier Evaluation.
 
         Description
@@ -805,7 +909,7 @@ class hgboost:
             if ('_clf' in self.method) and not ('_multi' in self.method):
                 _, X_test, _, y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=None, shuffle=True, stratify=self.y)
                 # Evaluate model
-                _, cl_results = self._eval(X_test, y_test, self.model, self.space, verbose=0)
+                _, cl_results = self._eval(X_test, y_test, self.model, verbose=0)
                 cv_results[name] = cl_results
             elif '_reg' in self.method:
                 _, X_test, _, y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=None, shuffle=True)
