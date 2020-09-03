@@ -454,27 +454,31 @@ class hgboost:
 
         # Create the ensemble classifier
         if self.verbose>=3: print('[hgboost] >Fit ensemble classifier with [%s] voting..' %(self.voting))
-        hgbE = VotingClassifier(models, voting=voting)
-        hgbE.fit(X, y==pos_label)
-        self.model = hgbE
+        model = VotingClassifier(models, voting=voting)
+        model.fit(X, y==pos_label)
+        self.model = model
 
         # Validation error
         val_results = None
         if self.val_size is not None:
             if self.verbose>=3: print('[hgboost] >Evalute [ensemble] model on independent validation dataset (%.0f samples, %.2g%%).' %(len(y_val), self.val_size * 100))
             # Evaluate results on the same validation set
-            val_score, val_results = self._eval(X_val, y_val, hgbE, verbose=2)
-            val_score_X, _ = self._eval(X_val, y_val, hgbX.model, verbose=2)
-            val_score_C, _ = self._eval(X_val, y_val, hgbC.model, verbose=2)
-            val_score_L, _ = self._eval(X_val, y_val, hgbL.model, verbose=2)
+            val_score, val_results = self._eval(X_val, y_val, model, verbose=2)
             if self.verbose>=3: print('[hgboost] >[Ensemble]   [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score['loss']))
-            if self.verbose>=3: print('[hgboost] >[XGboost]    [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_X['loss']))
-            if self.verbose>=3: print('[hgboost] >[Catboost]   [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_C['loss']))
-            if self.verbose>=3: print('[hgboost] >[Lightboost] [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_L['loss']))
+            # Other methods
+            if np.any(np.isin(method, 'xgb_clf')):
+                val_score_X, _ = self._eval(X_val, y_val, hgbX.model, verbose=2)
+                if self.verbose>=3: print('[hgboost] >[XGboost]    [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_X['loss']))
+            if np.any(np.isin(method, 'ctb_clf')):
+                val_score_C, _ = self._eval(X_val, y_val, hgbC.model, verbose=2)
+                if self.verbose>=3: print('[hgboost] >[Catboost]   [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_C['loss']))
+            if np.any(np.isin(method, 'lgb_clf')):
+                val_score_L, _ = self._eval(X_val, y_val, hgbL.model, verbose=2)
+                if self.verbose>=3: print('[hgboost] >[Lightboost] [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_L['loss']))
 
         self.results = {}
         self.results['val_results'] = val_results
-        self.results['model'] = hgbE
+        self.results['model'] = model
         self.results['summary'] = pd.concat([hgbX.results['summary'], hgbC.results['summary'], hgbL.results['summary']])
 
         # Return
@@ -875,6 +879,9 @@ class hgboost:
         ax : object
 
         """
+        if ('ensemble' in self.method):
+            if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
+            return None
         if not hasattr(self, 'model'):
             print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return None
@@ -898,6 +905,10 @@ class hgboost:
             Figure axis.
 
         """
+        if ('ensemble' in self.method):
+            if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
+            return None
+
         print('[hgboost] >%.0d-fold crossvalidation is performed with [%s]' %(self.cv, self.method))
         disable = (True if (self.verbose==0 or self.verbose>3) else False)
         ax = None
@@ -945,13 +956,16 @@ class hgboost:
             Figure axis.
 
         """
+        ax = None
+        if ('ensemble' in self.method):
+            if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
+            return None
         if not hasattr(self, 'model'):
             print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return None
         if self.val_size is None:
             print('[hgboost] >No validation set found. Hint: use the parameter [val_size=0.2] first <return>')
             return None
-        ax = None
 
         title = 'Results on independent validation set'
         if ('_clf' in self.method) and not ('_multi' in self.method):
@@ -996,6 +1010,10 @@ class hgboost:
             Figure axis.
 
         """
+        if ('ensemble' in self.method):
+            if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
+            return None, None
+
         top_n = np.minimum(top_n, self.results['summary'].shape[0])
         # getcolors = colourmap.generate(top_n, cmap='Reds_r')
         ascending = False if self.greater_is_better else True
@@ -1118,10 +1136,13 @@ class hgboost:
             Figure axis.
 
         """
-        if not hasattr(self, 'model'):
-            print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
-            return None
         ax1, ax2 = None, None
+        if ('ensemble' in self.method):
+            if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
+            return None, None
+        if (not hasattr(self, 'model')):
+            print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
+            return None, None
 
         if hasattr(self.model, 'evals_result'):
             fig, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
