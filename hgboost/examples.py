@@ -53,8 +53,6 @@ y_pred, y_proba = hgb_cat.predict(X)
 y_pred, y_proba = hgb_light.predict(X)
 
 # %% ENSEMBLE
-# from sklearn.ensemble import VotingClassifier
-# from sklearn.model_selection import cross_val_score
 hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
 
 # Import data
@@ -63,25 +61,16 @@ y = df['Survived'].values
 del df['Survived']
 X = hgb.preprocessing(df, verbose=0)
 
-# hgbX = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
-# hgbX.xgboost(X, y, pos_label=1)
-
-# hgbC = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
-# hgbC.catboost(X, y, pos_label=1)
-
-# hgbL = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
-# hgbL.lightboost(X, y, pos_label=1)
-
-
 results = hgb.ensemble(X, y, pos_label=1)
 
+# use the predictor
+y_pred, y_proba = hgb.predict(X)
 
-# Make voting classifier
-# hgbe = VotingClassifier([('xgboost', hgbX.model), ('catboost', hgbC.model), ('lightboost', hgbL.model)], voting='soft')
-# hgbe.fit(X, y)
-# hgbe.predict(X)
-# # Cross validation
-# cross_val_score(hgbe, X, y).mean()
+hgb.plot_params()
+hgb.plot()
+hgb.treeplot()
+hgb.plot_validation()
+hgb.plot_cv()
 
 # %% HYPEROPTIMIZED MULTI-XGBOOST
 hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
