@@ -382,6 +382,9 @@ It can be seen from the results that the ensemble classifier performs superior c
     # use the predictor
     y_pred, y_proba = hgb.predict(X)
 
+    # Plot
+    hgb.plot_validation()
+
 
 Ensemble Regression
 -------------------------
@@ -418,9 +421,8 @@ It can be seen from the results that the ensemble classifier performs superior c
     # Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
     y_pred, y_proba = hgb.predict(X)
 
-
-
-
+    # Plot
+    hgb.plot_validation()
 
 
 Plots
