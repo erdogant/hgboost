@@ -18,13 +18,13 @@ Description
 hgboost is a python package for hyperparameter optimization for xgboost, 
 catboost and lightboost using cross-validation, and evaluating the results
 on an independent validation set. hgboost can be applied for classification and regression tasks.
-The library consists the underneath parts:
+The hgboost approach contains the following parts:
     * Regression
     * Binary classification
     * multiclass classification
     * K-fold cross-validation
-    * Independent validation dataset
     * Hyperparameter searching
+    * Independent validation dataset
     * Feature importance
     * Early stopping
     * Plotting
