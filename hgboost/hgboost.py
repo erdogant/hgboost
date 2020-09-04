@@ -17,7 +17,7 @@ import pandas as pd
 import wget
 
 from sklearn.metrics import mean_squared_error, cohen_kappa_score, mean_absolute_error, log_loss, roc_auc_score, f1_score
-from sklearn.ensemble import VotingClassifier
+from sklearn.ensemble import VotingClassifier, VotingRegressor
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -377,7 +377,7 @@ class hgboost:
         # Return
         return self.results
 
-    def ensemble(self, X, y, pos_label=None, method=['xgb_clf', 'ctb_clf', 'lgb_clf'], eval_metric='auc', greater_is_better=True, voting='soft'):
+    def ensemble(self, X, y, pos_label=None, methods=['xgb_clf', 'ctb_clf', 'lgb_clf'], eval_metric=None, greater_is_better=None, voting='soft'):
         """Ensemble Classification with parameter hyperoptimization.
 
         Description
@@ -392,94 +392,154 @@ class hgboost:
             Response variable.
         pos_label : string/int.
             Fit the model on the pos_label that that is in [y].
-        method : String, (default : ['xgb_clf','ctb_clf','lgb_clf']).
-            The models to be used for the ensemble classifier.
-            * 'xgb_clf': XGboost
-            * 'ctb_clf': Catboost
-            * 'lgb_clf': Lightboost
+        methods : list of strings, (default : ['xgb_clf','ctb_clf','lgb_clf']).
+            The models included for the ensemble classifier or regressor. The clf and reg models can not be combined.
+            * ['xgb_clf','ctb_clf','lgb_clf']
+            * ['xgb_reg','ctb_reg','lgb_reg']
         eval_metric : str, (default : 'auc')
             Evaluation metric for the regressor of classification model.
             * 'auc' : area under ROC curve (two-class classification : default)
         greater_is_better : bool (default : True)
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
             * auc :  True -> two-class
+        voting : str, (default : 'soft')
+            Combining classifier using a voting scheme.
+            * 'hard' : using predicted classes.
+            * 'soft' : using the Probabilities.
 
         Returns
         -------
         results : dict
             * best_params: Best performing parameters.
             * summary: Summary of the models with the loss and other variables.
-            * trials: All model results.
-            * model: Best performing model.
+            * model: Ensemble of the best performing models.
             * val_results: Results on indepedent validation dataset.
         """
 
         import copy
-        if self.verbose>=3: print('[hgboost] >Start ensemble classification..')
         # Store parameters in object
+        self.results = {}
         self.voting = voting
-        self.method = 'ensemble_clf'
+        self.methods = methods
+
+        if np.all(list(map(lambda x: 'clf' in x, methods))):
+            if self.verbose>=3: print('[hgboost] >Create ensemble classification model..')
+            self.method = 'ensemble_clf'
+        elif np.all(list(map(lambda x: 'reg' in x, methods))):
+            if self.verbose>=3: print('[hgboost] >Create ensemble regression model..')
+            self.method = 'ensemble_reg'
+        else:
+            raise ValueError('[hgboost] >Error: The input [methods] must be of type "_clf" or "_reg" but can not be combined.')
 
         # Check input data
         X, y, self.pos_label = _check_input(X, y, pos_label, self.method, verbose=self.verbose)
         # Gather for method, the default metric and greater is better.
         self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
+        # Store the clean initialization in hgb
+        hgb = copy.copy(self)
+
         # Create independent validation set.
-        X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=self.val_size, random_state=self.random_state, shuffle=True, stratify=y)
+        if self.method == 'ensemble_clf':
+            X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=self.val_size, random_state=self.random_state, shuffle=True, stratify=y)
+        else:
+            X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=self.val_size, random_state=self.random_state, shuffle=True)
 
-        # Setup xgboost model
+        # Hyperparameter optimization for boosting models
         models = []
-        if np.any(np.isin(method, 'xgb_clf')):
-            hgbX = copy.copy(self)
-            hgbX.method = 'xgb_clf'
-            hgbX._classification(X_train, y_train, eval_metric, greater_is_better, 'default')
-            hgbX.results['summary']['method'] = 'xgb_clf'
-            models.append(('xgboost', hgbX.model))
+        for method in methods:
+            # Make copy of clean init
+            hgbM = copy.copy(hgb)
+            hgbM.method = method
+            hgbM._classification(X_train, y_train, eval_metric, greater_is_better, 'default')
+            # Store
+            models.append((method, copy.copy(hgbM.model)))
+            self.results[method] = {}
+            self.results[method]['model'] = copy.copy(hgbM)
 
-        # Setup catboost model
-        if np.any(np.isin(method, 'ctb_clf')):
-            hgbC = copy.copy(self)
-            hgbC.method = 'ctb_clf'
-            hgbC._classification(X_train, y_train, eval_metric, greater_is_better, 'default')
-            hgbC.results['summary']['method']= 'ctb_clf'
-            models.append(('catboost', hgbC.model))
+        # # Setup xgboost model
+        # models = []
+        # if np.any(np.isin(method, 'xgb_clf')):
+        #     hgbX = copy.copy(self)
+        #     hgbX.method = 'xgb_clf'
+        #     hgbX._classification(X_train, y_train, eval_metric, greater_is_better, 'default')
+        #     hgbX.results['summary']['method'] = 'xgb_clf'
+        #     models.append(('xgboost', hgbX.model))
+        #     self.results['xgb_clf'] = {}
+        #     self.results['xgb_clf']['model'] = hgbX.model
 
-        # Setup lightboost model
-        if np.any(np.isin(method, 'lgb_clf')):
-            hgbL = copy.copy(self)
-            hgbL.method = 'lgb_clf'
-            hgbL._classification(X_train, y_train, eval_metric, greater_is_better, 'default')
-            hgbL.results['summary']['method'] = 'lgb_clf'
-            models.append(('lightboost', hgbL.model))
+        # # Setup catboost model
+        # if np.any(np.isin(method, 'ctb_clf')):
+        #     hgbC = copy.copy(self)
+        #     hgbC.method = 'ctb_clf'
+        #     hgbC._classification(X_train, y_train, eval_metric, greater_is_better, 'default')
+        #     hgbC.results['summary']['method']= 'ctb_clf'
+        #     models.append(('catboost', hgbC.model))
+        #     self.results['ctb_clf'] = {}
+        #     self.results['ctb_clf']['model'] = hgbC.model
 
-        # Create the ensemble classifier
-        if self.verbose>=3: print('[hgboost] >Fit ensemble classifier with [%s] voting..' %(self.voting))
-        model = VotingClassifier(models, voting=voting)
-        model.fit(X, y==pos_label)
+        # # Setup lightboost model
+        # if np.any(np.isin(method, 'lgb_clf')):
+        #     hgbL = copy.copy(self)
+        #     hgbL.method = 'lgb_clf'
+        #     hgbL._classification(X_train, y_train, eval_metric, greater_is_better, 'default')
+        #     hgbL.results['summary']['method'] = 'lgb_clf'
+        #     models.append(('lightboost', hgbL.model))
+        #     self.results['lgb_clf'] = {}
+        #     self.results['lgb_clf']['model'] = hgbL.model
+
+        # Create the ensemble model
+        if self.verbose>=3: print('[hgboost] >Fit ensemble model with [%s] voting..' %(self.voting))
+        if self.method == 'ensemble_clf':
+            model = VotingClassifier(models, voting=voting, verbose=False)
+            model.fit(X, y==pos_label)
+        else:
+            model = VotingRegressor(models)
+            model.fit(X, y)
+        # Store ensemble model
         self.model = model
 
-        # Validation error
-        val_results = None
-        if self.val_size is not None:
-            if self.verbose>=3: print('[hgboost] >Evalute [ensemble] model on independent validation dataset (%.0f samples, %.2g%%).' %(len(y_val), self.val_size * 100))
-            # Evaluate results on the same validation set
-            val_score, val_results = self._eval(X_val, y_val, model, verbose=2)
-            if self.verbose>=3: print('[hgboost] >[Ensemble]   [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score['loss']))
-            # Other methods
-            if np.any(np.isin(method, 'xgb_clf')):
-                val_score_X, _ = self._eval(X_val, y_val, hgbX.model, verbose=2)
-                if self.verbose>=3: print('[hgboost] >[XGboost]    [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_X['loss']))
-            if np.any(np.isin(method, 'ctb_clf')):
-                val_score_C, _ = self._eval(X_val, y_val, hgbC.model, verbose=2)
-                if self.verbose>=3: print('[hgboost] >[Catboost]   [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_C['loss']))
-            if np.any(np.isin(method, 'lgb_clf')):
-                val_score_L, _ = self._eval(X_val, y_val, hgbL.model, verbose=2)
-                if self.verbose>=3: print('[hgboost] >[Lightboost] [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_L['loss']))
+        # Validation error for the ensemble model
+        if self.verbose>=3: print('[hgboost] >Evalute [ensemble] model on independent validation dataset (%.0f samples, %.2g%%).' %(len(y_val), self.val_size * 100))
+        # Evaluate results on the same validation set
+        val_score, val_results = self._eval(X_val, y_val, model, verbose=2)
+        if self.verbose>=3: print('[hgboost] >[Ensemble] [%s]: %.4g on independent validation dataset' %(self.eval_metric, val_score['loss']))
 
-        self.results = {}
+        # Validate each of the independent methods to show differences in loss-scoring
+        if self.val_size is not None:
+            self.X_val = X_val
+            self.y_val = y_val
+            for method in methods:
+                # Evaluation
+                val_score_M, val_results_M = self._eval(X_val, y_val, self.results[method]['model'].model, verbose=2)
+                # Store
+                self.results[method]['loss'] = val_score_M['loss']
+                self.results[method]['val_results'] = val_results_M
+                if self.verbose>=3: print('[hgboost] >[%s]  [%s]: %.4g on independent validation dataset' %(method, self.eval_metric, val_score_M['loss']))
+
+        # # Validation error
+        # val_results = None
+        # if self.val_size is not None:
+        #     if self.verbose>=3: print('[hgboost] >Evalute [ensemble] model on independent validation dataset (%.0f samples, %.2g%%).' %(len(y_val), self.val_size * 100))
+        #     # Evaluate results on the same validation set
+        #     val_score, val_results = self._eval(X_val, y_val, model, verbose=2)
+        #     if self.verbose>=3: print('[hgboost] >[Ensemble]   [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score['loss']))
+        #     # Other methods
+        #     if np.any(np.isin(method, 'xgb_clf')):
+        #         val_score_X, val_results_X = self._eval(X_val, y_val, hgbX.model, verbose=2)
+        #         self.results['xgb_clf']['val_results'] = val_results_X
+        #         if self.verbose>=3: print('[hgboost] >[XGboost]    [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_X['loss']))
+        #     if np.any(np.isin(method, 'ctb_clf')):
+        #         val_score_C, val_results_C = self._eval(X_val, y_val, hgbC.model, verbose=2)
+        #         self.results['ctb_clf']['val_results'] = val_results_C
+        #         if self.verbose>=3: print('[hgboost] >[Catboost]   [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_C['loss']))
+        #     if np.any(np.isin(method, 'lgb_clf')):
+        #         val_score_L, val_results_L = self._eval(X_val, y_val, hgbL.model, verbose=2)
+        #         self.results['lgb_clf']['val_results'] = val_results_L
+        #         if self.verbose>=3: print('[hgboost] >[Lightboost] [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_L['loss']))
+
         self.results['val_results'] = val_results
         self.results['model'] = model
-        self.results['summary'] = pd.concat([hgbX.results['summary'], hgbC.results['summary'], hgbL.results['summary']])
+        # self.results['summary'] = pd.concat([hgbX.results['summary'], hgbC.results['summary'], hgbL.results['summary']])
 
         # Return
         return self.results
@@ -957,9 +1017,6 @@ class hgboost:
 
         """
         ax = None
-        if ('ensemble' in self.method):
-            if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
-            return None
         if not hasattr(self, 'model'):
             print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return None
@@ -1120,7 +1177,56 @@ class hgboost:
         if return_ax:
             return ax, ax2
 
-    def plot(self, ylim=None, figsize=(15, 10), return_ax=False):
+    # def plot_summary_ensemble(self, ylim, figsize, ax1, ax2):
+    #     # Get models
+    #     keys = np.array([*self.results.keys()])
+    #     if self.method=='ensemble_reg':
+    #         Iloc = list(map(lambda x: '_reg' in x, keys))
+    #     else:
+    #         Iloc = list(map(lambda x: '_clf' in x, keys))
+    #     methods = keys[Iloc]
+
+    #     for method in methods:
+    #         model = self.results[method]
+    #         ax1, ax2 = plot_summary(model, ylim=ylim, figsize=figsize, return_ax=True, method=method, ax1=ax1, ax2=ax2)
+
+
+    # def plot(self, ylim=None, figsize=(15, 10), return_ax=False):
+    #     """Plot the summary results.
+
+    #     Parameters
+    #     ----------
+    #     ylim : tuple
+    #         Set the y-limit. In case of auc it can be: (0.5, 1)
+    #     figsize: tuple, default (25,25)
+    #         Figure size, (height, width)
+
+    #     Returns
+    #     -------
+    #     ax : object
+    #         Figure axis.
+
+    #     """
+    #     ax1, ax2 = None, None
+    #     if (not hasattr(self, 'model')):
+    #         print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost, lightboost or ensemble <return>')
+    #         return ax1, ax2
+
+    #     if hasattr(self.model, 'val_result'):
+    #         _, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
+    #     else:
+    #         _, ax1 = plt.subplots(1, 1, figsize=figsize)
+
+    #     # Plot the ensemble or the other models
+    #     if ('ensemble' in self.method):
+    #         ax1, ax2 = self.plot_summary_ensemble(ylim, figsize, ax1, ax2)
+    #     else:
+    #         ax1, ax2 = plot_summary(self, ylim=ylim, figsize=figsize, return_ax=return_ax, ax1=ax1, ax2=ax2)
+
+    #     return ax1, ax2
+
+
+    def plot(self, ylim=None, figsize=(15, 10), return_ax=False, ax1=None, ax2=None):
         """Plot the summary results.
 
         Parameters
@@ -1136,7 +1242,6 @@ class hgboost:
             Figure axis.
 
         """
-        ax1, ax2 = None, None
         if ('ensemble' in self.method):
             if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
             return None, None
@@ -1144,10 +1249,11 @@ class hgboost:
             print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return None, None
 
-        if hasattr(self.model, 'evals_result'):
-            fig, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
-        else:
-            fig, ax1 = plt.subplots(1, 1, figsize=figsize)
+        if ax1 is None:
+            if hasattr(self.model, 'val_result'):
+                _, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
+            else:
+                _, ax1 = plt.subplots(1, 1, figsize=figsize)
 
         tmpdf = self.results['summary'].sort_values(by='tid', ascending=True)
 
@@ -1178,7 +1284,7 @@ class hgboost:
         ax1.legend()
         if ylim is not None: ax1.set_ylim(ylim)
 
-        if hasattr(self.model, 'evals_result'):
+        if hasattr(self.model, 'val_result'):
             eval_metric = [*self.model.evals_result()['validation_0'].keys()][0]
             ax2.plot([*self.model.evals_result()['validation_0'].values()][0], label='Train error')
             ax2.plot([*self.model.evals_result()['validation_1'].values()][0], label='Test error')
@@ -1190,7 +1296,81 @@ class hgboost:
         if return_ax:
             return ax1, ax2
 
+# %% Plot summary
+# def plot_summary(model, ylim=None, figsize=(15, 10), return_ax=False, method=None, ax1=None, ax2=None, verbose=3):
+#     """Plot the summary results.
 
+#     Parameters
+#     ----------
+#     ylim : tuple
+#         Set the y-limit. In case of auc it can be: (0.5, 1)
+#     figsize: tuple, default (25,25)
+#         Figure size, (height, width)
+
+#     Returns
+#     -------
+#     ax : object
+#         Figure axis.
+
+#     """
+
+#     if method is None:
+#         method = model.method
+
+#     if ('ensemble' in method):
+#         if verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
+#         return None, None
+#     if (not hasattr(model, 'model')):
+#         print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
+#         return None, None
+
+#     if ax1 is None:
+#         if hasattr(model, 'val_result'):
+#             _, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
+#         else:
+#             _, ax1 = plt.subplots(1, 1, figsize=figsize)
+
+#     tmpdf = model.results['summary'].sort_values(by='tid', ascending=True)
+
+#     # Plot results with testsize
+#     idx = np.where(tmpdf['best'].values)[0]
+#     ax1.hlines(tmpdf['loss'].iloc[idx], 0, tmpdf['loss'].shape[0], colors='g', linestyles='dashed', label='Best (wihtout cv)')
+#     ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss'].iloc[idx], colors='g', linestyles='dashed')
+#     best_loss = tmpdf['loss'].iloc[idx]
+#     title = ('%s (%s: %.3g)' %(method, model.eval_metric, best_loss))
+
+#     # Plot results with cv
+#     if model.cv is not None:
+#         ax1.errorbar(tmpdf['tid'], tmpdf['loss_mean'], tmpdf['loss_std'], marker='s', mfc='red', label=str(model.cv) + '-fold cv for top ' + str(model.top_cv_evals) + ' models')
+#         idx = np.where(tmpdf['best_cv'].values)[0]
+#         ax1.hlines(tmpdf['loss_mean'].iloc[idx], 0, tmpdf['loss_mean'].shape[0], colors='r', linestyles='dotted', label='Best (' + str(model.cv) + '-fold cv)')
+#         ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss_mean'].iloc[idx], colors='r', linestyles='dashed')
+#         best_loss = tmpdf['loss_mean'].iloc[idx]
+#         title = ('%s (%.0d-fold cv mean %s: %.3g)' %(method, model.cv, model.eval_metric, best_loss))
+#         ax1.set_xlabel('Model number')
+
+#     # Plot all other evalution results on the single test-set
+#     ax1.scatter(tmpdf['tid'].values, tmpdf['loss'].values, s=10, label='All models')
+
+#     # Set labels
+#     ax1.set_title(title)
+#     ax1.set_ylabel(model.eval_metric)
+#     ax1.grid(True)
+#     ax1.legend()
+#     if ylim is not None: ax1.set_ylim(ylim)
+
+#     if hasattr(model.model, 'val_result'):
+#         eval_metric = [*model.model.evals_result()['validation_0'].keys()][0]
+#         ax2.plot([*model.model.evals_result()['validation_0'].values()][0], label='Train error')
+#         ax2.plot([*model.model.evals_result()['validation_1'].values()][0], label='Test error')
+#         ax2.set_ylabel(eval_metric)
+#         ax2.set_title(method)
+#         ax2.grid(True)
+#         ax2.legend()
+
+#     if return_ax:
+#         return ax1, ax2
+    
 # %% Import example dataset from github.
 def import_example(data='titanic', url=None, sep=',', verbose=3):
     """Import example dataset from github source.
