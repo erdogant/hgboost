@@ -259,6 +259,12 @@ Please cite hgboost in your publications if this is useful for your research. He
 }
 ```
 
+**References**
+    * http://hyperopt.github.io/hyperopt/
+    * https://github.com/dmlc/xgboost
+    * https://github.com/microsoft/LightGBM
+    * https://github.com/catboost/catboost
+    
 **Maintainers**
 * Erdogan Taskesen, github: [erdogant](https://github.com/erdogant)
 
