@@ -164,7 +164,7 @@ hgb.plot_validation()
 
 <p align="center">
   <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_1.png" width="600" />
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_2.png" width="600" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_2.png" width="400" />
   <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_3.png" width="600" />
 </p>
 
@@ -242,7 +242,7 @@ hgb.plot_validation()
 
 <p align="center">
   <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_ensemble_clf_1.png" width="600" />
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_ensemble_clf_2.png" width="600" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_ensemble_clf_2.png" width="400" />
   <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_ensemble_clf_3.png" width="600" />
 </p>
 
@@ -260,6 +260,7 @@ Please cite hgboost in your publications if this is useful for your research. He
 ```
 
 **References**
+
     * http://hyperopt.github.io/hyperopt/
     * https://github.com/dmlc/xgboost
     * https://github.com/microsoft/LightGBM
