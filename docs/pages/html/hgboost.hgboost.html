@@ -103,7 +103,9 @@
 <p class="caption"><span class="caption-text">Examples</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Examples.html">Classification Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html#multi-classification-examples">Multi-classification Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Examples.html#regression-examples">Regression Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html#ensemble-examples">Ensemble Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Examples.html#plots">Plots</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Code Documentation</span></p>
@@ -181,7 +183,7 @@
 <p>Contributors: <a class="reference external" href="https://github.com/erdogant/hgboost">https://github.com/erdogant/hgboost</a></p>
 <dl class="py class">
 <dt id="hgboost.hgboost.hgboost">
-<em class="property">class </em><code class="sig-prename descclassname">hgboost.hgboost.</code><code class="sig-name descname">hgboost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">max_eval</span><span class="o">=</span><span class="default_value">250</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">cv</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">test_size</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">val_size</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">top_cv_evals</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">3</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hgboost.hgboost.hgboost" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">hgboost.hgboost.</code><code class="sig-name descname">hgboost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">max_eval</span><span class="o">=</span><span class="default_value">250</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">cv</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">test_size</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">val_size</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">top_cv_evals</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">3</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hgboost.hgboost.hgboost" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a class hgboost that is instantiated with the desired method.</p>
 <dl class="py method">
 <dt id="hgboost.hgboost.hgboost.catboost">
@@ -263,6 +265,45 @@
 <dt id="hgboost.hgboost.hgboost.ctb_reg">
 <code class="sig-name descname">ctb_reg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">space</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hgboost.hgboost.hgboost.ctb_reg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="hgboost.hgboost.hgboost.ensemble">
+<code class="sig-name descname">ensemble</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">pos_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">methods</span><span class="o">=</span><span class="default_value">['xgb_clf', 'ctb_clf', 'lgb_clf']</span></em>, <em class="sig-param"><span class="n">eval_metric</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">greater_is_better</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">voting</span><span class="o">=</span><span class="default_value">'soft'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hgboost.hgboost.hgboost.ensemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensemble Classification with parameter hyperoptimization.</p>
+<p>Fit best model for xgboost, catboost and lightboost, and then combine the individual models to a new one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Input dataset.</p></li>
+<li><p><strong>y</strong> (<em>array-like</em>) – Response variable.</p></li>
+<li><p><strong>pos_label</strong> (<em>string/int.</em>) – Fit the model on the pos_label that that is in [y].</p></li>
+<li><p><strong>methods</strong> (<em>list of strings</em><em>, </em><em>(</em><em>default :</em><em> [</em><em>'xgb_clf'</em><em>,</em><em>'ctb_clf'</em><em>,</em><em>'lgb_clf'</em><em>]</em><em>)</em><em></em>) – The models included for the ensemble classifier or regressor. The clf and reg models can not be combined.
+* [‘xgb_clf’,’ctb_clf’,’lgb_clf’]
+* [‘xgb_reg’,’ctb_reg’,’lgb_reg’]</p></li>
+<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'auc'</em><em>)</em>) – Evaluation metric for the regressor of classification model.
+* ‘auc’ : area under ROC curve (two-class classification : default)</p></li>
+<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : True</em><em>)</em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
+* auc :  True -&gt; two-class</p></li>
+<li><p><strong>voting</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'soft'</em><em>)</em>) – Combining classifier using a voting scheme.
+* ‘hard’ : using predicted classes.
+* ‘soft’ : using the Probabilities.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><strong>results</strong> –</p>
+<ul class="simple">
+<li><p>best_params: Best performing parameters.</p></li>
+<li><p>summary: Summary of the models with the loss and other variables.</p></li>
+<li><p>model: Ensemble of the best performing models.</p></li>
+<li><p>val_results: Results on indepedent validation dataset.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hgboost.hgboost.hgboost.import_example">
@@ -365,7 +406,7 @@
 
 <dl class="py method">
 <dt id="hgboost.hgboost.hgboost.plot">
-<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ylim</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">15, 10</span></em>, <em class="sig-param"><span class="n">return_ax</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hgboost.hgboost.hgboost.plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ylim</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">15, 10</span></em>, <em class="sig-param"><span class="n">return_ax</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ax1</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ax2</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hgboost.hgboost.hgboost.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the summary results.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -524,7 +565,7 @@ Green will depic the best detected parameter and red demonstrates the top n para
 <dl class="py method">
 <dt id="hgboost.hgboost.hgboost.xgboost">
 <code class="sig-name descname">xgboost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">pos_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'xgb_clf'</span></em>, <em class="sig-param"><span class="n">eval_metric</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">greater_is_better</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">'default'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hgboost.hgboost.hgboost.xgboost" title="Permalink to this definition">¶</a></dt>
-<dd><p>Catboost Classification with parameter hyperoptimization.</p>
+<dd><p>Xgboost Classification with parameter hyperoptimization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

@@ -105,15 +105,23 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Classification Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#xgboost-two-class">xgboost two-class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#xgboost-multi-class">xgboost multi-class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#catboost">catboost</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#lightboost">lightboost</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#multi-classification-examples">Multi-classification Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#xgboost-multi-class">xgboost multi-class</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#regression-examples">Regression Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#xgboost-reg">xgboost_reg</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#lightboost-reg">lightboost_reg</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#catboost-reg">catboost_reg</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#ensemble-examples">Ensemble Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ensemble-classification">Ensemble Classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ensemble-regression">Ensemble Regression</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#plots">Plots</a><ul>
@@ -240,50 +248,6 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="xgboost-multi-class">
-<h2>xgboost multi-class<a class="headerlink" href="#xgboost-multi-class" title="Permalink to this headline">¶</a></h2>
-<p>Function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.xgboost" title="hgboost.hgboost.hgboost.xgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost()</span></code></a></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
-
-<span class="c1"># Initialize</span>
-<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-
-<span class="c1"># Load example data set</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">import_example</span><span class="p">()</span>
-<span class="c1"># Prepare data for classification</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Parch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="n">y</span><span class="p">[</span><span class="n">y</span><span class="o">&gt;=</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="mi">3</span>
-<span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Parch&#39;</span><span class="p">]</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-<span class="c1"># Fit best model with desired evaluation metric:</span>
-<span class="n">results</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">xgboost</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;xgb_clf_multi&#39;</span><span class="p">,</span> <span class="n">eval_metric</span><span class="o">=</span><span class="s1">&#39;kappa&#39;</span><span class="p">)</span>
-<span class="c1"># [hgboost] &gt;Start hgboost classification..</span>
-<span class="c1"># [hgboost] &gt;Collecting xgb_clf parameters.</span>
-<span class="c1"># [hgboost] &gt;Number of variables in search space is [10], loss function: [kappa].</span>
-<span class="c1"># [hgboost] &gt;method: xgb_clf_multi</span>
-<span class="c1"># [hgboost] &gt;eval_metric: kappa</span>
-<span class="c1"># [hgboost] &gt;greater_is_better: True</span>
-<span class="c1"># [hgboost] &gt;Total datset: (891, 204)</span>
-<span class="c1"># [hgboost] &gt;Hyperparameter optimization..</span>
-
-<span class="c1"># Plot the parameter space</span>
-<span class="n">hgb</span><span class="o">.</span><span class="n">plot_params</span><span class="p">()</span>
-<span class="c1"># Plot the summary results</span>
-<span class="n">hgb</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-<span class="c1"># Plot the best performing tree</span>
-<span class="n">hgb</span><span class="o">.</span><span class="n">treeplot</span><span class="p">()</span>
-<span class="c1"># Plot results on the validation set</span>
-<span class="n">hgb</span><span class="o">.</span><span class="n">plot_validation</span><span class="p">()</span>
-<span class="c1"># Plot results on the cross-validation</span>
-<span class="n">hgb</span><span class="o">.</span><span class="n">plot_cv</span><span class="p">()</span>
-
-<span class="c1"># Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)</span>
-<span class="n">y_pred</span><span class="p">,</span> <span class="n">y_proba</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 <div class="section" id="catboost">
 <h2>catboost<a class="headerlink" href="#catboost" title="Permalink to this headline">¶</a></h2>
 <p>Function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.catboost" title="hgboost.hgboost.hgboost.catboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.catboost()</span></code></a></p>
@@ -350,6 +314,53 @@
 <span class="c1"># [hgboost] &gt;Number of variables in search space is [10], loss function: [auc].</span>
 <span class="c1"># [hgboost] &gt;method: lgb_clf</span>
 <span class="c1"># [hgboost] &gt;eval_metric: auc</span>
+<span class="c1"># [hgboost] &gt;greater_is_better: True</span>
+<span class="c1"># [hgboost] &gt;Total datset: (891, 204)</span>
+<span class="c1"># [hgboost] &gt;Hyperparameter optimization..</span>
+
+<span class="c1"># Plot the parameter space</span>
+<span class="n">hgb</span><span class="o">.</span><span class="n">plot_params</span><span class="p">()</span>
+<span class="c1"># Plot the summary results</span>
+<span class="n">hgb</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="c1"># Plot the best performing tree</span>
+<span class="n">hgb</span><span class="o">.</span><span class="n">treeplot</span><span class="p">()</span>
+<span class="c1"># Plot results on the validation set</span>
+<span class="n">hgb</span><span class="o">.</span><span class="n">plot_validation</span><span class="p">()</span>
+<span class="c1"># Plot results on the cross-validation</span>
+<span class="n">hgb</span><span class="o">.</span><span class="n">plot_cv</span><span class="p">()</span>
+
+<span class="c1"># Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)</span>
+<span class="n">y_pred</span><span class="p">,</span> <span class="n">y_proba</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="multi-classification-examples">
+<h1>Multi-classification Examples<a class="headerlink" href="#multi-classification-examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="xgboost-multi-class">
+<h2>xgboost multi-class<a class="headerlink" href="#xgboost-multi-class" title="Permalink to this headline">¶</a></h2>
+<p>Function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.xgboost" title="hgboost.hgboost.hgboost.xgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost()</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
+<span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
+
+<span class="c1"># Initialize</span>
+<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># Load example data set</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">import_example</span><span class="p">()</span>
+<span class="c1"># Prepare data for classification</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Parch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">y</span><span class="p">[</span><span class="n">y</span><span class="o">&gt;=</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="mi">3</span>
+<span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Parch&#39;</span><span class="p">]</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Fit best model with desired evaluation metric:</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">xgboost</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;xgb_clf_multi&#39;</span><span class="p">,</span> <span class="n">eval_metric</span><span class="o">=</span><span class="s1">&#39;kappa&#39;</span><span class="p">)</span>
+<span class="c1"># [hgboost] &gt;Start hgboost classification..</span>
+<span class="c1"># [hgboost] &gt;Collecting xgb_clf parameters</span>
+<span class="c1"># [hgboost] &gt;Number of variables in search space is [10], loss function: [kappa]</span>
+<span class="c1"># [hgboost] &gt;method: xgb_clf_multi</span>
+<span class="c1"># [hgboost] &gt;eval_metric: kappa</span>
 <span class="c1"># [hgboost] &gt;greater_is_better: True</span>
 <span class="c1"># [hgboost] &gt;Total datset: (891, 204)</span>
 <span class="c1"># [hgboost] &gt;Hyperparameter optimization..</span>
@@ -502,6 +513,70 @@
 <span class="n">hgb</span><span class="o">.</span><span class="n">plot_validation</span><span class="p">()</span>
 <span class="c1"># Plot results on the cross-validation</span>
 <span class="n">hgb</span><span class="o">.</span><span class="n">plot_cv</span><span class="p">()</span>
+
+<span class="c1"># Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)</span>
+<span class="n">y_pred</span><span class="p">,</span> <span class="n">y_proba</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="ensemble-examples">
+<h1>Ensemble Examples<a class="headerlink" href="#ensemble-examples" title="Permalink to this headline">¶</a></h1>
+<p>An ensemble is that each of the fitted models, such as xgboost, lightboost and catboost is even further combined into one function.
+The results are usually superior compared to single models. However, the model complexity increases and training time too.
+An ensemble can be created for both classification and the regression models.
+The function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.ensemble" title="hgboost.hgboost.hgboost.ensemble"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.ensemble()</span></code></a></p>
+<div class="section" id="ensemble-classification">
+<h2>Ensemble Classification<a class="headerlink" href="#ensemble-classification" title="Permalink to this headline">¶</a></h2>
+<p>It can be seen from the results that the ensemble classifier performs superior compared to all indiviudal models.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
+<span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
+
+<span class="c1"># Initialize</span>
+<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># Import data</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">import_example</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Survived&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Survived&#39;</span><span class="p">]</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Fit ensemble model using the three boosting methods. By default these are readily set.</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">ensemble</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># use the predictor</span>
+<span class="n">y_pred</span><span class="p">,</span> <span class="n">y_proba</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="ensemble-regression">
+<h2>Ensemble Regression<a class="headerlink" href="#ensemble-regression" title="Permalink to this headline">¶</a></h2>
+<p>It can be seen from the results that the ensemble classifier performs superior compared to all indiviudal models.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
+<span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
+
+<span class="c1"># Initialize</span>
+<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># Load example data set</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">import_example</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span>
+<span class="n">I</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">I</span><span class="p">,:]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">I</span><span class="p">]</span>
+
+<span class="c1"># Fit ensemble model using the three boosting methods:</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">ensemble</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;xgb_reg&#39;</span><span class="p">,</span><span class="s1">&#39;ctb_reg&#39;</span><span class="p">,</span><span class="s1">&#39;lgb_reg&#39;</span><span class="p">])</span>
+<span class="c1"># [hgboost] &gt;Create ensemble regression model..</span>
+<span class="c1"># [hgboost] &gt;Collecting ctb_reg parameters.</span>
+<span class="c1"># [hgboost] &gt;...</span>
+<span class="c1"># [hgboost] &gt;Evalute [ensemble] model on independent validation dataset (143 samples, 20%).</span>
+<span class="c1"># [hgboost] &gt;[Ensemble] [rmse]: 64.62 on independent validation dataset</span>
+<span class="c1"># [hgboost] &gt;[xgb_reg]  [rmse]: 172.2 on independent validation dataset</span>
+<span class="c1"># [hgboost] &gt;[ctb_reg]  [rmse]: 183 on independent validation dataset</span>
+<span class="c1"># [hgboost] &gt;[lgb_reg]  [rmse]: 205.9 on independent validation dataset</span>
 
 <span class="c1"># Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)</span>
 <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_proba</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>

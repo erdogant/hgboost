@@ -32,7 +32,7 @@ Results
     ``hgboost`` is a python package for hyperparameter optimization for xgboost, catboost and lightboost using cross-validation, and evaluating the results on an independent validation set.
     There are many implementations of gradient boosting, some efficently uses the GPU, whereas others have specific interfaces.
     For this library ``hgboost``, we incorporated the *eXtreme Gradient Boosting* ``xgboost`` [2], *Light Gradient Boosting Machine* ``LightGBM`` [3],
-    and *Category Gradient Boosting* ``catboost`` [4].
+    and *Category Gradient Boosting* ``catboost`` [4]. We also created the option to learn an ``ensemble`` model.
 
     
 Schematic overview

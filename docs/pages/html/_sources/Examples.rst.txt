@@ -51,54 +51,6 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
     y_pred, y_proba = hgb.predict(X)
 
 
-
-xgboost multi-class
----------------------
-
-Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
-
-.. code:: python
-
-    # Import library
-    from hgboost import hgboost
-    
-    # Initialize
-    hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
-
-    # Load example data set    
-    df = hgb.import_example()
-    # Prepare data for classification
-    y = df['Parch'].values
-    y[y>=3]=3
-    del df['Parch']
-    X = hgb.preprocessing(df, verbose=0)
-
-    # Fit best model with desired evaluation metric:
-    results = hgb.xgboost(X, y, method='xgb_clf_multi', eval_metric='kappa')
-    # [hgboost] >Start hgboost classification..
-    # [hgboost] >Collecting xgb_clf parameters.
-    # [hgboost] >Number of variables in search space is [10], loss function: [kappa].
-    # [hgboost] >method: xgb_clf_multi
-    # [hgboost] >eval_metric: kappa
-    # [hgboost] >greater_is_better: True
-    # [hgboost] >Total datset: (891, 204) 
-    # [hgboost] >Hyperparameter optimization..
-
-    # Plot the parameter space
-    hgb.plot_params()
-    # Plot the summary results
-    hgb.plot()
-    # Plot the best performing tree
-    hgb.treeplot()
-    # Plot results on the validation set
-    hgb.plot_validation()
-    # Plot results on the cross-validation
-    hgb.plot_cv()
-
-    # Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
-    y_pred, y_proba = hgb.predict(X)
-
-
 catboost
 -------------
 
@@ -174,6 +126,56 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.lightboo
     # [hgboost] >eval_metric: auc
     # [hgboost] >greater_is_better: True
     # [hgboost] >Total datset: (891, 204) 
+    # [hgboost] >Hyperparameter optimization..
+
+    # Plot the parameter space
+    hgb.plot_params()
+    # Plot the summary results
+    hgb.plot()
+    # Plot the best performing tree
+    hgb.treeplot()
+    # Plot results on the validation set
+    hgb.plot_validation()
+    # Plot results on the cross-validation
+    hgb.plot_cv()
+
+    # Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
+    y_pred, y_proba = hgb.predict(X)
+
+
+Multi-classification Examples
+''''''''''''''''''''''''''''''
+
+xgboost multi-class
+---------------------
+
+Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
+
+.. code:: python
+
+    # Import library
+    from hgboost import hgboost
+    
+    # Initialize
+    hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+
+    # Load example data set    
+    df = hgb.import_example()
+    # Prepare data for classification
+    y = df['Parch'].values
+    y[y>=3]=3
+    del df['Parch']
+    X = hgb.preprocessing(df, verbose=0)
+
+    # Fit best model with desired evaluation metric:
+    results = hgb.xgboost(X, y, method='xgb_clf_multi', eval_metric='kappa')
+    # [hgboost] >Start hgboost classification..
+    # [hgboost] >Collecting xgb_clf parameters
+    # [hgboost] >Number of variables in search space is [10], loss function: [kappa]
+    # [hgboost] >method: xgb_clf_multi
+    # [hgboost] >eval_metric: kappa
+    # [hgboost] >greater_is_better: True
+    # [hgboost] >Total datset: (891, 204)
     # [hgboost] >Hyperparameter optimization..
 
     # Plot the parameter space
@@ -336,6 +338,82 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.catboost
 
     # Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
     y_pred, y_proba = hgb.predict(X)
+
+
+Ensemble Examples
+''''''''''''''''''''''''
+
+An ensemble is that each of the fitted models, such as xgboost, lightboost and catboost is even further combined into one function.
+The results are usually superior compared to single models. However, the model complexity increases and training time too.
+An ensemble can be created for both classification and the regression models.
+The function documentation can be found here :func:`hgboost.hgboost.hgboost.ensemble`
+
+
+Ensemble Classification
+-------------------------
+
+It can be seen from the results that the ensemble classifier performs superior compared to all indiviudal models.
+
+.. code:: python
+
+    # Import library
+    from hgboost import hgboost
+
+    # Initialize
+    hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+    
+    # Import data
+    df = hgb.import_example()
+    y = df['Survived'].values
+    del df['Survived']
+    X = hgb.preprocessing(df, verbose=0)
+    
+    # Fit ensemble model using the three boosting methods. By default these are readily set.
+    results = hgb.ensemble(X, y, pos_label=1)
+    
+    # use the predictor
+    y_pred, y_proba = hgb.predict(X)
+
+
+Ensemble Regression
+-------------------------
+
+It can be seen from the results that the ensemble classifier performs superior compared to all indiviudal models.
+
+.. code:: python
+
+    # Import library
+    from hgboost import hgboost
+    
+    # Initialize
+    hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None)
+
+    # Load example data set
+    df = hgb.import_example()
+    y = df['Age'].values
+    del df['Age']
+    I = ~np.isnan(y)
+    X = hgb.preprocessing(df, verbose=0)
+    X = X.loc[I,:]
+    y = y[I]
+
+    # Fit ensemble model using the three boosting methods:
+    results = hgb.ensemble(X, y, methods=['xgb_reg','ctb_reg','lgb_reg'])
+    # [hgboost] >Create ensemble regression model..
+    # [hgboost] >Collecting ctb_reg parameters.
+    # [hgboost] >...
+    # [hgboost] >Evalute [ensemble] model on independent validation dataset (143 samples, 20%).
+    # [hgboost] >[Ensemble] [rmse]: 64.62 on independent validation dataset
+    # [hgboost] >[xgb_reg]  [rmse]: 172.2 on independent validation dataset
+    # [hgboost] >[ctb_reg]  [rmse]: 183 on independent validation dataset
+    # [hgboost] >[lgb_reg]  [rmse]: 205.9 on independent validation dataset
+
+    # Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
+    y_pred, y_proba = hgb.predict(X)
+
+
+
+
 
 
 Plots

@@ -1129,20 +1129,6 @@ class hgboost:
         if return_ax:
             return ax, ax2
 
-    # def plot_summary_ensemble(self, ylim, figsize, ax1, ax2):
-    #     # Get models
-    #     keys = np.array([*self.results.keys()])
-    #     if self.method=='ensemble_reg':
-    #         Iloc = list(map(lambda x: '_reg' in x, keys))
-    #     else:
-    #         Iloc = list(map(lambda x: '_clf' in x, keys))
-    #     methods = keys[Iloc]
-
-    #     for method in methods:
-    #         model = self.results[method]
-    #         ax1, ax2 = plot_summary(model, ylim=ylim, figsize=figsize, return_ax=True, method=method, ax1=ax1, ax2=ax2)
-
-
     # def plot(self, ylim=None, figsize=(15, 10), return_ax=False):
     #     """Plot the summary results.
 
@@ -1178,7 +1164,21 @@ class hgboost:
     #     return ax1, ax2
 
 
-    def plot(self, ylim=None, figsize=(15, 10), return_ax=False, ax1=None, ax2=None):
+    def plot_ensemble(self, ylim, figsize, ax1, ax2):
+        # Get models
+        keys = np.array([*self.results.keys()])
+        if self.method=='ensemble_reg':
+            Iloc = list(map(lambda x: '_reg' in x, keys))
+        else:
+            Iloc = list(map(lambda x: '_clf' in x, keys))
+        methods = keys[Iloc]
+
+        for method in methods:
+            model = self.results[method]
+            # self.results['summary'] = pd.concat([hgbX.results['summary'], hgbC.results['summary'], hgbL.results['summary']])
+            # ax1, ax2 = plot_summary(model, ylim=ylim, figsize=figsize, return_ax=True, method=method, ax1=ax1, ax2=ax2)
+
+    def plot(self, ylim=None, figsize=(15, 10), return_ax=False):
         """Plot the summary results.
 
         Parameters
@@ -1194,12 +1194,14 @@ class hgboost:
             Figure axis.
 
         """
+        ax1, ax2 = None, None
         if ('ensemble' in self.method):
             if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
-            return None, None
+            self.plot_ensemble(ylim, figsize, ax1, ax2)
+            return ax1, ax2
         if (not hasattr(self, 'model')):
             print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
-            return None, None
+            return ax1, ax2
 
         if ax1 is None:
             if hasattr(self.model, 'val_result'):
