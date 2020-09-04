@@ -5,6 +5,7 @@ __pycache__/
 
 catboost_info/
 # docs/pages/
+old/
 
 # C extensions
 *.so
