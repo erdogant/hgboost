@@ -8,7 +8,7 @@
 
     Star it if you like it!
 
-``hgboost`` is short for Hyperoptimized Gradient Boosting and is a python package for hyperparameter optimization for xgboost, catboost and lightboost using cross-validation, and evaluating the results on an independent validation set.
+``hgboost`` is short for **Hyperoptimized Gradient Boosting** and is a python package for hyperparameter optimization for *xgboost*, *catboost* and *lightboost* using cross-validation, and evaluating the results on an independent validation set.
 ``hgboost`` can be applied for classification and regression tasks.
 
 ``hgboost`` is fun because:
@@ -17,13 +17,15 @@
     * 2. Determines the best scoring model(s) using k-fold cross validation.
     * 3. Evaluates best model on independent evaluation set.
     * 4. Fit model on entire input-data using the best model.
-    * 5. Return model, space and test/evaluation results.
-    * 6. Makes insightful plots.
+    * 5. Works for classification and regression
+    * 6. Creating an ensemble of all available methods is a one-liner.
+    * 7. Return model, space and test/evaluation results.
+    * 8. Makes insightful plots.
 
 **Documentation**
 
 * API Documentation: https://erdogant.github.io/hgboost/
-* Github: 
+* Github: https://github.com/erdogant/hgboost/
 
 **Schematic overview of hgboost**
 
@@ -257,17 +259,14 @@ Please cite hgboost in your publications if this is useful for your research. He
 }
 ```
 
-#### References
-* 
-   
-#### Maintainers
+**Maintainers**
 * Erdogan Taskesen, github: [erdogant](https://github.com/erdogant)
 
-#### Contribute
+**Contribute**
 * Contributions are welcome.
 
-#### Licence
+**Licence**
 See [LICENSE](LICENSE) for details.
 
-#### Coffee
+**Coffee**
 * This work is created and maintained in my free time. If you wish to buy me a <a href="https://erdogant.github.io/donate/?currency=USD&amount=5">Coffee</a> for this work, it is very appreciated.
