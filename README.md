@@ -186,7 +186,7 @@ y_pred, y_proba = hgb.predict(X)
 
 ```
 
-# CREATE ENSEMBLE MODEL FOR CLASSIFICATION
+### Create ensemble model for Classification
 
 ```python
 
@@ -207,7 +207,7 @@ y_pred, y_proba = hgb.predict(X)
 
 ```
 
-# CREATE ENSEMBLE MODEL FOR REGRESSION
+### Create ensemble model for Regression
 
 ```python
 
