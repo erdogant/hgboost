@@ -644,37 +644,37 @@ class hgboost:
         return out, eval_results
 
     def xgb_reg(self, space):
-        reg = xgb.XGBRegressor(**space['model_params'], n_jobs=self.n_jobs)
+        reg = xgb.XGBRegressor(**space['model_params'], n_jobs=self.n_jobs, verbosity=0)
         out, _ = self._train_model(reg, space)
         return out
 
     def lgb_reg(self, space):
-        reg = lgb.LGBMRegressor(**space['model_params'], n_jobs=self.n_jobs)
+        reg = lgb.LGBMRegressor(**space['model_params'], n_jobs=self.n_jobs, verbosity=0)
         out, _ = self._train_model(reg, space)
         return out
 
     def ctb_reg(self, space):
-        reg = ctb.CatBoostRegressor(**space['model_params'])
+        reg = ctb.CatBoostRegressor(**space['model_params'], verbosity=0)
         out, _ = self._train_model(reg, space)
         return out
 
     def xgb_clf(self, space):
-        clf = xgb.XGBClassifier(**space['model_params'], n_jobs=self.n_jobs)
+        clf = xgb.XGBClassifier(**space['model_params'], n_jobs=self.n_jobs, verbosity=0)
         out, _ = self._train_model(clf, space)
         return out
 
     def ctb_clf(self, space):
-        clf = ctb.CatBoostClassifier(**space['model_params'])
+        clf = ctb.CatBoostClassifier(**space['model_params'], verbosity=0)
         out, _ = self._train_model(clf, space)
         return out
 
     def lgb_clf(self, space):
-        clf = lgb.LGBMClassifier(**space['model_params'], n_jobs=self.n_jobs)
+        clf = lgb.LGBMClassifier(**space['model_params'], n_jobs=self.n_jobs, verbosity=0)
         out, _ = self._train_model(clf, space)
         return out
 
     def xgb_clf_multi(self, space):
-        clf = xgb.XGBClassifier(**space['model_params'], n_jobs=self.n_jobs)
+        clf = xgb.XGBClassifier(**space['model_params'], n_jobs=self.n_jobs, verbosity=0)
         out, _ = self._train_model(clf, space)
         return out
 
