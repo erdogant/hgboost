@@ -1,4 +1,4 @@
-"""hgboost: Hyperoptimization Gradient Boosting library.
+"""hgboost: Hyperoptimized Gradient Boosting library.
 
 Contributors: https://github.com/erdogant/hgboost
 """
