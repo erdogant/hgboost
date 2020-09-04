@@ -259,17 +259,14 @@ Please cite hgboost in your publications if this is useful for your research. He
 }
 ```
 
-#### References
-* 
-   
-#### Maintainers
+**Maintainers**
 * Erdogan Taskesen, github: [erdogant](https://github.com/erdogant)
 
-#### Contribute
+**Contribute**
 * Contributions are welcome.
 
-#### Licence
+**Licence**
 See [LICENSE](LICENSE) for details.
 
-#### Coffee
+**Coffee**
 * This work is created and maintained in my free time. If you wish to buy me a <a href="https://erdogant.github.io/donate/?currency=USD&amount=5">Coffee</a> for this work, it is very appreciated.
