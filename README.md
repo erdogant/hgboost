@@ -23,6 +23,7 @@
 **Documentation**
 
 * API Documentation: https://erdogant.github.io/hgboost/
+* Github: 
 
 **Schematic overview of hgboost**
 
@@ -185,6 +186,51 @@ y_pred, y_proba = hgb.predict(X)
 
 ```
 
+# CREATE ENSEMBLE MODEL FOR CLASSIFICATION
+
+```python
+
+from hgboost import hgboost
+
+hgb = hgboost(max_eval=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+
+# Import data
+df = hgb.import_example()
+y = df['Survived'].values
+del df['Survived']
+X = hgb.preprocessing(df, verbose=0)
+
+results = hgb.ensemble(X, y, pos_label=1)
+
+# use the predictor
+y_pred, y_proba = hgb.predict(X)
+
+```
+
+# CREATE ENSEMBLE MODEL FOR REGRESSION
+
+```python
+
+from hgboost import hgboost
+
+hgb = hgboost(max_eval=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+
+# Import data
+df = hgb.import_example()
+y = df['Age'].values
+del df['Age']
+I = ~np.isnan(y)
+X = hgb.preprocessing(df, verbose=0)
+X = X.loc[I,:]
+y = y[I]
+
+results = hgb.ensemble(X, y, methods=['xgb_reg','ctb_reg','lgb_reg'])
+
+# use the predictor
+y_pred, y_proba = hgb.predict(X)
+
+```
+
 
 #### Citation
 Please cite hgboost in your publications if this is useful for your research. Here is an example BibTeX entry:
@@ -192,7 +238,7 @@ Please cite hgboost in your publications if this is useful for your research. He
 @misc{erdogant2020hgboost,
   title={hgboost},
   author={Erdogan Taskesen},
-  year={2019},
+  year={2020},
   howpublished={\url{https://github.com/erdogant/hgboost}},
 }
 ```
