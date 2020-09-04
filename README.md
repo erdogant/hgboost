@@ -231,6 +231,20 @@ y_pred, y_proba = hgb.predict(X)
 
 ```
 
+```python
+
+# Plot the ensemble classification validation results
+hgb.plot_validation()
+
+```
+
+<p align="center">
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_ensemble_clf_1.png" width="600" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_ensemble_clf_2.png" width="600" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_ensemble_clf_3.png" width="600" />
+</p>
+
+
 
 #### Citation
 Please cite hgboost in your publications if this is useful for your research. Here is an example BibTeX entry:
