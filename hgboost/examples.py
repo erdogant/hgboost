@@ -106,7 +106,7 @@ y_pred, y_proba = hgb.predict(X)
 
 
 # %% ENSEMBLE CLASSIFIER
-hgb = hgboost(max_eval=2, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
 
 # Import data
 df = hgb.import_example()
@@ -119,11 +119,8 @@ results = hgb.ensemble(X, y, pos_label=1)
 # use the predictor
 y_pred, y_proba = hgb.predict(X)
 
-hgb.plot_params()
-hgb.plot()
-hgb.treeplot()
+# Plot
 hgb.plot_validation()
-hgb.plot_cv()
 
 # %% ENSEMBLE REGRESSION
 hgb = hgboost(max_eval=2, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
@@ -142,11 +139,8 @@ results = hgb.ensemble(X, y, methods=['xgb_reg','ctb_reg','lgb_reg'])
 # use the predictor
 y_pred, y_proba = hgb.predict(X)
 
-hgb.plot_params()
-hgb.plot()
-hgb.treeplot()
+# Plot
 hgb.plot_validation()
-hgb.plot_cv()
 
 # %% CLASSIFICATION TWO-CLASS #####
 from sklearn import datasets
