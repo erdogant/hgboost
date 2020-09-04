@@ -34,7 +34,7 @@ import time
 class hgboost:
     """Create a class hgboost that is instantiated with the desired method."""
 
-    def __init__(self, max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3):
+    def __init__(self, max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, n_jobs=-1, verbose=3):
         """Initialize hgboost with user-defined parameters.
 
         Parameters
@@ -53,6 +53,9 @@ class hgboost:
             Setup the validation set. This part is kept entirely seperate from the test-size.
         random_state : int, (default : None)
             Fix the random state for validation set and test set. Note that is not used for the crossvalidation.
+        n_jobs : int, (default : -1)
+            The number of jobs to run in parallel for fit. None means 1 unless in a joblib.parallel_backend context.
+            -1 means using all processors.
         verbose : int, (default : 3)
             Print progress to screen.
             0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE
@@ -81,6 +84,7 @@ class hgboost:
         self.algo=tpe.suggest
         self.cv = cv
         self.random_state = random_state
+        self.n_jobs = n_jobs
         self.verbose = verbose
 
     def _fit(self, X, y, pos_label=None):
@@ -456,50 +460,19 @@ class hgboost:
             self.results[method] = {}
             self.results[method]['model'] = copy.copy(hgbM)
 
-        # # Setup xgboost model
-        # models = []
-        # if np.any(np.isin(method, 'xgb_clf')):
-        #     hgbX = copy.copy(self)
-        #     hgbX.method = 'xgb_clf'
-        #     hgbX._classification(X_train, y_train, eval_metric, greater_is_better, 'default')
-        #     hgbX.results['summary']['method'] = 'xgb_clf'
-        #     models.append(('xgboost', hgbX.model))
-        #     self.results['xgb_clf'] = {}
-        #     self.results['xgb_clf']['model'] = hgbX.model
-
-        # # Setup catboost model
-        # if np.any(np.isin(method, 'ctb_clf')):
-        #     hgbC = copy.copy(self)
-        #     hgbC.method = 'ctb_clf'
-        #     hgbC._classification(X_train, y_train, eval_metric, greater_is_better, 'default')
-        #     hgbC.results['summary']['method']= 'ctb_clf'
-        #     models.append(('catboost', hgbC.model))
-        #     self.results['ctb_clf'] = {}
-        #     self.results['ctb_clf']['model'] = hgbC.model
-
-        # # Setup lightboost model
-        # if np.any(np.isin(method, 'lgb_clf')):
-        #     hgbL = copy.copy(self)
-        #     hgbL.method = 'lgb_clf'
-        #     hgbL._classification(X_train, y_train, eval_metric, greater_is_better, 'default')
-        #     hgbL.results['summary']['method'] = 'lgb_clf'
-        #     models.append(('lightboost', hgbL.model))
-        #     self.results['lgb_clf'] = {}
-        #     self.results['lgb_clf']['model'] = hgbL.model
-
         # Create the ensemble model
         if self.verbose>=3: print('[hgboost] >Fit ensemble model with [%s] voting..' %(self.voting))
         if self.method == 'ensemble_clf':
-            model = VotingClassifier(models, voting=voting, verbose=False)
+            model = VotingClassifier(models, voting=voting, n_jobs=self.n_jobs, verbose=False)
             model.fit(X, y==pos_label)
         else:
-            model = VotingRegressor(models)
+            model = VotingRegressor(models, n_jobs=self.n_jobs)
             model.fit(X, y)
         # Store ensemble model
         self.model = model
 
         # Validation error for the ensemble model
-        if self.verbose>=3: print('[hgboost] >Evalute [ensemble] model on independent validation dataset (%.0f samples, %.2g%%).' %(len(y_val), self.val_size * 100))
+        if self.verbose>=3: print('[hgboost] >Evalute [ensemble] model on independent validation dataset (%.0f samples, %.2g%%)' %(len(y_val), self.val_size * 100))
         # Evaluate results on the same validation set
         val_score, val_results = self._eval(X_val, y_val, model, verbose=2)
         if self.verbose>=3: print('[hgboost] >[Ensemble] [%s]: %.4g on independent validation dataset' %(self.eval_metric, val_score['loss']))
@@ -516,27 +489,7 @@ class hgboost:
                 self.results[method]['val_results'] = val_results_M
                 if self.verbose>=3: print('[hgboost] >[%s]  [%s]: %.4g on independent validation dataset' %(method, self.eval_metric, val_score_M['loss']))
 
-        # # Validation error
-        # val_results = None
-        # if self.val_size is not None:
-        #     if self.verbose>=3: print('[hgboost] >Evalute [ensemble] model on independent validation dataset (%.0f samples, %.2g%%).' %(len(y_val), self.val_size * 100))
-        #     # Evaluate results on the same validation set
-        #     val_score, val_results = self._eval(X_val, y_val, model, verbose=2)
-        #     if self.verbose>=3: print('[hgboost] >[Ensemble]   [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score['loss']))
-        #     # Other methods
-        #     if np.any(np.isin(method, 'xgb_clf')):
-        #         val_score_X, val_results_X = self._eval(X_val, y_val, hgbX.model, verbose=2)
-        #         self.results['xgb_clf']['val_results'] = val_results_X
-        #         if self.verbose>=3: print('[hgboost] >[XGboost]    [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_X['loss']))
-        #     if np.any(np.isin(method, 'ctb_clf')):
-        #         val_score_C, val_results_C = self._eval(X_val, y_val, hgbC.model, verbose=2)
-        #         self.results['ctb_clf']['val_results'] = val_results_C
-        #         if self.verbose>=3: print('[hgboost] >[Catboost]   [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_C['loss']))
-        #     if np.any(np.isin(method, 'lgb_clf')):
-        #         val_score_L, val_results_L = self._eval(X_val, y_val, hgbL.model, verbose=2)
-        #         self.results['lgb_clf']['val_results'] = val_results_L
-        #         if self.verbose>=3: print('[hgboost] >[Lightboost] [%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score_L['loss']))
-
+        # Store
         self.results['val_results'] = val_results
         self.results['model'] = model
         # self.results['summary'] = pd.concat([hgbX.results['summary'], hgbC.results['summary'], hgbL.results['summary']])
@@ -613,7 +566,7 @@ class hgboost:
         # Validation error
         val_results = None
         if self.val_size is not None:
-            if self.verbose>=3: print('[hgboost] >Evalute best [%s] model on independent validation dataset (%.0f samples, %.2g%%).' %(self.method, len(self.y_val), self.val_size * 100))
+            if self.verbose>=3: print('[hgboost] >Evalute best [%s] model on independent validation dataset (%.0f samples, %.2g%%)' %(self.method, len(self.y_val), self.val_size * 100))
             # Evaluate results
             val_score, val_results = self._eval(self.X_val, self.y_val, model, verbose=2)
             if self.verbose>=3: print('[hgboost] >[%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score['loss']))
@@ -683,7 +636,6 @@ class hgboost:
         eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)]
         # Make fit with stopping-rule to avoid overfitting. Directly perform evaluation with the eval_set.
         model.fit(self.X_train, self.y_train, eval_set=eval_set, **space['fit_params'])
-        # auc_mean = cross_val_score(model, self.X, self.y, cv=self.cv)
         # Evaluate results
         out, eval_results = self._eval(self.X_test, self.y_test, model, verbose=verbose)
         # Return
@@ -692,12 +644,12 @@ class hgboost:
         return out, eval_results
 
     def xgb_reg(self, space):
-        reg = xgb.XGBRegressor(**space['model_params'])
+        reg = xgb.XGBRegressor(**space['model_params'], n_jobs=self.n_jobs)
         out, _ = self._train_model(reg, space)
         return out
 
     def lgb_reg(self, space):
-        reg = lgb.LGBMRegressor(**space['model_params'])
+        reg = lgb.LGBMRegressor(**space['model_params'], n_jobs=self.n_jobs)
         out, _ = self._train_model(reg, space)
         return out
 
@@ -707,7 +659,7 @@ class hgboost:
         return out
 
     def xgb_clf(self, space):
-        clf = xgb.XGBClassifier(**space['model_params'])
+        clf = xgb.XGBClassifier(**space['model_params'], n_jobs=self.n_jobs)
         out, _ = self._train_model(clf, space)
         return out
 
@@ -717,12 +669,12 @@ class hgboost:
         return out
 
     def lgb_clf(self, space):
-        clf = lgb.LGBMClassifier(**space['model_params'])
+        clf = lgb.LGBMClassifier(**space['model_params'], n_jobs=self.n_jobs)
         out, _ = self._train_model(clf, space)
         return out
 
     def xgb_clf_multi(self, space):
-        clf = xgb.XGBClassifier(**space['model_params'])
+        clf = xgb.XGBClassifier(**space['model_params'], n_jobs=self.n_jobs)
         out, _ = self._train_model(clf, space)
         return out
 
@@ -838,7 +790,7 @@ class hgboost:
                 elif self.eval_metric=='f1':
                     loss = results[self.eval_metric]
                 elif self.eval_metric=='auc_cv':
-                    loss = np.mean(cross_val_score(model, self.X_train, self.y_train, cv=self.cv))
+                    loss = np.mean(cross_val_score(model, self.X_train, self.y_train, cv=self.cv, n_jobs=self.n_jobs))
                 else:
                     raise ValueError('[hgboost] >Error: [%s] is not a valid [eval_metric] for [%s].' %(self.eval_metric, self.method))
 
