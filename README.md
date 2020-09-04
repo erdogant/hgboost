@@ -26,6 +26,8 @@
 
 * API Documentation: https://erdogant.github.io/hgboost/
 * Github: https://github.com/erdogant/hgboost/
+* [Regression notebook](https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb)
+* [Classification notebook](https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb)
 
 **Schematic overview of hgboost**
 
