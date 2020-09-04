@@ -47,6 +47,13 @@ conda activate env_hgboost
 
 ```bash
 pip install hgboost
+
+```
+
+**Force to install latest version**
+
+```bash
+pip install -U hgboost
 ```
 
 ### Install from github-source
