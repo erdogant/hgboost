@@ -367,10 +367,18 @@ It can be seen from the results that the ensemble classifier performs superior c
     y = df['Survived'].values
     del df['Survived']
     X = hgb.preprocessing(df, verbose=0)
-    
+
     # Fit ensemble model using the three boosting methods. By default these are readily set.
     results = hgb.ensemble(X, y, pos_label=1)
-    
+    # [hgboost] >Create ensemble regression model..
+    # [hgboost] >...
+    # [hgboost] >Fit ensemble model with [soft] voting..
+    # [hgboost] >Evalute [ensemble] model on independent validation dataset (179 samples, 20%)
+    # [hgboost] >[Ensemble] [auc]: -0.9788 on independent validation dataset
+    # [hgboost] >[xgb_clf]  [auc]: -0.8434 on independent validation dataset
+    # [hgboost] >[ctb_clf]  [auc]: -0.8875 on independent validation dataset
+    # [hgboost] >[lgb_clf]  [auc]: -0.8816 on independent validation dataset
+
     # use the predictor
     y_pred, y_proba = hgb.predict(X)
 
@@ -400,7 +408,6 @@ It can be seen from the results that the ensemble classifier performs superior c
     # Fit ensemble model using the three boosting methods:
     results = hgb.ensemble(X, y, methods=['xgb_reg','ctb_reg','lgb_reg'])
     # [hgboost] >Create ensemble regression model..
-    # [hgboost] >Collecting ctb_reg parameters.
     # [hgboost] >...
     # [hgboost] >Evalute [ensemble] model on independent validation dataset (143 samples, 20%).
     # [hgboost] >[Ensemble] [rmse]: 64.62 on independent validation dataset

@@ -1163,7 +1163,6 @@ class hgboost:
 
     #     return ax1, ax2
 
-
     def plot_ensemble(self, ylim, figsize, ax1, ax2):
         # Get models
         keys = np.array([*self.results.keys()])

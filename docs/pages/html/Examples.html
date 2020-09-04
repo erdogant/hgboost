@@ -543,6 +543,14 @@ The function documentation can be found here <a class="reference internal" href=
 
 <span class="c1"># Fit ensemble model using the three boosting methods. By default these are readily set.</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">ensemble</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># [hgboost] &gt;Create ensemble regression model..</span>
+<span class="c1"># [hgboost] &gt;...</span>
+<span class="c1"># [hgboost] &gt;Fit ensemble model with [soft] voting..</span>
+<span class="c1"># [hgboost] &gt;Evalute [ensemble] model on independent validation dataset (179 samples, 20%)</span>
+<span class="c1"># [hgboost] &gt;[Ensemble] [auc]: -0.9788 on independent validation dataset</span>
+<span class="c1"># [hgboost] &gt;[xgb_clf]  [auc]: -0.8434 on independent validation dataset</span>
+<span class="c1"># [hgboost] &gt;[ctb_clf]  [auc]: -0.8875 on independent validation dataset</span>
+<span class="c1"># [hgboost] &gt;[lgb_clf]  [auc]: -0.8816 on independent validation dataset</span>
 
 <span class="c1"># use the predictor</span>
 <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_proba</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -570,7 +578,6 @@ The function documentation can be found here <a class="reference internal" href=
 <span class="c1"># Fit ensemble model using the three boosting methods:</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">ensemble</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;xgb_reg&#39;</span><span class="p">,</span><span class="s1">&#39;ctb_reg&#39;</span><span class="p">,</span><span class="s1">&#39;lgb_reg&#39;</span><span class="p">])</span>
 <span class="c1"># [hgboost] &gt;Create ensemble regression model..</span>
-<span class="c1"># [hgboost] &gt;Collecting ctb_reg parameters.</span>
 <span class="c1"># [hgboost] &gt;...</span>
 <span class="c1"># [hgboost] &gt;Evalute [ensemble] model on independent validation dataset (143 samples, 20%).</span>
 <span class="c1"># [hgboost] &gt;[Ensemble] [rmse]: 64.62 on independent validation dataset</span>
