@@ -10,8 +10,10 @@ hgboost's documentation!
     * 2. Determines the best scoring model(s) using k-fold cross validation.
     * 3. Evaluates best model on independent evaluation set.
     * 4. Fit model on entire input-data using the best model.
-    * 5. Return model, space and test/evaluation results.
-    * 6. Makes insightful plots.
+    * 5. Works for classification and regression
+    * 6. Creating an ensemble of all available methods is a one-liner.
+    * 7. Return model, space and test/evaluation results.
+    * 8. Makes insightful plots.
 
 
 Content
