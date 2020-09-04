@@ -654,7 +654,7 @@ class hgboost:
         return out
 
     def ctb_reg(self, space):
-        reg = ctb.CatBoostRegressor(**space['model_params'], verbosity=0)
+        reg = ctb.CatBoostRegressor(**space['model_params'])
         out, _ = self._train_model(reg, space)
         return out
 
@@ -664,7 +664,7 @@ class hgboost:
         return out
 
     def ctb_clf(self, space):
-        clf = ctb.CatBoostClassifier(**space['model_params'], verbosity=0)
+        clf = ctb.CatBoostClassifier(**space['model_params'])
         out, _ = self._train_model(clf, space)
         return out
 
