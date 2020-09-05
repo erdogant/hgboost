@@ -24,7 +24,7 @@ Aim
     The optimal set of parameters are determined by bayesian hyperoptimization using k-fold cross-validation approach on indepdendent train/testsets.
     ``hgboost`` can be applied for classification tasks, such as two-class or multi-class, and regression tasks using xgboost, catboost or lightboost.
 
-    The aim of the gradient boosting algorithm is to fit a boosted decision trees by minimizing an error gradient. However, there are manyThe aim of ``hgboost`` is too determine the most robust model by efficiently searching across the parameter space using
+    The aim of ``hgboost`` is to determine the most robust model by efficiently searching across the parameter space using
     **hyperoptimization** for which the loss is evaluated using by means of a train/test-set with k-fold cross-validation.
     In addition, the final optimized model is evaluated on an independent validation set.
     

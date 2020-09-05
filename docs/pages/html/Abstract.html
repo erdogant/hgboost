@@ -199,7 +199,7 @@ It is wise to carefully split your data into an independent evaluation set, a tr
 <dt>Aim</dt><dd><p>The aim of this library is to determine the most robust gradient boosting model model by evaluating on an indepdendent validation set.
 The optimal set of parameters are determined by bayesian hyperoptimization using k-fold cross-validation approach on indepdendent train/testsets.
 <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> can be applied for classification tasks, such as two-class or multi-class, and regression tasks using xgboost, catboost or lightboost.</p>
-<p>The aim of the gradient boosting algorithm is to fit a boosted decision trees by minimizing an error gradient. However, there are manyThe aim of <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> is too determine the most robust model by efficiently searching across the parameter space using
+<p>The aim of <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> is to determine the most robust model by efficiently searching across the parameter space using
 <strong>hyperoptimization</strong> for which the loss is evaluated using by means of a train/test-set with k-fold cross-validation.
 In addition, the final optimized model is evaluated on an independent validation set.</p>
 </dd>
