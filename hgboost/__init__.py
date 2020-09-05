@@ -95,5 +95,7 @@ Example
 References
 ----------
 * https://github.com/erdogant/hgboost
-
+* https://erdogant.github.io/hgboost/
+* https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb
+* https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb
 """
