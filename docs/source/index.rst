@@ -11,7 +11,7 @@ hgboost's documentation!
     * 3. Evaluates best model on independent evaluation set.
     * 4. Fit model on entire input-data using the best model.
     * 5. Works for classification and regression
-    * 6. Creating an ensemble of all available methods is a one-liner.
+    * 6. Creating a super-hyperoptimized model by an ensemble of all individual optimized models.
     * 7. Return model, space and test/evaluation results.
     * 8. Makes insightful plots.
 
