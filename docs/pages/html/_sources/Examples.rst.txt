@@ -5,6 +5,11 @@
 Classification Examples
 ''''''''''''''''''''''''
 
+Some of the described examples can also be found in the Colab notebooks:
+See `classification Colab notebook`_. 
+
+.. _classification Colab notebook: https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb
+
 xgboost two-class
 -------------------
 
@@ -195,6 +200,12 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
 
 Regression Examples
 ''''''''''''''''''''''''
+
+Some of the described examples can also be found in the notebooks:
+See `regression Colab notebook`_. 
+
+.. _regression Colab notebook: https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb
+
 
 xgboost_reg
 -------------------

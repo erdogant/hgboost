@@ -77,6 +77,18 @@ Source code and issue tracker
 Available on Github, `erdogant/hgboost <https://github.com/erdogant/hgboost/>`_.
 Please report bugs, issues and feature extensions there.
 
+Colab notebooks
+------------------------------
+
+Some of the described examples can also be found in the notebooks:
+    * See `classification Colab notebook`_. 
+    * See `regression Colab notebook`_. 
+
+.. _classification Colab notebook: https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb
+
+.. _regression Colab notebook: https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb
+
+
 Citing *hgboost*
 ----------------
 Here is an example BibTeX entry:
