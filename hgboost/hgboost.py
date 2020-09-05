@@ -470,7 +470,7 @@ class hgboost:
         # Create the ensemble model
         if self.verbose>=3: print('[hgboost] >Fit ensemble model with [%s] voting..' %(self.voting))
         if self.method == 'ensemble_clf':
-            model = VotingClassifier(models, voting=voting, n_jobs=self.n_jobs, verbose=False)
+            model = VotingClassifier(models, voting=voting, n_jobs=self.n_jobs)
             model.fit(X, y==pos_label)
         else:
             model = VotingRegressor(models, n_jobs=self.n_jobs)
