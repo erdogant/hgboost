@@ -651,36 +651,43 @@ class hgboost:
         return out, eval_results
 
     def xgb_reg(self, space):
+        """Train Xgboost regression model."""
         reg = xgb.XGBRegressor(**space['model_params'], n_jobs=self.n_jobs, verbosity=0)
         out, _ = self._train_model(reg, space)
         return out
 
     def lgb_reg(self, space):
+        """Train lightboost regression model."""
         reg = lgb.LGBMRegressor(**space['model_params'], n_jobs=self.n_jobs, verbosity=0)
         out, _ = self._train_model(reg, space)
         return out
 
     def ctb_reg(self, space):
+        """Train catboost regression model."""
         reg = ctb.CatBoostRegressor(**space['model_params'])
         out, _ = self._train_model(reg, space)
         return out
 
     def xgb_clf(self, space):
+        """Train xgboost classification model."""
         clf = xgb.XGBClassifier(**space['model_params'], n_jobs=self.n_jobs, verbosity=0)
         out, _ = self._train_model(clf, space)
         return out
 
     def ctb_clf(self, space):
+        """Train catboost classification model."""
         clf = ctb.CatBoostClassifier(**space['model_params'])
         out, _ = self._train_model(clf, space)
         return out
 
     def lgb_clf(self, space):
+        """Train lightboost classification model."""
         clf = lgb.LGBMClassifier(**space['model_params'], n_jobs=self.n_jobs, verbosity=0)
         out, _ = self._train_model(clf, space)
         return out
 
     def xgb_clf_multi(self, space):
+        """Train xgboost multi-class classification model."""
         clf = xgb.XGBClassifier(**space['model_params'], n_jobs=self.n_jobs, verbosity=0)
         out, _ = self._train_model(clf, space)
         return out
