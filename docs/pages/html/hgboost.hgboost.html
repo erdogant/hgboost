@@ -195,10 +195,18 @@
 <li><p><strong>X</strong> (<em>pd.DataFrame.</em>) – Input dataset.</p></li>
 <li><p><strong>y</strong> (<em>array-like.</em>) – Response variable.</p></li>
 <li><p><strong>pos_label</strong> (<em>string/int.</em>) – Fit the model on the pos_label that that is in [y].</p></li>
-<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'auc'</em><em>)</em><em></em>) – Evaluation metric for the regressor of classification model.
-* ‘auc’ : area under ROC curve (two-class classification : default)</p></li>
-<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : True</em><em>)</em><em></em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-* auc :  two-class</p></li>
+<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'auc'</em><em>)</em><em></em>) – <dl class="simple">
+<dt>Evaluation metric for the regressor of classification model.</dt><dd><ul>
+<li><p>’auc’ : area under ROC curve (default for two-class)</p></li>
+<li><p>’kappa’ : (default for multi-class)</p></li>
+<li><p>’f1’ : F1-score</p></li>
+<li><p>’logloss’</p></li>
+<li><p>’auc_cv’ : Compute average auc per iteration in each cross. This approach is computational expensive.</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : True</em><em>)</em><em></em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -277,16 +285,36 @@
 <li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Input dataset.</p></li>
 <li><p><strong>y</strong> (<em>array-like</em>) – Response variable.</p></li>
 <li><p><strong>pos_label</strong> (<em>string/int.</em>) – Fit the model on the pos_label that that is in [y].</p></li>
-<li><p><strong>methods</strong> (<em>list of strings</em><em>, </em><em>(</em><em>default :</em><em> [</em><em>'xgb_clf'</em><em>,</em><em>'ctb_clf'</em><em>,</em><em>'lgb_clf'</em><em>]</em><em>)</em><em></em>) – The models included for the ensemble classifier or regressor. The clf and reg models can not be combined.
-* [‘xgb_clf’,’ctb_clf’,’lgb_clf’]
-* [‘xgb_reg’,’ctb_reg’,’lgb_reg’]</p></li>
-<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'auc'</em><em>)</em>) – Evaluation metric for the regressor of classification model.
-* ‘auc’ : area under ROC curve (two-class classification : default)</p></li>
-<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : True</em><em>)</em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-* auc :  True -&gt; two-class</p></li>
-<li><p><strong>voting</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'soft'</em><em>)</em>) – Combining classifier using a voting scheme.
-* ‘hard’ : using predicted classes.
-* ‘soft’ : using the Probabilities.</p></li>
+<li><p><strong>methods</strong> (<em>list of strings</em><em>, </em><em>(</em><em>default :</em><em> [</em><em>'xgb_clf'</em><em>,</em><em>'ctb_clf'</em><em>,</em><em>'lgb_clf'</em><em>]</em><em>)</em><em></em>) – <dl class="simple">
+<dt>The models included for the ensemble classifier or regressor. The clf and reg models can not be combined.</dt><dd><ul>
+<li><p>[‘xgb_clf’,’ctb_clf’,’lgb_clf’]</p></li>
+<li><p>[‘xgb_reg’,’ctb_reg’,’lgb_reg’]</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'auc'</em><em>)</em>) – <dl class="simple">
+<dt>Evaluation metric for the regressor of classification model.</dt><dd><ul>
+<li><p>’auc’ : area under ROC curve (two-class classification : default)</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : True</em><em>)</em>) – <dl class="simple">
+<dt>If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.</dt><dd><ul>
+<li><p>auc :  True -&gt; two-class</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>voting</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'soft'</em><em>)</em>) – <dl class="simple">
+<dt>Combining classifier using a voting scheme.</dt><dd><ul>
+<li><p>’hard’ : using predicted classes.</p></li>
+<li><p>’soft’ : using the Probabilities.</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -348,10 +376,18 @@
 <li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Input dataset.</p></li>
 <li><p><strong>y</strong> (<em>array-like</em>) – Response variable.</p></li>
 <li><p><strong>pos_label</strong> (<em>string/int.</em>) – Fit the model on the pos_label that that is in [y].</p></li>
-<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'auc'</em><em>)</em>) – Evaluation metric for the regressor of classification model.
-* ‘auc’ : area under ROC curve (two-class classification : default)</p></li>
-<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : True</em><em>)</em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-* auc :  True -&gt; two-class</p></li>
+<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'auc'</em><em>)</em>) – <dl class="simple">
+<dt>Evaluation metric for the regressor of classification model.</dt><dd><ul>
+<li><p>’auc’ : area under ROC curve (default for two-class)</p></li>
+<li><p>’kappa’ : (default for multi-class)</p></li>
+<li><p>’f1’ : F1-score</p></li>
+<li><p>’logloss’</p></li>
+<li><p>’auc_cv’ : Compute average auc per iteration in each cross. This approach is computational expensive.</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : True</em><em>)</em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -535,9 +571,14 @@ Green will depic the best detected parameter and red demonstrates the top n para
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>num_trees</strong> (<em>int</em><em>, </em><em>default None</em>) – Best tree is shown when None. Specify the ordinal number of any other target tree.</p></li>
-<li><p><strong>plottype</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'horizontal'</em><em>)</em>) – Works only in case of xgb model.
-* ‘horizontal’
-* ‘vertical’</p></li>
+<li><p><strong>plottype</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'horizontal'</em><em>)</em>) – <dl class="simple">
+<dt>Works only in case of xgb model.</dt><dd><ul>
+<li><p>’horizontal’</p></li>
+<li><p>’vertical’</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
 <li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>default</em><em> (</em><em>25</em><em>,</em><em>25</em><em>)</em>) – Figure size, (height, width)</p></li>
 <li><p><strong>verbose</strong> (<em>int</em><em>, </em><em>(</em><em>default : 3</em><em>)</em>) – Print progress to screen.
 0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE</p></li>
@@ -582,14 +623,25 @@ Green will depic the best detected parameter and red demonstrates the top n para
 <li><p>’xgb_clf_multi’: XGboost multi-class classifier</p></li>
 </ul>
 </p></li>
-<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : None</em><em>)</em><em></em>) – Evaluation metric for the regressor of classification model.
-* ‘auc’ : area under ROC curve (default for two-class)
-* ‘kappa’ : (default for multi-class)
-* ‘f1’ : F1-score
-* ‘logloss’</p></li>
-<li><p><strong>greater_is_better</strong> (<em>bool.</em>) – If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-* auc :  True -&gt; two-class
-* kappa : True -&gt; multi-class</p></li>
+<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : None</em><em>)</em><em></em>) – <dl class="simple">
+<dt>Evaluation metric for the regressor of classification model.</dt><dd><ul>
+<li><p>’auc’ : area under ROC curve (default for two-class)</p></li>
+<li><p>’kappa’ : (default for multi-class)</p></li>
+<li><p>’f1’ : F1-score</p></li>
+<li><p>’logloss’</p></li>
+<li><p>’auc_cv’ : Compute average auc per iteration in each cross. This approach is computational expensive.</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>greater_is_better</strong> (<em>bool.</em>) – <dl class="simple">
+<dt>If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.</dt><dd><ul>
+<li><p>auc :  True -&gt; two-class</p></li>
+<li><p>kappa : True -&gt; multi-class</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
