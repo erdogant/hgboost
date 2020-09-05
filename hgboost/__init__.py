@@ -6,7 +6,7 @@ from hgboost.hgboost import (
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 
 # module level doc-string
 __doc__ = """
@@ -15,7 +15,7 @@ hgboost - Hyperoptimized Gradient Boosting
 
 Description
 -----------
-hgboost is a python package for hyperparameter optimization for xgboost, 
+hgboost is a python package for hyperparameter optimization for xgboost,
 catboost and lightboost using cross-validation, and evaluating the results
 on an independent validation set. hgboost can be applied for classification and regression tasks.
 The hgboost approach contains the following parts:
