@@ -282,14 +282,15 @@ class hgboost:
             * 'xgb_clf_multi': XGboost multi-class classifier
         eval_metric : str, (default : None).
             Evaluation metric for the regressor of classification model.
-            * 'auc' : area under ROC curve (default for two-class)
-            * 'kappa' : (default for multi-class)
-            * 'f1' : F1-score
-            * 'logloss'
+                * 'auc' : area under ROC curve (default for two-class)
+                * 'kappa' : (default for multi-class)
+                * 'f1' : F1-score
+                * 'logloss'
+                * 'auc_cv' : Compute average auc per iteration in each cross. This approach is computational expensive.
         greater_is_better : bool.
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-            * auc :  True -> two-class
-            * kappa : True -> multi-class
+                * auc :  True -> two-class
+                * kappa : True -> multi-class
 
         Returns
         -------
@@ -322,10 +323,13 @@ class hgboost:
             Fit the model on the pos_label that that is in [y].
         eval_metric : str, (default : 'auc').
             Evaluation metric for the regressor of classification model.
-            * 'auc' : area under ROC curve (two-class classification : default)
+                * 'auc' : area under ROC curve (default for two-class)
+                * 'kappa' : (default for multi-class)
+                * 'f1' : F1-score
+                * 'logloss'
+                * 'auc_cv' : Compute average auc per iteration in each cross. This approach is computational expensive.
         greater_is_better : bool (default : True).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-            * auc :  two-class
 
         Returns
         -------
@@ -358,10 +362,13 @@ class hgboost:
             Fit the model on the pos_label that that is in [y].
         eval_metric : str, (default : 'auc')
             Evaluation metric for the regressor of classification model.
-            * 'auc' : area under ROC curve (two-class classification : default)
+                * 'auc' : area under ROC curve (default for two-class)
+                * 'kappa' : (default for multi-class)
+                * 'f1' : F1-score
+                * 'logloss'
+                * 'auc_cv' : Compute average auc per iteration in each cross. This approach is computational expensive.
         greater_is_better : bool (default : True)
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-            * auc :  True -> two-class
 
         Returns
         -------
@@ -398,18 +405,18 @@ class hgboost:
             Fit the model on the pos_label that that is in [y].
         methods : list of strings, (default : ['xgb_clf','ctb_clf','lgb_clf']).
             The models included for the ensemble classifier or regressor. The clf and reg models can not be combined.
-            * ['xgb_clf','ctb_clf','lgb_clf']
-            * ['xgb_reg','ctb_reg','lgb_reg']
+                * ['xgb_clf','ctb_clf','lgb_clf']
+                * ['xgb_reg','ctb_reg','lgb_reg']
         eval_metric : str, (default : 'auc')
             Evaluation metric for the regressor of classification model.
-            * 'auc' : area under ROC curve (two-class classification : default)
+                * 'auc' : area under ROC curve (two-class classification : default)
         greater_is_better : bool (default : True)
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
-            * auc :  True -> two-class
+                * auc :  True -> two-class
         voting : str, (default : 'soft')
             Combining classifier using a voting scheme.
-            * 'hard' : using predicted classes.
-            * 'soft' : using the Probabilities.
+                * 'hard' : using predicted classes.
+                * 'soft' : using the Probabilities.
 
         Returns
         -------
@@ -878,8 +885,8 @@ class hgboost:
             Best tree is shown when None. Specify the ordinal number of any other target tree.
         plottype : str, (default : 'horizontal')
             Works only in case of xgb model.
-            * 'horizontal'
-            * 'vertical'
+                * 'horizontal'
+                * 'vertical'
         figsize: tuple, default (25,25)
             Figure size, (height, width)
         verbose : int, (default : 3)
@@ -1587,7 +1594,7 @@ def _check_eval_metric(method, eval_metric, greater_is_better, verbose=3):
     if greater_is_better is None:
         if (eval_metric == 'f1'):
             greater_is_better = True
-        elif (eval_metric == 'auc'):
+        elif 'auc' in eval_metric:
             greater_is_better = True
         elif (eval_metric == 'kappa'):
             greater_is_better = True
