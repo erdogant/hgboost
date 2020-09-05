@@ -29,9 +29,12 @@
 * API Documentation: https://erdogant.github.io/hgboost/
 * Github: https://github.com/erdogant/hgboost/
 
+Regression example:
 <a href="https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open regression example In Colab"/>
 </a>
+
+Classification example:
 <a href="https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open classification example In Colab"/>
 </a>
