@@ -6,7 +6,7 @@ from hgboost.hgboost import (
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 # module level doc-string
 __doc__ = """
@@ -47,14 +47,11 @@ Example
 >>> y = df['Survived'].values
 >>> del df['Survived']
 >>> X = hgb.preprocessing(df, verbose=0)
->>> y = y.astype(str)
->>> y[y=='1']='survived'
->>> y[y=='0']='dead'
 
 >>> # Fit a classification model
->>> results = hgb.xgboost(X, y, pos_label='survived')
->>> results = hgb.catboost(X, y, pos_label='survived')
->>> results = hgb.lightboost(X, y, pos_label='survived')
+>>> results = hgb.xgboost(X, y, pos_label=1)
+>>> results = hgb.catboost(X, y, pos_label=1)
+>>> results = hgb.lightboost(X, y, pos_label=1)
 
 >>> # Make some plots
 >>> hgb.plot_params()
