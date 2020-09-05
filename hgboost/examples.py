@@ -114,7 +114,7 @@ y = df['Survived'].values
 del df['Survived']
 X = hgb.preprocessing(df, verbose=0)
 
-results = hgb.ensemble(X, y, pos_label=1)
+results = hgb.ensemble(X, y, pos_label=1, methods=['xgb_clf','ctb_clf','lgb_clf'])
 
 # use the predictor
 y_pred, y_proba = hgb.predict(X)
@@ -162,6 +162,9 @@ hgb.plot_validation()
 hgb.plot_cv()
 
 # %% CLASSIFICATION MULTI-CLASS #####
+from sklearn import datasets
+import pandas as pd
+
 iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris['feature_names'])
 y = iris.target
