@@ -575,7 +575,7 @@ class hgboost:
         # Create a basic model by using default parameters.
         space_basic = {}
         space_basic['fit_params'] = {'verbose': 0}
-        space_basic['model_params'] = {'eval_metric': self.eval_metric}
+        space_basic['model_params'] = {}
         model_basic = getattr(self, self.method)
         model_basic = fn(space_basic)['model']
         comparison_results = {}
@@ -1480,8 +1480,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         }
         space = {}
         space['model_params'] = xgb_reg_params
-        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': False}
-        # space['fit_params'] = {'eval_metric': eval_metric, 'early_stopping_rounds': 10, 'verbose': False}
+        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
         return(space)
 
     # LightGBM parameters
@@ -1495,7 +1494,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         }
         space = {}
         space['model_params'] = lgb_reg_params
-        space['fit_params'] = {'eval_metric': 'l2', 'early_stopping_rounds': early_stopping_rounds, 'verbose': False}
+        space['fit_params'] = {'eval_metric': 'l2', 'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
 
         return(space)
 
@@ -1509,7 +1508,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         }
         space = {}
         space['model_params'] = ctb_reg_params
-        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': False}
+        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
         return(space)
 
     # CatBoost classification parameters
@@ -1524,7 +1523,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         }
         space = {}
         space['model_params'] = ctb_clf_params
-        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': False}
+        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
         return(space)
 
     # LightBoost classification parameters
@@ -1546,7 +1545,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         }
         space = {}
         space['model_params'] = lgb_clf_params
-        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': False}
+        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
         return(space)
 
     if 'xgb_clf' in fn_name:
@@ -1572,7 +1571,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
 
         space = {}
         space['model_params'] = xgb_clf_params
-        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': False}
+        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
 
         if verbose>=3: print('[hgboost] >Number of variables in search space is [%.0d], loss function: [%s].' %(len([*space['model_params']]), eval_metric))
         return(space)
