@@ -1067,6 +1067,8 @@ class hgboost:
         top_n = np.minimum(top_n, self.results['summary'].shape[0])
         # getcolors = colourmap.generate(top_n, cmap='Reds_r')
         ascending = False if self.greater_is_better else True
+        summary_results = self.results['summary'].copy()
+        summary_results = summary_results.loc[~summary_results['default_params'], :]
 
         # Sort data based on loss
         colname = 'loss'
@@ -1079,7 +1081,8 @@ class hgboost:
             colnames = colname
 
         # Sort on best loss
-        df_summary = self.results['summary'].sort_values(by=colnames, ascending=ascending)
+        df_summary = summary_results.sort_values(by=colnames, ascending=ascending)
+
         # Get parameters for best scoring model
         idx_best = np.where(df_summary[colbest])[0]
         if self.cv is not None:
@@ -1100,7 +1103,7 @@ class hgboost:
             # Make new column
             if i_col == 0: i_row = i_row + 1
             # Make density
-            linefit = sns.distplot(self.results['summary'][param],
+            linefit = sns.distplot(summary_results[param],
                                    hist=False,
                                    kde=True,
                                    rug=True,
@@ -1132,7 +1135,7 @@ class hgboost:
             # print(i_row)
 
         ##################### Scatter plot #####################
-        df_sum = self.results['summary'].sort_values(by='tid', ascending=True)
+        df_sum = summary_results.sort_values(by='tid', ascending=True)
         idx_best = np.where(df_sum[colbest])[0]
         if self.cv is not None:
             idx_best_cv = np.where(df_sum[colbest_cv])[0]
