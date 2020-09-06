@@ -13,7 +13,7 @@ rm -rf *.css
 rm -rf *.dot
 rm -rf *.png
 rm -rf hgboost/catboost_info
+rm -rf hgboost/docs/catboost_info
+rm -rf hgboost/notebooks/catboost_info
 rm -rf catboost_info
 rm -rf hgboost/__pycache__
-
-
