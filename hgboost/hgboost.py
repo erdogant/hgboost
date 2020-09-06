@@ -25,7 +25,7 @@ from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val
 import lightgbm as lgb
 import xgboost as xgb
 import catboost as ctb
-from hyperopt import fmin, tpe, STATUS_OK, STATUS_FAIL, Trials, hp
+from hyperopt import fmin, tpe, STATUS_OK, Trials, hp
 
 from tqdm import tqdm
 import time
