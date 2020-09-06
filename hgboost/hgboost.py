@@ -1199,7 +1199,7 @@ class hgboost:
             return ax1, ax2
 
         # Plot comparison between hyperoptimized vs basic model
-        if (self.results.get('comparison_results', None) is not None):
+        if (self.results.get('comparison_results', None) is not None) and ([*self.results['comparison_results'].values()][0] is not None):
             cle.plot_cross(self.results['comparison_results'], title='Comparison between model with HyperOptimized vs default parameters on validation set.')
 
         if hasattr(self.model, 'evals_result'):
