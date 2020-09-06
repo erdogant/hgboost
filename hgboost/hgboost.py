@@ -47,6 +47,8 @@ class hgboost:
             Cross-validation. Specifying the test size by test_size.
         top_cv_evals : int, (default : 10)
             Number of top best performing models that is evaluated.
+            If set to None, each iteration (max_eval) is tested.
+            If set to 0, cross validation is not performed.
         test_size : float, (default : 0.2)
             Splitting train/test set with test_size=0.2 and train = 1-test_size.
         val_size : float, (default : 0.2)
@@ -73,7 +75,7 @@ class hgboost:
         """
         if (threshold is None) or (threshold <= 0): raise ValueError('[hgboost] >Error: [threshold] must be >0 and not [None]')
         if (max_eval is None) or (max_eval <= 0): max_eval = 1
-        if top_cv_evals is None: top_cv_evals=0
+        if top_cv_evals is None: max_eval=0
         if (test_size is None) or (test_size <= 0): raise ValueError('[hgboost] >Error: test_size must be >0 and not [None] Note: the final model is learned on the entire dataset. [test_size] may help you getting a more robust model.')
 
         self.max_eval=max_eval
@@ -554,7 +556,7 @@ class hgboost:
         disable = (False if (self.verbose<3) else True)
         fn = getattr(self, self.method)
 
-        # Split train-test set
+        # Split train-test set. This set is used for parameter optimization. Note that parameters are shuffled and the train-test set is retained constant. This will make the comparison across parameters and not differences in train-test variances.
         if '_clf' in self.method:
             self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
         elif '_reg' in self.method:
@@ -566,17 +568,31 @@ class hgboost:
         # Summary results
         results_summary, model = self._to_df(trials, verbose=self.verbose)
 
-        # Cross-validation over the optimized models.
+        # Cross-validation over the top n models. To speed up we can decide to further test only the best performing ones. The best performing model is returned.
         if self.cv is not None:
             model, results_summary, best_params = self._cv(results_summary, self.space, best_params)
 
+        # Create a basic model by using default parameters.
+        space_basic = {}
+        space_basic['fit_params'] = {'verbose': 0}
+        space_basic['model_params'] = {'eval_metric': self.eval_metric}
+        model_basic = getattr(self, self.method)
+        model_basic = fn(space_basic)['model']
+        comparison_results = {}
+
         # Validation error
         val_results = None
-        if self.val_size is not None:
-            if self.verbose>=3: print('[hgboost] >Evalute best [%s] model on independent validation dataset (%.0f samples, %.2g%%)' %(self.method, len(self.y_val), self.val_size * 100))
+        if (self.val_size is not None):
+            if self.verbose>=3: print('[hgboost] >Evalute best [%s] model on validation dataset (%.0f samples, %.2g%%)' %(self.method, len(self.y_val), self.val_size * 100))
             # Evaluate results
             val_score, val_results = self._eval(self.X_val, self.y_val, model, verbose=2)
-            if self.verbose>=3: print('[hgboost] >[%s] on independent validation dataset: %.4g' %(self.eval_metric, val_score['loss']))
+            val_score_basic, val_results_basic = self._eval(self.X_val, self.y_val, model_basic, verbose=2)
+            comparison_results['Model with HyperOptimized parameters (validation set)'] = val_results
+            comparison_results['Model with default parameters (validation set)'] = val_results_basic
+            if self.verbose>=3: print('[hgboost] >[%s]: %.4g using HyperOptimized parameters on validation set.' %(self.eval_metric, val_score['loss']))
+            if self.verbose>=3: print('[hgboost] >[%s]: %.4g using default parameters on validation set.' %(self.eval_metric, val_score_basic['loss']))
+            # Store validation results
+            results_summary = _store_validation_scores(results_summary, best_params, model_basic, val_score_basic, val_score, self.greater_is_better)
 
         # Remove the model column
         del results_summary['model']
@@ -587,6 +603,7 @@ class hgboost:
         results['trials'] = trials
         results['model'] = model
         results['val_results'] = val_results
+        results['comparison_results'] = comparison_results
         # Return
         return model, results
 
@@ -646,8 +663,6 @@ class hgboost:
         # Evaluate results
         out, eval_results = self._eval(self.X_test, self.y_test, model, verbose=verbose)
         # Return
-        # The model.best_score is the default eval_metric from eval_set in the fit function. The default depends on the selected method.
-        # if self.verbose>=4: print("[hgboost] >best score: {0}, best iteration: {1}".format(model.best_score, model.best_iteration))
         return out, eval_results
 
     def xgb_reg(self, space):
@@ -756,7 +771,7 @@ class hgboost:
         return y_pred, y_proba
 
     def _eval(self, X_test, y_test, model, verbose=3):
-        """Classifier Evaluation.
+        """Model Evaluation.
 
         Description
         -----------
@@ -938,18 +953,30 @@ class hgboost:
         print('[hgboost] >%.0d-fold crossvalidation is performed with [%s]' %(self.cv, self.method))
         disable = (True if (self.verbose==0 or self.verbose>3) else False)
         ax = None
+
+        # Make model by using all default parameters
+        # space_dumb = {}
+        # space_dumb['fit_params'] = {}
+        # space_dumb['model_params'] = {}
+
         # Run the cross-validations
         cv_results = {}
         for i in tqdm(np.arange(0, self.cv), disable=disable):
             name = 'cross ' + str(i)
-            # Split train-test set
             if ('_clf' in self.method) and not ('_multi' in self.method):
+                # Make train-test
                 _, X_test, _, y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=None, shuffle=True, stratify=self.y)
-                # Evaluate model
+                # Evaluate model using hyperoptimized model
                 _, cl_results = self._eval(X_test, y_test, self.model, verbose=0)
                 cv_results[name] = cl_results
+                # Evaluate using default settings
+                # _, cl_results_dumb = self._eval(X_test, y_test, model_dumb['model'], verbose=0)
+                # cv_results[name + ' (default)'] = cl_results_dumb
+
             elif '_reg' in self.method:
+                # Make train-test
                 _, X_test, _, y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=None, shuffle=True)
+                # Evaluate model using hyperoptimized model
                 y_pred = self.predict(X_test, model=self.model)[0]
                 cv_results[name] = pd.DataFrame(np.c_[y_test, y_pred], columns=['y', 'y_pred'])
 
@@ -1143,6 +1170,82 @@ class hgboost:
         if return_ax:
             return ax, ax2
 
+    def plot(self, ylim=None, figsize=(15, 10), return_ax=False):
+        """Plot the summary results.
+
+        Parameters
+        ----------
+        ylim : tuple
+            Set the y-limit. In case of auc it can be: (0.5, 1)
+        figsize: tuple, default (25,25)
+            Figure size, (height, width)
+
+        Returns
+        -------
+        ax : object
+            Figure axis.
+
+        """
+        ax1, ax2 = None, None
+        if ('ensemble' in self.method):
+            if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
+            self.plot_ensemble(ylim, figsize, ax1, ax2)
+            return ax1, ax2
+        if (not hasattr(self, 'model')):
+            print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
+            return ax1, ax2
+
+        # Plot comparison between hyperoptimized vs basic model
+        if (self.results.get('comparison_results', None) is not None):
+            cle.plot_cross(self.results['comparison_results'], title='Comparison between model with HyperOptimized vs default parameters on validation set.')
+
+        if hasattr(self.model, 'evals_result'):
+            _, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
+        else:
+            _, ax1 = plt.subplots(1, 1, figsize=figsize)
+
+        tmpdf = self.results['summary'].sort_values(by='tid', ascending=True)
+        tmpdf = tmpdf.loc[~tmpdf['loss'].isna(), :]
+
+        # Plot results with testsize
+        idx = np.where(tmpdf['best'].values)[0]
+        ax1.hlines(tmpdf['loss'].iloc[idx], 0, tmpdf['loss'].shape[0], colors='g', linestyles='dashed', label='Best model (without cv)')
+        ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss'].iloc[idx], colors='g', linestyles='dashed')
+        best_loss = tmpdf['loss'].iloc[idx]
+        title = ('%s (%s: %.3g)' %(self.method, self.eval_metric, best_loss))
+
+        # Plot results with cv
+        if self.cv is not None:
+            ax1.errorbar(tmpdf['tid'], tmpdf['loss_mean'], tmpdf['loss_std'], marker='s', mfc='red', label=str(self.cv) + '-fold cv for top ' + str(self.top_cv_evals) + ' scoring models')
+            idx = np.where(tmpdf['best_cv'].values)[0]
+            ax1.hlines(tmpdf['loss_mean'].iloc[idx], 0, tmpdf['loss_mean'].shape[0], colors='r', linestyles='dotted', label='Best model (' + str(self.cv) + '-fold cv)')
+            ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss_mean'].iloc[idx], colors='r', linestyles='dashed')
+            best_loss = tmpdf['loss_mean'].iloc[idx]
+            title = ('%s (%.0d-fold cv mean %s: %.3g)' %(self.method, self.cv, self.eval_metric, best_loss))
+            ax1.set_xlabel('Model number')
+
+        # Plot all other evalution results
+        ax1.scatter(tmpdf['tid'].values, tmpdf['loss'].values, s=10, label='All models')
+
+        # Set labels
+        ax1.set_title(title)
+        ax1.set_ylabel(self.eval_metric)
+        ax1.grid(True)
+        ax1.legend()
+        if ylim is not None: ax1.set_ylim(ylim)
+
+        if hasattr(self.model, 'evals_result'):
+            eval_metric = [*self.model.evals_result()['validation_0'].keys()][0]
+            ax2.plot([*self.model.evals_result()['validation_0'].values()][0], label='Train error')
+            ax2.plot([*self.model.evals_result()['validation_1'].values()][0], label='Test error')
+            ax2.set_ylabel(eval_metric)
+            ax2.set_title(self.method)
+            ax2.grid(True)
+            ax2.legend()
+
+        if return_ax:
+            return ax1, ax2
+
     # def plot(self, ylim=None, figsize=(15, 10), return_ax=False):
     #     """Plot the summary results.
 
@@ -1191,77 +1294,30 @@ class hgboost:
             # self.results['summary'] = pd.concat([hgbX.results['summary'], hgbC.results['summary'], hgbL.results['summary']])
             # ax1, ax2 = plot_summary(model, ylim=ylim, figsize=figsize, return_ax=True, method=method, ax1=ax1, ax2=ax2)
 
-    def plot(self, ylim=None, figsize=(15, 10), return_ax=False):
-        """Plot the summary results.
 
-        Parameters
-        ----------
-        ylim : tuple
-            Set the y-limit. In case of auc it can be: (0.5, 1)
-        figsize: tuple, default (25,25)
-            Figure size, (height, width)
+# %%
+def _store_validation_scores(results_summary, best_params, model_basic, val_score_basic, val_score, greater_is_better):
+    # Store default parameters
+    params = [*best_params.keys()]
+    idx = results_summary.index.max() + 1
+    results_summary.loc[idx] = np.nan
+    # Store the params of the basic model
+    for param in params:
+        results_summary[param].iloc[idx] = model_basic.get_params().get(param, None)
 
-        Returns
-        -------
-        ax : object
-            Figure axis.
+    results_summary['loss_validation'] = np.nan
+    results_summary['loss_validation'].iloc[idx] = val_score_basic['loss'] * (-1 if greater_is_better else 1)
+    results_summary['default_params'] = False
+    results_summary['default_params'].iloc[idx] = True
 
-        """
-        ax1, ax2 = None, None
-        if ('ensemble' in self.method):
-            if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
-            self.plot_ensemble(ylim, figsize, ax1, ax2)
-            return ax1, ax2
-        if (not hasattr(self, 'model')):
-            print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
-            return ax1, ax2
+    # Store the best loss validation score for the hyperoptimized model
+    if np.any(results_summary.columns.str.contains('best_cv')):
+        idx = np.where(results_summary['best_cv']==1)[0]
+    else:
+        idx = np.where(results_summary['best']==1)[0]
+    results_summary['loss_validation'].iloc[idx] = val_score['loss'] * (-1 if greater_is_better else 1)
 
-        if ax1 is None:
-            if hasattr(self.model, 'val_result'):
-                _, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
-            else:
-                _, ax1 = plt.subplots(1, 1, figsize=figsize)
-
-        tmpdf = self.results['summary'].sort_values(by='tid', ascending=True)
-
-        # Plot results with testsize
-        idx = np.where(tmpdf['best'].values)[0]
-        ax1.hlines(tmpdf['loss'].iloc[idx], 0, tmpdf['loss'].shape[0], colors='g', linestyles='dashed', label='Best (wihtout cv)')
-        ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss'].iloc[idx], colors='g', linestyles='dashed')
-        best_loss = tmpdf['loss'].iloc[idx]
-        title = ('%s (%s: %.3g)' %(self.method, self.eval_metric, best_loss))
-
-        # Plot results with cv
-        if self.cv is not None:
-            ax1.errorbar(tmpdf['tid'], tmpdf['loss_mean'], tmpdf['loss_std'], marker='s', mfc='red', label=str(self.cv) + '-fold cv for top ' + str(self.top_cv_evals) + ' models')
-            idx = np.where(tmpdf['best_cv'].values)[0]
-            ax1.hlines(tmpdf['loss_mean'].iloc[idx], 0, tmpdf['loss_mean'].shape[0], colors='r', linestyles='dotted', label='Best (' + str(self.cv) + '-fold cv)')
-            ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss_mean'].iloc[idx], colors='r', linestyles='dashed')
-            best_loss = tmpdf['loss_mean'].iloc[idx]
-            title = ('%s (%.0d-fold cv mean %s: %.3g)' %(self.method, self.cv, self.eval_metric, best_loss))
-            ax1.set_xlabel('Model number')
-
-        # Plot all other evalution results on the single test-set
-        ax1.scatter(tmpdf['tid'].values, tmpdf['loss'].values, s=10, label='All models')
-
-        # Set labels
-        ax1.set_title(title)
-        ax1.set_ylabel(self.eval_metric)
-        ax1.grid(True)
-        ax1.legend()
-        if ylim is not None: ax1.set_ylim(ylim)
-
-        if hasattr(self.model, 'val_result'):
-            eval_metric = [*self.model.evals_result()['validation_0'].keys()][0]
-            ax2.plot([*self.model.evals_result()['validation_0'].values()][0], label='Train error')
-            ax2.plot([*self.model.evals_result()['validation_1'].values()][0], label='Test error')
-            ax2.set_ylabel(eval_metric)
-            ax2.set_title(self.method)
-            ax2.grid(True)
-            ax2.legend()
-
-        if return_ax:
-            return ax1, ax2
+    return results_summary
 
 # %% Plot summary
 # def plot_summary(model, ylim=None, figsize=(15, 10), return_ax=False, method=None, ax1=None, ax2=None, verbose=3):
