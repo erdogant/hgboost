@@ -17,10 +17,10 @@ Default ``eval_metric`` are as following:
     * 'auc'   : lightboost      :func:`hgboost.hgboost.hgboost.lightboost`
     * 'auc'   : catboost        :func:`hgboost.hgboost.hgboost.catboost`
 
-The performance of the model can deviate based on the ``threshold`` being used but the threshold this will not affect the learning process.
-After learning a model, and predicting new samples with it, each sample will get a probability belonging to the class.
+The performance of the model can deviate based on the ``threshold`` being used but the theshold this will not affect the learning process.
+After learning a model, and predicting new samples with it, each sample will get a probability belowing to the class.
 In case of our two-class approach the simple rule account: **P(class of interest) = 1-P(class rest)**
-The threshold is used on the probabilities to divide samples into one of the classes.
+The threshold is used on the probabilities to devide samples into one of the classes.
 
 
 AUC
