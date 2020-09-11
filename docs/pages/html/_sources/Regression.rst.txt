@@ -7,7 +7,7 @@ Regression
 
 The ``hgboost`` method consists 3 **regression** methods: ``xgboost_reg``, ``catboost_reg``, ``lightboost_reg``.
 Each algorithm provides hyperparameters that must very likely be tuned for a specific dataset.
-Although there are many hyperparameters to tune, some are more important the others. The parameters used in ``hgboost`` are lised below:
+Although there are many hyperparameters to tune, some are more important the others. The parameters used in ``hgboost`` are listed below:
 
 Parameters
     * The number of trees or estimators.

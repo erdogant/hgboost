@@ -196,15 +196,15 @@ in overtrained models as the search space can easily consist tens of thousands c
 But there is more to it because an optimized gridsearch approach may still result in overtrained models.
 It is wise to carefully split your data into an independent evaluation set, a train, and test set, and then examine, by means of k-fold cross validation, the hyper-parameter space.</p>
 </dd>
-<dt>Aim</dt><dd><p>The aim of this library is to determine the most robust gradient boosting model model by evaluating on an indepdendent validation set.
-The optimal set of parameters are determined by bayesian hyperoptimization using k-fold cross-validation approach on indepdendent train/testsets.
+<dt>Aim</dt><dd><p>The aim of this library is to determine the most robust gradient boosting model model by evaluating on an independent validation set.
+The optimal set of parameters are determined by bayesian hyperoptimization using k-fold cross-validation approach on independent train/testsets.
 <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> can be applied for classification tasks, such as two-class or multi-class, and regression tasks using xgboost, catboost or lightboost.</p>
 <p>The aim of <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> is to determine the most robust model by efficiently searching across the parameter space using
 <strong>hyperoptimization</strong> for which the loss is evaluated using by means of a train/test-set with k-fold cross-validation.
 In addition, the final optimized model is evaluated on an independent validation set.</p>
 </dd>
 <dt>Results</dt><dd><p><code class="docutils literal notranslate"><span class="pre">hgboost</span></code> is a python package for hyperparameter optimization for xgboost, catboost and lightboost using cross-validation, and evaluating the results on an independent validation set.
-There are many implementations of gradient boosting, some efficently uses the GPU, whereas others have specific interfaces.
+There are many implementations of gradient boosting, some efficiently uses the GPU, whereas others have specific interfaces.
 For this library <code class="docutils literal notranslate"><span class="pre">hgboost</span></code>, we incorporated the <em>eXtreme Gradient Boosting</em> <code class="docutils literal notranslate"><span class="pre">xgboost</span></code> [2], <em>Light Gradient Boosting Machine</em> <code class="docutils literal notranslate"><span class="pre">LightGBM</span></code> [3],
 and <em>Category Gradient Boosting</em> <code class="docutils literal notranslate"><span class="pre">catboost</span></code> [4]. We also created the option to learn an <code class="docutils literal notranslate"><span class="pre">ensemble</span></code> model.</p>
 </dd>

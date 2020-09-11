@@ -10,7 +10,7 @@ Code reviews are an effective method for improving software quality. McConnell (
 While this means that none of these methods are good enough on their own and that they should be combined, clearly code review is an essential tool here.
 
 This library is therefore developed with several techniques, such as coding styling, low complexity, docstrings, reviews, and unit tests.
-Such conventions are helpfull to improve the quality, make the code cleaner and more understandable but alos to trace future bugs, and spot syntax errors.
+Such conventions are helpful to improve the quality, make the code cleaner and more understandable but also to trace future bugs, and spot syntax errors.
 
 
 library
@@ -63,7 +63,7 @@ Version 0.1.0 of the ``hgboost`` library scored, according the code analyzer: **
 Developing software with low(er) technical dept may take extra development time, but has many advantages:
 
 * Higher quality code
-* easier maintanable
+* easier maintainable
 * Less prone to bugs and errors
 * Higher security
 
@@ -71,7 +71,7 @@ Developing software with low(er) technical dept may take extra development time,
 Unit tests
 ----------
 
-The use of unit tests is essential to garantee a consistent output of developed functions.
+The use of unit tests is essential to guarantee a consistent output of developed functions.
 The following tests are secured using :func:`tests.test_hgboost`:
 
 * The input parameters are checked.

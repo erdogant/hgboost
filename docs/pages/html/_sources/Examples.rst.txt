@@ -38,7 +38,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
     # [hgboost] >method: xgb_clf
     # [hgboost] >eval_metric: f1
     # [hgboost] >greater_is_better: True
-    # [hgboost] >Total datset: (891, 204) 
+    # [hgboost] >Total dataset: (891, 204) 
     # [hgboost] >Hyperparameter optimization..
 
     # Plot the parameter space
@@ -52,7 +52,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
     # Plot results on the cross-validation
     hgb.plot_cv()
 
-    # Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
+    # Make new prediction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
     y_pred, y_proba = hgb.predict(X)
 
 
@@ -84,7 +84,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.catboost
     # [hgboost] >method: ctb_clf
     # [hgboost] >eval_metric: auc
     # [hgboost] >greater_is_better: True
-    # [hgboost] >Total datset: (891, 204) 
+    # [hgboost] >Total dataset: (891, 204) 
     # [hgboost] >Hyperparameter optimization..
 
     # Plot the parameter space
@@ -130,7 +130,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.lightboo
     # [hgboost] >method: lgb_clf
     # [hgboost] >eval_metric: auc
     # [hgboost] >greater_is_better: True
-    # [hgboost] >Total datset: (891, 204) 
+    # [hgboost] >Total dataset: (891, 204) 
     # [hgboost] >Hyperparameter optimization..
 
     # Plot the parameter space
@@ -180,7 +180,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
     # [hgboost] >method: xgb_clf_multi
     # [hgboost] >eval_metric: kappa
     # [hgboost] >greater_is_better: True
-    # [hgboost] >Total datset: (891, 204)
+    # [hgboost] >Total dataset: (891, 204)
     # [hgboost] >Hyperparameter optimization..
 
     # Plot the parameter space
@@ -237,7 +237,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost_
     # [hgboost] >method: xgb_reg
     # [hgboost] >eval_metric: rmse
     # [hgboost] >greater_is_better: True
-    # [hgboost] >Total datset: (891, 204) 
+    # [hgboost] >Total dataset: (891, 204) 
     # [hgboost] >Hyperparameter optimization..
 
     # Plot the parameter space
@@ -285,7 +285,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.lightboo
     # [hgboost] >method: lgb_reg
     # [hgboost] >eval_metric: rmse
     # [hgboost] >greater_is_better: True
-    # [hgboost] >Total datset: (891, 204) 
+    # [hgboost] >Total dataset: (891, 204) 
     # [hgboost] >Hyperparameter optimization..
 
     # Plot the parameter space
@@ -333,7 +333,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.catboost
     # [hgboost] >method: ctb_reg
     # [hgboost] >eval_metric: rmse
     # [hgboost] >greater_is_better: True
-    # [hgboost] >Total datset: (891, 204) 
+    # [hgboost] >Total dataset: (891, 204) 
     # [hgboost] >Hyperparameter optimization..
 
     # Plot the parameter space

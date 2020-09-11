@@ -20,8 +20,8 @@ Background
     It is wise to carefully split your data into an independent evaluation set, a train, and test set, and then examine, by means of k-fold cross validation, the hyper-parameter space. 
     
 Aim
-    The aim of this library is to determine the most robust gradient boosting model model by evaluating on an indepdendent validation set.
-    The optimal set of parameters are determined by bayesian hyperoptimization using k-fold cross-validation approach on indepdendent train/testsets.
+    The aim of this library is to determine the most robust gradient boosting model model by evaluating on an independent validation set.
+    The optimal set of parameters are determined by bayesian hyperoptimization using k-fold cross-validation approach on independent train/testsets.
     ``hgboost`` can be applied for classification tasks, such as two-class or multi-class, and regression tasks using xgboost, catboost or lightboost.
 
     The aim of ``hgboost`` is to determine the most robust model by efficiently searching across the parameter space using
@@ -30,7 +30,7 @@ Aim
     
 Results
     ``hgboost`` is a python package for hyperparameter optimization for xgboost, catboost and lightboost using cross-validation, and evaluating the results on an independent validation set.
-    There are many implementations of gradient boosting, some efficently uses the GPU, whereas others have specific interfaces.
+    There are many implementations of gradient boosting, some efficiently uses the GPU, whereas others have specific interfaces.
     For this library ``hgboost``, we incorporated the *eXtreme Gradient Boosting* ``xgboost`` [2], *Light Gradient Boosting Machine* ``LightGBM`` [3],
     and *Category Gradient Boosting* ``catboost`` [4]. We also created the option to learn an ``ensemble`` model.
 

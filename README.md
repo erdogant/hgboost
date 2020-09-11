@@ -83,10 +83,10 @@ import hgboost as hgboost
 
 ```python
 
-# Load libray
+# Load library
 from hgboost import hgboost
 
-# Initizalization
+# Initialization
 hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
 
 ```
@@ -123,10 +123,10 @@ results = hgb.xgboost(X, y, pos_label='survived')
 # [hgboost] >eval_metric: auc
 # [hgboost] >greater_is_better: True
 # [hgboost] >pos_label: True
-# [hgboost] >Total datset: (891, 204) 
+# [hgboost] >Total dataset: (891, 204) 
 # [hgboost] >Hyperparameter optimization..
 #  100% |----| 500/500 [04:39<05:21,  1.33s/trial, best loss: -0.8800619834710744]
-# [hgboost] >Best peforming [xgb_clf] model: auc=0.881198
+# [hgboost] >Best performing [xgb_clf] model: auc=0.881198
 # [hgboost] >5-fold cross validation for the top 10 scoring models, Total nr. tests: 50
 # 100%|██████████| 10/10 [00:42<00:00,  4.27s/it]
 # [hgboost] >Evalute best [xgb_clf] model on independent validation dataset (179 samples, 20.00%).
