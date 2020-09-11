@@ -6,7 +6,7 @@ Steps 1-4 are already done in the template! Start at step 5 :)
 4. <DONE> Change the Sphinx build directory to docs in your Makefile for example as follows: BUILDDIR = pages
 
 
-TODO for every project seperately:
+TODO for every project separately:
 
 5. Go to your <repo_dir>/docs/ 
 6. Run <make clean>

@@ -52,7 +52,7 @@ class hgboost:
         test_size : float, (default : 0.2)
             Splitting train/test set with test_size=0.2 and train = 1-test_size.
         val_size : float, (default : 0.2)
-            Setup the validation set. This part is kept entirely seperate from the test-size.
+            Setup the validation set. This part is kept entirely separate from the test-size.
         random_state : int, (default : None)
             Fix the random state for validation set and test set. Note that is not used for the crossvalidation.
         n_jobs : int, (default : -1)
@@ -116,7 +116,7 @@ class hgboost:
             * summary: Summary of the models with the loss and other variables.
             * trials: All model results.
             * model: Best performing model.
-            * val_results: Results on indepedent validation dataset.
+            * val_results: Results on independent validation dataset.
 
         """
         # Check input data
@@ -185,7 +185,7 @@ class hgboost:
             * summary: Summary of the models with the loss and other variables.
             * trials: All model results.
             * model: Best performing model.
-            * val_results: Results on indepedent validation dataset.
+            * val_results: Results on independent validation dataset.
 
         """
         if self.verbose>=3: print('[hgboost] >Start hgboost regression..')
@@ -221,7 +221,7 @@ class hgboost:
             * summary: Summary of the models with the loss and other variables.
             * trials: All model results.
             * model: Best performing model.
-            * val_results: Results on indepedent validation dataset.
+            * val_results: Results on independent validation dataset.
 
         """
         if self.verbose>=3: print('[hgboost] >Start hgboost regression..')
@@ -257,7 +257,7 @@ class hgboost:
             * summary: Summary of the models with the loss and other variables.
             * trials: All model results.
             * model: Best performing model.
-            * val_results: Results on indepedent validation dataset.
+            * val_results: Results on independent validation dataset.
 
         """
         if self.verbose>=3: print('[hgboost] >Start hgboost regression..')
@@ -301,7 +301,7 @@ class hgboost:
             * summary: Summary of the models with the loss and other variables.
             * trials: All model results.
             * model: Best performing model.
-            * val_results: Results on indepedent validation dataset.
+            * val_results: Results on independent validation dataset.
 
         """
         if self.verbose>=3: print('[hgboost] >Start hgboost classification..')
@@ -340,7 +340,7 @@ class hgboost:
             * summary: Summary of the models with the loss and other variables.
             * trials: All model results.
             * model: Best performing model.
-            * val_results: Results on indepedent validation dataset.
+            * val_results: Results on independent validation dataset.
 
         """
         if self.verbose>=3: print('[hgboost] >Start hgboost classification..')
@@ -379,7 +379,7 @@ class hgboost:
             * summary: Summary of the models with the loss and other variables.
             * trials: All model results.
             * model: Best performing model.
-            * val_results: Results on indepedent validation dataset.
+            * val_results: Results on independent validation dataset.
 
         """
         if self.verbose>=3: print('[hgboost] >Start hgboost classification..')
@@ -426,7 +426,7 @@ class hgboost:
             * best_params: Best performing parameters.
             * summary: Summary of the models with the loss and other variables.
             * model: Ensemble of the best performing models.
-            * val_results: Results on indepedent validation dataset.
+            * val_results: Results on independent validation dataset.
         """
 
         import copy
@@ -511,11 +511,11 @@ class hgboost:
 
         Description
         -----------
-        Here we seperate a small part of the data as the validation set.
+        Here we separate a small part of the data as the validation set.
         * The new data is stored in self.X and self.y
         * The validation X and y are stored in self.X_val and self.y_val
         """
-        if self.verbose>=3: print('[hgboost] >Total datset: %s ' %(str(X.shape)))
+        if self.verbose>=3: print('[hgboost] >Total dataset: %s ' %(str(X.shape)))
 
         if (self.val_size is not None):
             if '_clf' in self.method:
@@ -548,7 +548,7 @@ class hgboost:
             * summary: Summary of the models with the loss and other variables.
             * trials: All model results.
             * model: Best performing model.
-            * val_results: Results on indepedent validation dataset.
+            * val_results: Results on independent validation dataset.
 
         """
         if self.verbose>=3: print('[hgboost] >Hyperparameter optimization..')
@@ -732,7 +732,7 @@ class hgboost:
         df['best'].iloc[idx] = True
 
         # Return
-        if verbose>=3: print('[hgboost] >Best peforming [%s] model: %s=%g' %(self.method, self.eval_metric, score))
+        if verbose>=3: print('[hgboost] >Best performing [%s] model: %s=%g' %(self.method, self.eval_metric, score))
         return(df, model)
 
     # Predict
@@ -856,7 +856,7 @@ class hgboost:
         df : pd.DataFrame
             Input data.
         y_min : int [0..len(y)], optional
-            Minimal number of sampels that must be present in a group. All groups with less then y_min samples are labeled as _other_ and are not used in the enriching model. The default is None.
+            Minimal number of samples that must be present in a group. All groups with less then y_min samples are labeled as _other_ and are not used in the enriching model. The default is None.
         perc_min_num : float [None, 0..1], optional
             Force column (int or float) to be numerical if unique non-zero values are above percentage. The default is None. Alternative can be 0.8
         verbose : int, (default: 3)
@@ -1043,7 +1043,7 @@ class hgboost:
         Description
         -----------
         This plot demonstrate the density distribution of the used parameters.
-        Green will depic the best detected parameter and red demonstrates the top n paramters with best loss.
+        Green will depict the best detected parameter and red demonstrates the top n paramters with best loss.
 
         Parameters
         ----------
@@ -1299,6 +1299,8 @@ class hgboost:
 
 
 # %%
+
+# %%
 def _store_validation_scores(results_summary, best_params, model_basic, val_score_basic, val_score, greater_is_better):
     # Store default parameters
     params = [*best_params.keys()]
@@ -1360,7 +1362,7 @@ def _store_validation_scores(results_summary, best_params, model_basic, val_scor
 
 #     # Plot results with testsize
 #     idx = np.where(tmpdf['best'].values)[0]
-#     ax1.hlines(tmpdf['loss'].iloc[idx], 0, tmpdf['loss'].shape[0], colors='g', linestyles='dashed', label='Best (wihtout cv)')
+#     ax1.hlines(tmpdf['loss'].iloc[idx], 0, tmpdf['loss'].shape[0], colors='g', linestyles='dashed', label='Best (without cv)')
 #     ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss'].iloc[idx], colors='g', linestyles='dashed')
 #     best_loss = tmpdf['loss'].iloc[idx]
 #     title = ('%s (%s: %.3g)' %(method, model.eval_metric, best_loss))
@@ -1375,7 +1377,7 @@ def _store_validation_scores(results_summary, best_params, model_basic, val_scor
 #         title = ('%s (%.0d-fold cv mean %s: %.3g)' %(method, model.cv, model.eval_metric, best_loss))
 #         ax1.set_xlabel('Model number')
 
-#     # Plot all other evalution results on the single test-set
+#     # Plot all other evaluation results on the single test-set
 #     ax1.scatter(tmpdf['tid'].values, tmpdf['loss'].values, s=10, label='All models')
 
 #     # Set labels
