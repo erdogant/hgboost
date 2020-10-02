@@ -29,6 +29,8 @@ from hyperopt import fmin, tpe, STATUS_OK, Trials, hp
 
 from tqdm import tqdm
 import time
+import copy
+
 
 # %%
 class hgboost:
@@ -50,7 +52,7 @@ class hgboost:
             If set to None, each iteration (max_eval) is tested.
             If set to 0, cross validation is not performed.
         test_size : float, (default : 0.2)
-            Splitting train/test set with test_size=0.2 and train = 1-test_size.
+            Splitting train/test set with test_size=0.2 and train=1-test_size.
         val_size : float, (default : 0.2)
             Setup the validation set. This part is kept entirely separate from the test-size.
         random_state : int, (default : None)
@@ -74,20 +76,20 @@ class hgboost:
 
         """
         if (threshold is None) or (threshold <= 0): raise ValueError('[hgboost] >Error: [threshold] must be >0 and not [None]')
-        if (max_eval is None) or (max_eval <= 0): max_eval = 1
+        if (max_eval is None) or (max_eval <= 0): max_eval=1
         if top_cv_evals is None: max_eval=0
         if (test_size is None) or (test_size <= 0): raise ValueError('[hgboost] >Error: test_size must be >0 and not [None] Note: the final model is learned on the entire dataset. [test_size] may help you getting a more robust model.')
 
         self.max_eval=max_eval
         self.top_cv_evals=top_cv_evals
-        self.threshold = threshold
+        self.threshold=threshold
         self.test_size=test_size
         self.val_size=val_size
         self.algo=tpe.suggest
-        self.cv = cv
-        self.random_state = random_state
-        self.n_jobs = n_jobs
-        self.verbose = verbose
+        self.cv=cv
+        self.random_state=random_state
+        self.n_jobs=n_jobs
+        self.verbose=verbose
 
     def _fit(self, X, y, pos_label=None):
         """Fit the best performing model.
@@ -120,7 +122,7 @@ class hgboost:
 
         """
         # Check input data
-        X, y, self.pos_label = _check_input(X, y, pos_label, self.method, verbose=self.verbose)
+        X, y, self.pos_label=_check_input(X, y, pos_label, self.method, verbose=self.verbose)
 
         # Print to screen
         if self.verbose>=3:
@@ -131,7 +133,7 @@ class hgboost:
         # Set validation set
         self._set_validation_set(X, y)
         # Find best parameters
-        self.model, self.results = self._HPOpt()
+        self.model, self.results=self._HPOpt()
         # Fit on all data using best parameters
         if self.verbose>=3: print('[hgboost] >Retrain [%s] on the entire dataset with the optimal parameters settings.' %(self.method))
         self.model.fit(X, y)
@@ -140,7 +142,7 @@ class hgboost:
 
     def _classification(self, X, y, eval_metric, greater_is_better, params):
         # Gather for method, the default metric and greater is better.
-        self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
+        self.eval_metric, self.greater_is_better=_check_eval_metric(self.method, eval_metric, greater_is_better)
         # Import search space for the specific function
         if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, verbose=self.verbose)
         self.space = params
@@ -171,8 +173,8 @@ class hgboost:
             Response variable.
         eval_metric : str, (default : 'rmse').
             Evaluation metric for the regressor model.
-                * 'rmse' : root mean squared error.
-                * 'mae' : mean absolute error.
+                * 'rmse': root mean squared error.
+                * 'mae': mean absolute error.
         greater_is_better : bool (default : False).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
         params : dict, (default : 'default').
@@ -207,8 +209,8 @@ class hgboost:
             Response variable.
         eval_metric : str, (default : 'rmse').
             Evaluation metric for the regressor model.
-            * 'rmse' : root mean squared error.
-            * 'mae' : mean absolute error.
+            * 'rmse': root mean squared error.
+            * 'mae': mean absolute error.
         greater_is_better : bool (default : False).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
         params : dict, (default : 'default').
@@ -243,8 +245,8 @@ class hgboost:
             Response variable.
         eval_metric : str, (default : 'rmse').
             Evaluation metric for the regressor model.
-                * 'rmse' : root mean squared error.
-                * 'mae' : mean absolute error.
+                * 'rmse': root mean squared error.
+                * 'mae': mean absolute error.
         greater_is_better : bool (default : False).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
         params : dict, (default : 'default').
@@ -284,11 +286,11 @@ class hgboost:
             * 'xgb_clf_multi': XGboost multi-class classifier
         eval_metric : str, (default : None).
             Evaluation metric for the regressor of classification model.
-                * 'auc' : area under ROC curve (default for two-class)
-                * 'kappa' : (default for multi-class)
-                * 'f1' : F1-score
+                * 'auc': area under ROC curve (default for two-class)
+                * 'kappa': (default for multi-class)
+                * 'f1': F1-score
                 * 'logloss'
-                * 'auc_cv' : Compute average auc per iteration in each cross. This approach is computational expensive.
+                * 'auc_cv': Compute average auc per iteration in each cross. This approach is computational expensive.
         greater_is_better : bool.
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
                 * auc :  True -> two-class
@@ -325,11 +327,11 @@ class hgboost:
             Fit the model on the pos_label that that is in [y].
         eval_metric : str, (default : 'auc').
             Evaluation metric for the regressor of classification model.
-                * 'auc' : area under ROC curve (default for two-class)
-                * 'kappa' : (default for multi-class)
-                * 'f1' : F1-score
+                * 'auc': area under ROC curve (default for two-class)
+                * 'kappa': (default for multi-class)
+                * 'f1': F1-score
                 * 'logloss'
-                * 'auc_cv' : Compute average auc per iteration in each cross. This approach is computational expensive.
+                * 'auc_cv': Compute average auc per iteration in each cross. This approach is computational expensive.
         greater_is_better : bool (default : True).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
 
@@ -364,11 +366,11 @@ class hgboost:
             Fit the model on the pos_label that that is in [y].
         eval_metric : str, (default : 'auc')
             Evaluation metric for the regressor of classification model.
-                * 'auc' : area under ROC curve (default for two-class)
-                * 'kappa' : (default for multi-class)
-                * 'f1' : F1-score
+                * 'auc': area under ROC curve (default for two-class)
+                * 'kappa': (default for multi-class)
+                * 'f1': F1-score
                 * 'logloss'
-                * 'auc_cv' : Compute average auc per iteration in each cross. This approach is computational expensive.
+                * 'auc_cv': Compute average auc per iteration in each cross. This approach is computational expensive.
         greater_is_better : bool (default : True)
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
 
@@ -411,14 +413,14 @@ class hgboost:
                 * ['xgb_reg','ctb_reg','lgb_reg']
         eval_metric : str, (default : 'auc')
             Evaluation metric for the regressor of classification model.
-                * 'auc' : area under ROC curve (two-class classification : default)
+                * 'auc': area under ROC curve (two-class classification : default)
         greater_is_better : bool (default : True)
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
                 * auc :  True -> two-class
         voting : str, (default : 'soft')
             Combining classifier using a voting scheme.
-                * 'hard' : using predicted classes.
-                * 'soft' : using the Probabilities.
+                * 'hard': using predicted classes.
+                * 'soft': using the Probabilities.
 
         Returns
         -------
@@ -428,8 +430,6 @@ class hgboost:
             * model: Ensemble of the best performing models.
             * val_results: Results on independent validation dataset.
         """
-
-        import copy
         # Store parameters in object
         self.results = {}
         self.voting = voting
@@ -556,7 +556,8 @@ class hgboost:
         disable = (False if (self.verbose<3) else True)
         fn = getattr(self, self.method)
 
-        # Split train-test set. This set is used for parameter optimization. Note that parameters are shuffled and the train-test set is retained constant. This will make the comparison across parameters and not differences in train-test variances.
+        # Split train-test set. This set is used for parameter optimization. Note that parameters are shuffled and the train-test set is retained constant.
+        # This will make the comparison across parameters and not differences in train-test variances.
         if '_clf' in self.method:
             self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
         elif '_reg' in self.method:
@@ -826,8 +827,8 @@ class hgboost:
                 # Negative loss score if required
                 if self.greater_is_better: loss = loss * -1
                 # Store
-                out = {'loss': loss, 'eval_time': time.time(), 'status': STATUS_OK, 'model' : model}
-                # out = {'loss': loss, 'eval_time': time.time(), 'auc': results['auc'], 'kappa': results['kappa'], 'f1': results['f1'], 'status': STATUS_OK, 'model' : model}
+                out = {'loss': loss, 'eval_time': time.time(), 'status': STATUS_OK, 'model': model}
+                # out = {'loss': loss, 'eval_time': time.time(), 'auc': results['auc'], 'kappa': results['kappa'], 'f1': results['f1'], 'status': STATUS_OK, 'model': model}
         elif '_reg' in self.method:
             # Regression
             # loss = space['loss_func'](y_test, y_pred)
@@ -841,7 +842,7 @@ class hgboost:
             # Negative loss score if required
             if self.greater_is_better: loss = loss * -1
             # Store results
-            out = {'loss': loss, 'eval_time': time.time(), 'status': STATUS_OK, 'model' : model}
+            out = {'loss': loss, 'eval_time': time.time(), 'status': STATUS_OK, 'model': model}
         else:
             raise ValueError('[hgboost] >Error: Method %s does not exists.' %(self.method))
 
@@ -1094,7 +1095,7 @@ class hgboost:
         nrCols = 3
         nrRows = int(np.ceil(len(params) / 3))
 
-        ################### Density plot for each parameter ##################
+        # Density plot for each parameter
         fig, ax = plt.subplots(nrRows, nrCols, figsize=figsize)
         i_row = -1
         for i, param in enumerate(params):
@@ -1134,7 +1135,7 @@ class hgboost:
             # print(i_col)
             # print(i_row)
 
-        ##################### Scatter plot #####################
+        # Scatter plot
         df_sum = summary_results.sort_values(by='tid', ascending=True)
         idx_best = np.where(df_sum[colbest])[0]
         if self.cv is not None:
@@ -1161,7 +1162,7 @@ class hgboost:
                 ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best_cv], df_sum[param].values[idx_best], s=100, color='r', marker='x', label='Best ' + str(self.cv) + '-fold cv')
 
             # Set labels
-            ax2[i_row][i_col].set(xlabel = 'iteration', ylabel = '{}'.format(param), title = '{} over Search'.format(param))
+            ax2[i_row][i_col].set(xlabel='iteration', ylabel='{}'.format(param), title='{} over Search'.format(param))
             if self.cv is not None:
                 ax2[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, df_sum[param].values[idx_best_cv], self.cv)))
             else:
@@ -1249,47 +1250,33 @@ class hgboost:
         if return_ax:
             return ax1, ax2
 
-    # def plot(self, ylim=None, figsize=(15, 10), return_ax=False):
-    #     """Plot the summary results.
-
-    #     Parameters
-    #     ----------
-    #     ylim : tuple
-    #         Set the y-limit. In case of auc it can be: (0.5, 1)
-    #     figsize: tuple, default (25,25)
-    #         Figure size, (height, width)
-
-    #     Returns
-    #     -------
-    #     ax : object
-    #         Figure axis.
-
-    #     """
-    #     ax1, ax2 = None, None
-    #     if (not hasattr(self, 'model')):
-    #         print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost, lightboost or ensemble <return>')
-    #         return ax1, ax2
-
-    #     if hasattr(self.model, 'val_result'):
-    #         _, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
-    #     else:
-    #         _, ax1 = plt.subplots(1, 1, figsize=figsize)
-
-    #     # Plot the ensemble or the other models
-    #     if ('ensemble' in self.method):
-    #         ax1, ax2 = self.plot_summary_ensemble(ylim, figsize, ax1, ax2)
-    #     else:
-    #         ax1, ax2 = plot_summary(self, ylim=ylim, figsize=figsize, return_ax=return_ax, ax1=ax1, ax2=ax2)
-
-    #     return ax1, ax2
-
     def plot_ensemble(self, ylim, figsize, ax1, ax2):
+        """Plot ensemble results.
+
+        Parameters
+        ----------
+        ylim : tuple
+            Set the y-limit. In case of auc it can be: (0.5, 1)
+        figsize: tuple, default (25,25)
+            Figure size, (height, width)
+        ax1 : Object
+            Axis of figure 1
+        ax2 : Object
+            Axis of figure 2
+
+        Returns
+        -------
+        ax : object
+            Figure axis.
+
+        """
         # Get models
         keys = np.array([*self.results.keys()])
         if self.method=='ensemble_reg':
             Iloc = list(map(lambda x: '_reg' in x, keys))
         else:
             Iloc = list(map(lambda x: '_clf' in x, keys))
+
         methods = keys[Iloc]
 
         for method in methods:
@@ -1297,8 +1284,6 @@ class hgboost:
             # self.results['summary'] = pd.concat([hgbX.results['summary'], hgbC.results['summary'], hgbL.results['summary']])
             # ax1, ax2 = plot_summary(model, ylim=ylim, figsize=figsize, return_ax=True, method=method, ax1=ax1, ax2=ax2)
 
-
-# %%
 
 # %%
 def _store_validation_scores(results_summary, best_params, model_basic, val_score_basic, val_score, greater_is_better):
@@ -1324,81 +1309,7 @@ def _store_validation_scores(results_summary, best_params, model_basic, val_scor
 
     return results_summary
 
-# %% Plot summary
-# def plot_summary(model, ylim=None, figsize=(15, 10), return_ax=False, method=None, ax1=None, ax2=None, verbose=3):
-#     """Plot the summary results.
 
-#     Parameters
-#     ----------
-#     ylim : tuple
-#         Set the y-limit. In case of auc it can be: (0.5, 1)
-#     figsize: tuple, default (25,25)
-#         Figure size, (height, width)
-
-#     Returns
-#     -------
-#     ax : object
-#         Figure axis.
-
-#     """
-
-#     if method is None:
-#         method = model.method
-
-#     if ('ensemble' in method):
-#         if verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
-#         return None, None
-#     if (not hasattr(model, 'model')):
-#         print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
-#         return None, None
-
-#     if ax1 is None:
-#         if hasattr(model, 'val_result'):
-#             _, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
-#         else:
-#             _, ax1 = plt.subplots(1, 1, figsize=figsize)
-
-#     tmpdf = model.results['summary'].sort_values(by='tid', ascending=True)
-
-#     # Plot results with testsize
-#     idx = np.where(tmpdf['best'].values)[0]
-#     ax1.hlines(tmpdf['loss'].iloc[idx], 0, tmpdf['loss'].shape[0], colors='g', linestyles='dashed', label='Best (without cv)')
-#     ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss'].iloc[idx], colors='g', linestyles='dashed')
-#     best_loss = tmpdf['loss'].iloc[idx]
-#     title = ('%s (%s: %.3g)' %(method, model.eval_metric, best_loss))
-
-#     # Plot results with cv
-#     if model.cv is not None:
-#         ax1.errorbar(tmpdf['tid'], tmpdf['loss_mean'], tmpdf['loss_std'], marker='s', mfc='red', label=str(model.cv) + '-fold cv for top ' + str(model.top_cv_evals) + ' models')
-#         idx = np.where(tmpdf['best_cv'].values)[0]
-#         ax1.hlines(tmpdf['loss_mean'].iloc[idx], 0, tmpdf['loss_mean'].shape[0], colors='r', linestyles='dotted', label='Best (' + str(model.cv) + '-fold cv)')
-#         ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss_mean'].iloc[idx], colors='r', linestyles='dashed')
-#         best_loss = tmpdf['loss_mean'].iloc[idx]
-#         title = ('%s (%.0d-fold cv mean %s: %.3g)' %(method, model.cv, model.eval_metric, best_loss))
-#         ax1.set_xlabel('Model number')
-
-#     # Plot all other evaluation results on the single test-set
-#     ax1.scatter(tmpdf['tid'].values, tmpdf['loss'].values, s=10, label='All models')
-
-#     # Set labels
-#     ax1.set_title(title)
-#     ax1.set_ylabel(model.eval_metric)
-#     ax1.grid(True)
-#     ax1.legend()
-#     if ylim is not None: ax1.set_ylim(ylim)
-
-#     if hasattr(model.model, 'val_result'):
-#         eval_metric = [*model.model.evals_result()['validation_0'].keys()][0]
-#         ax2.plot([*model.model.evals_result()['validation_0'].values()][0], label='Train error')
-#         ax2.plot([*model.model.evals_result()['validation_1'].values()][0], label='Test error')
-#         ax2.set_ylabel(eval_metric)
-#         ax2.set_title(method)
-#         ax2.grid(True)
-#         ax2.legend()
-
-#     if return_ax:
-#         return ax1, ax2
-    
 # %% Import example dataset from github.
 def import_example(data='titanic', url=None, sep=',', verbose=3):
     """Import example dataset from github source.
@@ -1475,13 +1386,13 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
     # XGB parameters
     if fn_name=='xgb_reg':
         xgb_reg_params = {
-            'learning_rate' : hp.quniform('learning_rate', 0.05, 0.31, 0.05),
-            'max_depth' : hp.choice('max_depth', np.arange(5, 30, 1, dtype=int)),
+            'learning_rate': hp.quniform('learning_rate', 0.05, 0.31, 0.05),
+            'max_depth': hp.choice('max_depth', np.arange(5, 30, 1, dtype=int)),
             'min_child_weight': hp.choice('min_child_weight', np.arange(1, 10, 1, dtype=int)),
             'gamma': hp.choice('gamma', [0, 0.25, 0.5, 1.0]),
             'reg_lambda': hp.choice('reg_lambda', [0.1, 1.0, 5.0, 10.0, 50.0, 100.0]),
             'subsample': hp.uniform('subsample', 0.5, 1),
-            'n_estimators' : hp.choice('n_estimators', range(20, 205, 5)),
+            'n_estimators': hp.choice('n_estimators', range(20, 205, 5)),
         }
         space = {}
         space['model_params'] = xgb_reg_params
@@ -1491,11 +1402,11 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
     # LightGBM parameters
     if fn_name=='lgb_reg':
         lgb_reg_params = {
-            'learning_rate' : hp.quniform('learning_rate', 0.05, 0.31, 0.05),
-            'max_depth' : hp.choice('max_depth', np.arange(5, 30, 1, dtype=int)),
+            'learning_rate': hp.quniform('learning_rate', 0.05, 0.31, 0.05),
+            'max_depth': hp.choice('max_depth', np.arange(5, 30, 1, dtype=int)),
             'min_child_weight': hp.choice('min_child_weight', np.arange(1, 8, 1, dtype=int)),
             'subsample': hp.uniform('subsample', 0.8, 1),
-            'n_estimators' : hp.choice('n_estimators', range(20, 205, 5)),
+            'n_estimators': hp.choice('n_estimators', range(20, 205, 5)),
         }
         space = {}
         space['model_params'] = lgb_reg_params
@@ -1506,10 +1417,10 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
     # CatBoost regression parameters
     if fn_name=='ctb_reg':
         ctb_reg_params = {
-            'learning_rate' : hp.quniform('learning_rate', 0.05, 0.31, 0.05),
-            'max_depth' : hp.choice('max_depth', np.arange(2, 16, 1, dtype=int)),
-            'colsample_bylevel' : hp.choice('colsample_bylevel', np.arange(0.3, 0.8, 0.1)),
-            'n_estimators' : hp.choice('n_estimators', range(20, 205, 5)),
+            'learning_rate': hp.quniform('learning_rate', 0.05, 0.31, 0.05),
+            'max_depth': hp.choice('max_depth', np.arange(2, 16, 1, dtype=int)),
+            'colsample_bylevel': hp.choice('colsample_bylevel', np.arange(0.3, 0.8, 0.1)),
+            'n_estimators': hp.choice('n_estimators', range(20, 205, 5)),
         }
         space = {}
         space['model_params'] = ctb_reg_params
@@ -1518,65 +1429,65 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
 
     # CatBoost classification parameters
     if fn_name=='ctb_clf':
-        ctb_clf_params = {
-            'learning_rate' : hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.31), base = 10, num = 1000)),
-            'depth' : hp.choice('max_depth', np.arange(2, 16, 1, dtype=int)),
-            'iterations' : hp.choice('iterations', np.arange(100, 1000, 100)),
-            'l2_leaf_reg' : hp.choice('l2_leaf_reg', np.arange(1, 100, 2)),
-            'border_count' : hp.choice('border_count', np.arange(5, 200, 1)),
-            'thread_count' : 4,
+        ctb_clf_params={
+            'learning_rate': hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.31), base=10, num=1000)),
+            'depth': hp.choice('max_depth', np.arange(2, 16, 1, dtype=int)),
+            'iterations': hp.choice('iterations', np.arange(100, 1000, 100)),
+            'l2_leaf_reg': hp.choice('l2_leaf_reg', np.arange(1, 100, 2)),
+            'border_count': hp.choice('border_count', np.arange(5, 200, 1)),
+            'thread_count': 4,
         }
-        space = {}
-        space['model_params'] = ctb_clf_params
-        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
+        space={}
+        space['model_params']=ctb_clf_params
+        space['fit_params']={'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
         return(space)
 
     # LightBoost classification parameters
     if fn_name=='lgb_clf':
-        lgb_clf_params = {
-            'learning_rate' : hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.5), base = 10, num = 1000)),
-            'max_depth' : hp.choice('max_depth', np.arange(5, 75, 1)),
-            'boosting_type' : hp.choice('boosting_type', ['gbdt','goss','dart']),
-            'num_leaves' : hp.choice('num_leaves', np.arange(100, 1000, 100)),
-            'n_estimators' : hp.choice('n_estimators', np.arange(20, 205, 5)),
-            'subsample_for_bin' : hp.choice('subsample_for_bin', np.arange(20000, 300000, 20000)),
-            'min_child_samples' : hp.choice('min_child_weight', np.arange(20, 500, 5)),
-            'reg_alpha' : hp.quniform('reg_alpha', 0, 1, 0.01),
-            'reg_lambda' : hp.quniform('reg_lambda', 0, 1, 0.01),
-            'colsample_bytree' : hp.quniform('colsample_bytree', 0.6, 1, 0.01),
-            'subsample' : hp.quniform('subsample', 0.5, 1, 100),
-            'bagging_fraction' : hp.choice('bagging_fraction', np.arange(0.2, 1, 0.2)),
-            'is_unbalance' : hp.choice('is_unbalance', [True, False]),
+        lgb_clf_params={
+            'learning_rate': hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.5), base=10, num=1000)),
+            'max_depth': hp.choice('max_depth', np.arange(5, 75, 1)),
+            'boosting_type': hp.choice('boosting_type', ['gbdt', 'goss', 'dart']),
+            'num_leaves': hp.choice('num_leaves', np.arange(100, 1000, 100)),
+            'n_estimators': hp.choice('n_estimators', np.arange(20, 205, 5)),
+            'subsample_for_bin': hp.choice('subsample_for_bin', np.arange(20000, 300000, 20000)),
+            'min_child_samples': hp.choice('min_child_weight', np.arange(20, 500, 5)),
+            'reg_alpha': hp.quniform('reg_alpha', 0, 1, 0.01),
+            'reg_lambda': hp.quniform('reg_lambda', 0, 1, 0.01),
+            'colsample_bytree': hp.quniform('colsample_bytree', 0.6, 1, 0.01),
+            'subsample': hp.quniform('subsample', 0.5, 1, 100),
+            'bagging_fraction': hp.choice('bagging_fraction', np.arange(0.2, 1, 0.2)),
+            'is_unbalance': hp.choice('is_unbalance', [True, False]),
         }
-        space = {}
-        space['model_params'] = lgb_clf_params
-        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
+        space={}
+        space['model_params']=lgb_clf_params
+        space['fit_params']={'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
         return(space)
 
     if 'xgb_clf' in fn_name:
-        xgb_clf_params = {
-            'learning_rate' : hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.5), base = 10, num = 1000)),
-            'max_depth' : hp.choice('max_depth', range(5, 75, 1)),
-            'min_child_weight' : hp.quniform('min_child_weight', 1, 10, 1),
-            'gamma' : hp.choice('gamma', [0.5, 1, 1.5, 2, 5]),
-            'subsample' : hp.quniform('subsample', 0.1, 1, 0.01),
-            'n_estimators' : hp.choice('n_estimators', range(20, 205, 5)),
-            'booster' : 'gbtree',
-            'colsample_bytree' : hp.quniform('colsample_bytree', 0.1, 1.0, 0.01),
+        xgb_clf_params={
+            'learning_rate': hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.5), base=10, num=1000)),
+            'max_depth': hp.choice('max_depth', range(5, 75, 1)),
+            'min_child_weight': hp.quniform('min_child_weight', 1, 10, 1),
+            'gamma': hp.choice('gamma', [0.5, 1, 1.5, 2, 5]),
+            'subsample': hp.quniform('subsample', 0.1, 1, 0.01),
+            'n_estimators': hp.choice('n_estimators', range(20, 205, 5)),
+            'booster': 'gbtree',
+            'colsample_bytree': hp.quniform('colsample_bytree', 0.1, 1.0, 0.01),
         }
 
         if fn_name=='xgb_clf':
-            # xgb_clf_params['eval_metric'] = hp.choice('eval_metric', ['error', eval_metric])
-            xgb_clf_params['objective'] = 'binary:logistic'
-            xgb_clf_params['scale_pos_weight'] = hp.choice('scale_pos_weight', [0, 0.5, 1])
+            # xgb_clf_params['eval_metric']=hp.choice('eval_metric', ['error', eval_metric])
+            xgb_clf_params['objective']='binary:logistic'
+            xgb_clf_params['scale_pos_weight']=hp.choice('scale_pos_weight', [0, 0.5, 1])
 
         if fn_name=='xgb_clf_multi':
             xgb_clf_params['objective']='multi:softprob'
             # scoring='kappa'
 
-        space = {}
-        space['model_params'] = xgb_clf_params
-        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
+        space={}
+        space['model_params']=xgb_clf_params
+        space['fit_params']={'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
 
         if verbose>=3: print('[hgboost] >Number of variables in search space is [%.0d], loss function: [%s].' %(len([*space['model_params']]), eval_metric))
         return(space)
@@ -1598,17 +1509,17 @@ def _check_input(X, y, pos_label, method, verbose=4):
         if np.any(np.isnan(y)): raise ValueError('[hgboost] >Error: Response variable y can not have nan values.')
 
     if ('_reg' in method):
-        pos_label = None
+        pos_label=None
 
     # Set pos_label and y
     if (pos_label is not None) and ('_clf' in method):
         if verbose>=4: print('[hgboost] >pos_label is used to set [%s].' %(pos_label))
-        y = y==pos_label
+        y=y==pos_label
         pos_label=True
 
     # Checks pos_label status in case of method is classification
     if ('_clf' in method) and (pos_label is None) and (str(y.dtype)=='bool'):
-        pos_label = True
+        pos_label=True
         if verbose>=4: print('[hgboost] >[pos_label] is set to [%s] because [y] is of type [bool].' %(pos_label))
 
     # Raise ValueError in case of pos_label is not set and not bool.
@@ -1628,11 +1539,11 @@ def _check_input(X, y, pos_label, method, verbose=4):
         raise ValueError('[hgboost] >Error: [xgb_clf_multi] requires >2 classes. Hint: use method="xgb_clf"')
 
     if ('_clf_multi' in method):
-        pos_label = None
+        pos_label=None
         if verbose>=4: print('[hgboost] >[pos_label] is set to [None] because [method] is of type [%s].' %(method))
 
     # Check counts y
-    y_counts = np.unique(y, return_counts=True)[1]
+    y_counts=np.unique(y, return_counts=True)[1]
     if np.any(y_counts<5) and ('_clf' in method):
         raise ValueError('[hgboost] >Error: [y] contains [%.0d] classes with < 5 samples. Each class should have >=5 samples.' %(sum(y_counts<5)))
     # Check number of classes, should be >1
@@ -1641,7 +1552,7 @@ def _check_input(X, y, pos_label, method, verbose=4):
 
     # Set X
     X.reset_index(drop=True, inplace=True)
-    X.columns = X.columns.values.astype(str)
+    X.columns=X.columns.values.astype(str)
     if verbose>=4: print('[hgboost] >Reset index for X.')
 
     # Return
@@ -1651,24 +1562,24 @@ def _check_input(X, y, pos_label, method, verbose=4):
 def _check_eval_metric(method, eval_metric, greater_is_better, verbose=3):
     # Check the eval_metric
     if (eval_metric is None) and ('_reg' in method):
-        eval_metric = 'rmse'
+        eval_metric='rmse'
     elif (eval_metric is None) and ('_clf_multi' in method):
-        eval_metric = 'kappa'
+        eval_metric='kappa'
     elif (eval_metric is None) and ('_clf' in method):
-        eval_metric = 'auc'
+        eval_metric='auc'
 
     # Check the greater_is_better for evaluation metric
     if greater_is_better is None:
         if (eval_metric == 'f1'):
-            greater_is_better = True
+            greater_is_better=True
         elif 'auc' in eval_metric:
-            greater_is_better = True
+            greater_is_better=True
         elif (eval_metric == 'kappa'):
-            greater_is_better = True
+            greater_is_better=True
         elif (eval_metric == 'rmse'):
-            greater_is_better = False
+            greater_is_better=False
         elif (eval_metric == 'mae'):
-            greater_is_better = False
+            greater_is_better=False
         else:
             if verbose>=2: print('[hgboost] >[%s] is not a implemented option. [greater_is_better] is set to %s' %(eval_metric, str(greater_is_better)))
 
