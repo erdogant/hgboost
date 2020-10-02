@@ -7,6 +7,7 @@
 [![GitHub Open Issues](https://img.shields.io/github/issues/erdogant/hgboost.svg)](https://github.com/erdogant/hgboost/issues)
 [![Project Status](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![Downloads](https://pepy.tech/badge/hgboost/month)](https://pepy.tech/project/hgboost/month)
+[![Downloads](https://pepy.tech/badge/hgboost)](https://pepy.tech/project/hgboost)
 [![Sphinx](https://img.shields.io/badge/Sphinx-Docs-Green)](https://erdogant.github.io/hgboost/)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb)
 
