@@ -1103,17 +1103,21 @@ class hgboost:
             i_col = np.mod(i, nrCols)
             # Make new column
             if i_col == 0: i_row = i_row + 1
-            # Make density
-            linefit = sns.distplot(summary_results[param],
-                                   hist=False,
-                                   kde=True,
-                                   rug=True,
-                                   color='darkblue',
-                                   kde_kws={'shade': shade, 'linewidth': 1, 'color': color_params[i, :]},
-                                   rug_kws={'color': 'black'},
-                                   ax=ax[i_row][i_col])
+            if self.verbose>=5: print('>Plot row: %.0d, col: %.0d' %(i_row, i_col))
+            # Retrieve the data from the seperate plots
+            y_data = sns.distplot(summary_results[param], hist=False, kde=True, ax=ax[i_row][i_col]).get_lines()[0].get_data()[1]
+            # y_data = linefit.get_lines()[0].get_data()[1]
 
-            y_data = linefit.get_lines()[0].get_data()[1]
+            # Make density
+            sns.distplot(summary_results[param],
+                         hist=False,
+                         kde=True,
+                         rug=True,
+                         color='darkblue',
+                         kde_kws={'shade': shade, 'linewidth': 1, 'color': color_params[i, :]},
+                         rug_kws={'color': 'black'},
+                         ax=ax[i_row][i_col])
+
             getvals = df_summary[param].values
             if len(y_data)>0:
                 # Plot the top n (not the first because that one is plotted in green)

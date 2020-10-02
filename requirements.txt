@@ -7,3 +7,12 @@ matplotlib
 numpy 
 pandas 
 tqdm
+hyperopt
+lightgbm
+catboost
+xgboost
+classeval
+treeplot
+df2onehot
+colourmap
+seaborn
