@@ -79,6 +79,7 @@ class hgboost:
         if (max_eval is None) or (max_eval <= 0): max_eval=1
         if top_cv_evals is None: max_eval=0
         if (test_size is None) or (test_size <= 0): raise ValueError('[hgboost] >Error: test_size must be >0 and not [None] Note: the final model is learned on the entire dataset. [test_size] may help you getting a more robust model.')
+        if (val_size is not None) and (val_size<=0): val_size=None
 
         self.max_eval=max_eval
         self.top_cv_evals=top_cv_evals
@@ -123,6 +124,10 @@ class hgboost:
         """
         # Check input data
         X, y, self.pos_label=_check_input(X, y, pos_label, self.method, verbose=self.verbose)
+
+        # Recaculate test size. This should be the percentage of the total dataset after removing the validation set.
+        if (self.val_size is not None) and (self.val_size > 0):
+            self.test_size = np.round((self.test_size * X.shape[0]) / (X.shape[0] - (self.val_size * X.shape[0])), 2)
 
         # Print to screen
         if self.verbose>=3:
@@ -522,6 +527,7 @@ class hgboost:
                 self.X, self.X_val, self.y, self.y_val = train_test_split(X, y, test_size=self.val_size, random_state=self.random_state, shuffle=True, stratify=y)
             elif '_reg' in self.method:
                 self.X, self.X_val, self.y, self.y_val = train_test_split(X, y, test_size=self.val_size, random_state=self.random_state, shuffle=True)
+            if self.verbose>=3: print('[hgboost] >Validation set: %s ' %(str(self.X_val.shape)))
         else:
             self.X = X
             self.y = y
@@ -551,7 +557,6 @@ class hgboost:
             * val_results: Results on independent validation dataset.
 
         """
-        if self.verbose>=3: print('[hgboost] >Hyperparameter optimization..')
         # Import the desired model-function for the classification/regression
         disable = (False if (self.verbose<3) else True)
         fn = getattr(self, self.method)
@@ -562,6 +567,10 @@ class hgboost:
             self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True, stratify=self.y)
         elif '_reg' in self.method:
             self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True)
+
+        if self.verbose>=3: print('[hgboost] >Train-set: %s ' %(str(self.X_train.shape)))
+        if self.verbose>=3: print('[hgboost] >Test-set: %s ' %(str(self.X_test.shape)))
+        if self.verbose>=3: print('[hgboost] >Hyperparameter optimization..')
 
         # Hyperoptimization to find best performing model. Set the trials which is the object where all the HPopt results are stored.
         trials=Trials()

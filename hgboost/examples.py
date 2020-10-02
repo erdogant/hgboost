@@ -19,20 +19,20 @@
 # plotting
 
 # %%
+import numpy as np
 from hgboost import hgboost
 print(dir(hgboost))
 # print(hgboost.__version__)
-import numpy as np
 
 # %%
-hgb_xgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
-df = hgb_xgb.import_example()
+hg = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+df = hg.import_example()
 y = df['Survived'].values
 del df['Survived']
-X = hgb_xgb.preprocessing(df, verbose=0)
+X = hg.preprocessing(df, verbose=0)
 
 # Fit
-results = hgb_xgb.xgboost(X, y, pos_label=1)
+results = hg.xgboost(X, y, pos_label=1)
 
 # %% HYPEROPTIMIZED XGBOOST
 hgb_xgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
