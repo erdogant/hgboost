@@ -179,6 +179,7 @@ class hgboost:
         eval_metric : str, (default : 'rmse').
             Evaluation metric for the regressor model.
                 * 'rmse': root mean squared error.
+                * 'mse': mean squared error.
                 * 'mae': mean absolute error.
         greater_is_better : bool (default : False).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
@@ -214,8 +215,9 @@ class hgboost:
             Response variable.
         eval_metric : str, (default : 'rmse').
             Evaluation metric for the regressor model.
-            * 'rmse': root mean squared error.
-            * 'mae': mean absolute error.
+                * 'rmse': root mean squared error.
+                * 'mse': mean squared error.
+                * 'mae': mean absolute error.
         greater_is_better : bool (default : False).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
         params : dict, (default : 'default').
@@ -251,6 +253,7 @@ class hgboost:
         eval_metric : str, (default : 'rmse').
             Evaluation metric for the regressor model.
                 * 'rmse': root mean squared error.
+                * 'mse': mean squared error.
                 * 'mae': mean absolute error.
         greater_is_better : bool (default : False).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
@@ -841,8 +844,10 @@ class hgboost:
         elif '_reg' in self.method:
             # Regression
             # loss = space['loss_func'](y_test, y_pred)
-            if self.eval_metric=='rmse':
-                loss = mean_squared_error(y_test, y_pred)
+            if self.eval_metric=='mse':
+                loss = mean_squared_error(y_test, y_pred, squared=True)
+            elif self.eval_metric=='rmse':
+                loss = mean_squared_error(y_test, y_pred, squared=False)
             elif self.eval_metric=='mae':
                 loss = mean_absolute_error(y_test, y_pred)
             else:
@@ -1590,6 +1595,8 @@ def _check_eval_metric(method, eval_metric, greater_is_better, verbose=3):
         elif (eval_metric == 'kappa'):
             greater_is_better=True
         elif (eval_metric == 'rmse'):
+            greater_is_better=False
+        elif (eval_metric == 'mse'):
             greater_is_better=False
         elif (eval_metric == 'mae'):
             greater_is_better=False

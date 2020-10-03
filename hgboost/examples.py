@@ -100,6 +100,8 @@ X = X.loc[I,:]
 y = y[I]
 
 # Fit
+results = hgb.xgboost_reg(X, y, eval_metric='mse')
+results = hgb.xgboost_reg(X, y, eval_metric='rmse')
 results = hgb.xgboost_reg(X, y, eval_metric='mae')
 results = hgb.catboost_reg(X, y, eval_metric='mae')
 results = hgb.lightboost_reg(X, y, eval_metric='mae')
