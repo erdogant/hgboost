@@ -36,12 +36,12 @@ import copy
 class hgboost:
     """Create a class hgboost that is instantiated with the desired method."""
 
-    def __init__(self, max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, n_jobs=-1, verbose=3):
+    def __init__(self, max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, is_unbalance=True, random_state=None, n_jobs=-1, verbose=3):
         """Initialize hgboost with user-defined parameters.
 
         Parameters
         ----------
-        max_eval : int, (default : 250W)
+        max_eval : int, (default : 250)
             Search space is created on the number of evaluations.
         threshold : float, (default : 0.5)
             Classification threshold. In case of two-class model this is 0.5
@@ -55,6 +55,12 @@ class hgboost:
             Splitting train/test set with test_size=0.2 and train=1-test_size.
         val_size : float, (default : 0.2)
             Setup the validation set. This part is kept entirely separate from the test-size.
+        is_unbalance : Bool, (default: True)
+            Control the balance of positive and negative weights, useful for unbalanced classes.
+            xgboost clf : sum(negative instances) / sum(positive instances)
+            catboost clf : sum(negative instances) / sum(positive instances)
+            lightgbm clf : balanced
+            False: grid search
         random_state : int, (default : None)
             Fix the random state for validation set and test set. Note that is not used for the crossvalidation.
         n_jobs : int, (default : -1)
@@ -91,6 +97,7 @@ class hgboost:
         self.random_state=random_state
         self.n_jobs=n_jobs
         self.verbose=verbose
+        self.is_unbalance = is_unbalance
 
     def _fit(self, X, y, pos_label=None):
         """Fit the best performing model.
@@ -149,7 +156,7 @@ class hgboost:
         # Gather for method, the default metric and greater is better.
         self.eval_metric, self.greater_is_better=_check_eval_metric(self.method, eval_metric, greater_is_better)
         # Import search space for the specific function
-        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, verbose=self.verbose)
+        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, y=y, pos_label=self.pos_label, is_unbalance=self.is_unbalance, verbose=self.verbose)
         self.space = params
         # Fit model
         self.results = self._fit(X, y, pos_label=self.pos_label)
@@ -160,7 +167,7 @@ class hgboost:
         # Gather for method, the default metric and greater is better.
         self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
         # Import search space for the specific function
-        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, verbose=self.verbose)
+        if params == 'default': params = _get_params(y, self.method, eval_metric=self.eval_metric, verbose=self.verbose)
         self.space = params
         # Fit model
         self.results = self._fit(X, y)
@@ -1010,11 +1017,13 @@ class hgboost:
 
         return ax
 
-    def plot_validation(self, figsize=(15, 8), cmap='Set2', return_ax=False):
+    def plot_validation(self, figsize=(15, 8), cmap='Set2', normalized=None, return_ax=False):
         """Plot the results on the validation set.
 
         Parameters
         ----------
+        normalized: Bool, (default : None)
+            Normalize the confusion matrix when True.
         figsize: tuple, default (25,25)
             Figure size, (height, width)
 
@@ -1031,10 +1040,11 @@ class hgboost:
         if self.val_size is None:
             print('[hgboost] >No validation set found. Hint: use the parameter [val_size=0.2] first <return>')
             return None
-
+        
         title = 'Results on independent validation set'
         if ('_clf' in self.method) and not ('_multi' in self.method):
             if (self.results.get('val_results', None)) is not None:
+                if normalized is not None: self.results['val_results']['confmat']['normalized']=normalized
                 ax = cle.plot(self.results['val_results'], title=title)
                 if return_ax: return ax
         elif ('_reg' in self.method):
@@ -1392,7 +1402,7 @@ def import_example(data='titanic', url=None, sep=',', verbose=3):
 
 
 # %% Set the search spaces
-def _get_params(fn_name, eval_metric=None, verbose=3):
+def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=False, verbose=3):
     # choice : categorical variables
     # quniform : discrete uniform (integers spaced evenly)
     # uniform: continuous uniform (floats spaced evenly)
@@ -1447,6 +1457,14 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
 
     # CatBoost classification parameters
     if fn_name=='ctb_clf':
+        # Class sizes
+        if is_unbalance:
+            # https://catboost.ai/docs/concepts/python-reference_parameters-list.html#python-reference_parameters-list
+            if verbose>=3: print('[hgboost] >Correct for unbalanced classes using [auto_class_weights]..')
+            scale_pos_weight = np.sum(y!=pos_label) / np.sum(y==pos_label)
+        else:
+            scale_pos_weight = hp.choice('scale_pos_weight', np.arange(1, 101, 9))
+
         ctb_clf_params={
             'learning_rate': hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.31), base=10, num=1000)),
             'depth': hp.choice('max_depth', np.arange(2, 16, 1, dtype=int)),
@@ -1454,6 +1472,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
             'l2_leaf_reg': hp.choice('l2_leaf_reg', np.arange(1, 100, 2)),
             'border_count': hp.choice('border_count', np.arange(5, 200, 1)),
             'thread_count': 4,
+            'scale_pos_weight' : scale_pos_weight,
         }
         space={}
         space['model_params']=ctb_clf_params
@@ -1462,6 +1481,13 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
 
     # LightBoost classification parameters
     if fn_name=='lgb_clf':
+        # Class sizes
+        if is_unbalance:
+            if verbose>=3: print('[hgboost] >Correct for unbalanced classes using [is_unbalance]..')
+            is_unbalance = [True]
+        else:
+            is_unbalance = [True, False]
+
         lgb_clf_params={
             'learning_rate': hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.5), base=10, num=1000)),
             'max_depth': hp.choice('max_depth', np.arange(5, 75, 1)),
@@ -1475,7 +1501,7 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
             'colsample_bytree': hp.quniform('colsample_bytree', 0.6, 1, 0.01),
             'subsample': hp.quniform('subsample', 0.5, 1, 100),
             'bagging_fraction': hp.choice('bagging_fraction', np.arange(0.2, 1, 0.2)),
-            'is_unbalance': hp.choice('is_unbalance', [True, False]),
+            'is_unbalance': hp.choice('is_unbalance', is_unbalance),
         }
         space={}
         space['model_params']=lgb_clf_params
@@ -1497,7 +1523,13 @@ def _get_params(fn_name, eval_metric=None, verbose=3):
         if fn_name=='xgb_clf':
             # xgb_clf_params['eval_metric']=hp.choice('eval_metric', ['error', eval_metric])
             xgb_clf_params['objective']='binary:logistic'
-            xgb_clf_params['scale_pos_weight']=hp.choice('scale_pos_weight', [0, 0.5, 1])
+            # Class sizes
+            if is_unbalance:
+                if verbose>=3: print('[hgboost] >Correct for unbalanced classes using [scale_pos_weight]..')
+                scale_pos_weight = np.sum(y!=pos_label) / np.sum(y==pos_label)
+            else:
+                scale_pos_weight = hp.choice('scale_pos_weight', np.arange(1, 101, 9))
+            xgb_clf_params['scale_pos_weight']=scale_pos_weight
 
         if fn_name=='xgb_clf_multi':
             xgb_clf_params['objective']='multi:softprob'
