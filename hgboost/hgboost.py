@@ -22,9 +22,14 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
-import lightgbm as lgb
 import xgboost as xgb
 import catboost as ctb
+
+try:
+    import lightgbm as lgb
+except:
+    pass
+
 from hyperopt import fmin, tpe, STATUS_OK, Trials, hp
 
 from tqdm import tqdm
@@ -240,6 +245,7 @@ class hgboost:
             * val_results: Results on independent validation dataset.
 
         """
+
         if self.verbose>=3: print('[hgboost] >Start hgboost regression..')
         # Method
         self.method='lgb_reg'
@@ -1539,7 +1545,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
         space['model_params']=xgb_clf_params
         space['fit_params']={'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
 
-        if verbose>=3: print('[hgboost] >Number of variables in search space is [%.0d], loss function: [%s].' %(len([*space['model_params']]), eval_metric))
+        if verbose>=3: print('[hgboost] >Number of hyperparameters in gridsearch space is [%.0d], loss function: [%s].' %(len([*space['model_params']]), eval_metric))
         return(space)
 
 
