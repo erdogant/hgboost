@@ -172,7 +172,7 @@ class hgboost:
         # Gather for method, the default metric and greater is better.
         self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
         # Import search space for the specific function
-        if params == 'default': params = _get_params(y, self.method, eval_metric=self.eval_metric, verbose=self.verbose)
+        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, verbose=self.verbose)
         self.space = params
         # Fit model
         self.results = self._fit(X, y)
