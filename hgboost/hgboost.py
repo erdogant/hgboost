@@ -10,6 +10,7 @@ import classeval as cle
 from df2onehot import df2onehot
 import treeplot as tree
 import colourmap
+import pypickle
 
 import os
 import numpy as np
@@ -159,7 +160,7 @@ class hgboost:
 
     def _classification(self, X, y, eval_metric, greater_is_better, params):
         # Gather for method, the default metric and greater is better.
-        self.eval_metric, self.greater_is_better=_check_eval_metric(self.method, eval_metric, greater_is_better)
+        self.eval_metric, self.greater_is_better =_check_eval_metric(self.method, eval_metric, greater_is_better)
         # Import search space for the specific function
         if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, y=y, pos_label=self.pos_label, is_unbalance=self.is_unbalance, verbose=self.verbose)
         self.space = params
@@ -616,7 +617,7 @@ class hgboost:
             comparison_results['Model with HyperOptimized parameters (validation set)'] = val_results
             comparison_results['Model with default parameters (validation set)'] = val_results_basic
             if self.verbose>=3: print('[hgboost] >[%s]: %.4g using HyperOptimized parameters on validation set.' %(self.eval_metric, val_score['loss']))
-            if self.verbose>=3: print('[hgboost] >[%s]: %.4g using default parameters on validation set.' %(self.eval_metric, val_score_basic['loss']))
+            if self.verbose>=3: print('[hgboost] >[%s]: %.4g using default (not optimized) parameters on validation set.' %(self.eval_metric, val_score_basic['loss']))
             # Store validation results
             results_summary = _store_validation_scores(results_summary, best_params, model_basic, val_score_basic, val_score, self.greater_is_better)
 
@@ -876,7 +877,7 @@ class hgboost:
         if self.verbose>=5: print('[hgboost] >[%s] - [%s] - loss: %s' %(self.method, self.eval_metric, loss))
         return out, results
 
-    def preprocessing(self, df, y_min=2, perc_min_num=0.8, verbose=None):
+    def preprocessing(self, df, y_min=2, perc_min_num=0.8, excl_background='0.0', hot_only=False, verbose=None):
         """Pre-processing of the input data.
 
         Parameters
@@ -898,7 +899,7 @@ class hgboost:
 
         """
         if verbose is None: verbose = self.verbose
-        X = df2onehot(df, y_min=y_min, hot_only=False, perc_min_num=perc_min_num, excl_background='0.0', verbose=verbose)
+        X = df2onehot(df, y_min=y_min, hot_only=hot_only, perc_min_num=perc_min_num, excl_background=excl_background, verbose=verbose)
         return X['onehot']
 
     def import_example(self, data='titanic', url=None, sep=',', verbose=3):
@@ -1050,6 +1051,7 @@ class hgboost:
         title = 'Results on independent validation set'
         if ('_clf' in self.method) and not ('_multi' in self.method):
             if (self.results.get('val_results', None)) is not None:
+                print('[hgboost] >Results are plot from key: "results["val_results"]"')
                 if normalized is not None: self.results['val_results']['confmat']['normalized']=normalized
                 ax = cle.plot(self.results['val_results'], title=title)
                 if return_ax: return ax
@@ -1317,6 +1319,100 @@ class hgboost:
             model = self.results[method]
             # self.results['summary'] = pd.concat([hgbX.results['summary'], hgbC.results['summary'], hgbL.results['summary']])
             # ax1, ax2 = plot_summary(model, ylim=ylim, figsize=figsize, return_ax=True, method=method, ax1=ax1, ax2=ax2)
+
+    def save(self, filepath='hgboost_model.pkl', overwrite=False, verbose=3):
+        """Save learned model in pickle file.
+    
+        Parameters
+        ----------
+        filepath : str, (default: 'hgboost_model.pkl')
+            Pathname to store pickle files.
+        overwrite : bool, (default=False)
+            Overwite file if exists.
+        verbose : int, optional
+            Show message. A higher number gives more informatie. The default is 3.
+    
+        Returns
+        -------
+        bool : [True, False]
+            Status whether the file is saved.
+    
+        """
+        if (filepath is None) or (filepath==''):
+            filepath = 'hgboost_model.pkl'
+        if filepath[-4:] != '.pkl':
+            filepath = filepath + '.pkl'
+        # Store data
+        storedata = {}
+        storedata['results'] = self.results
+        storedata['method'] = self.method
+        storedata['eval_metric'] = self.eval_metric
+        storedata['greater_is_better'] = self.greater_is_better
+        storedata['space'] = self.space
+        storedata['model'] = self.model
+        storedata['algo'] = self.algo
+        storedata['max_eval'] = self.max_eval
+        storedata['top_cv_evals'] = self.top_cv_evals
+        storedata['threshold'] = self.threshold
+        storedata['test_size'] = self.test_size
+        storedata['val_size'] = self.val_size
+        storedata['cv'] = self.cv
+        storedata['random_state'] = self.random_state
+        storedata['n_jobs'] = self.n_jobs
+        storedata['verbose'] = self.verbose
+        storedata['is_unbalance'] = self.is_unbalance
+        # Save
+        status = pypickle.save(filepath, storedata, overwrite=overwrite, verbose=verbose)
+        if verbose>=3: print('[hgboost] >Saving.. %s' %(status))
+        # return
+        return status
+
+    def load(self, filepath='hgboost_model.pkl', verbose=3):
+        """Load learned model.
+
+        Parameters
+        ----------
+        filepath : str
+            Pathname to stored pickle files.
+        verbose : int, optional
+            Show message. A higher number gives more information. The default is 3.
+
+        Returns
+        -------
+        Object.
+
+        """
+        if (filepath is None) or (filepath==''):
+            filepath = 'hgboost_model.pkl'
+        if filepath[-4:]!='.pkl':
+            filepath = filepath + '.pkl'
+        # Load
+        storedata = pypickle.load(filepath, verbose=verbose)
+        # Store in self
+        if storedata is not None:
+            self.results = storedata['results']
+            self.method = storedata['method']
+            self.eval_metric = storedata['eval_metric']
+            self.greater_is_better = storedata['greater_is_better']
+            self.model = storedata['model']
+            self.space = storedata['space']
+            self.algo = storedata['algo']
+            self.max_eval = storedata['max_eval']
+            self.top_cv_evals = storedata['top_cv_evals']
+            self.threshold = storedata['threshold']
+            self.test_size = storedata['test_size']
+            self.val_size = storedata['val_size']
+            self.cv = storedata['cv']
+            self.is_unbalance = storedata['is_unbalance']
+            self.random_state = storedata['random_state']
+            self.n_jobs = storedata['n_jobs']
+            self.verbose = storedata['verbose']
+
+            if verbose>=3: print('[hgboost] >Loading succesful!')
+            # Return results
+            return self.results
+        else:
+            if verbose>=2: print('[hgboost] >WARNING: Could not load data.')
 
 
 # %%

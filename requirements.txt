@@ -2,6 +2,7 @@
 #conda activate env_hgboost
 #conda install spyder
 
+pypickle
 wget
 matplotlib 
 numpy 

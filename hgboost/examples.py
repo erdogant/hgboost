@@ -34,7 +34,7 @@ X = hg.preprocessing(df, verbose=0)
 # Fit
 results = hg.xgboost(X, y, pos_label=1)
 
-# %% HYPEROPTIMIZED XGBOOST
+# %% HYPEROPTIMIZED CLASSIFICATION XGBOOST
 hgb_xgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
 hgb_cat = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
 hgb_light = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
@@ -63,7 +63,7 @@ y_pred, y_proba = hgb_cat.predict(X)
 y_pred, y_proba = hgb_light.predict(X)
 
 
-# %% HYPEROPTIMIZED MULTI-XGBOOST
+# %% HYPEROPTIMIZED MULTI-CLASS XGBOOST
 hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
 
 # Import data
@@ -88,7 +88,7 @@ y_pred, y_proba = hgb.predict(X)
 
 
 # %% HYPEROPTIMIZED REGRESSION-XGBOOST
-hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
+hgb = hgboost(max_eval=50, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=4)
 
 # Import data
 df = hgb.import_example()
