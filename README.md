@@ -11,6 +11,7 @@
 [![Sphinx](https://img.shields.io/badge/Sphinx-Docs-Green)](https://erdogant.github.io/hgboost/)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb)
 [![BuyMeCoffee](https://img.shields.io/badge/buymea-coffee-yellow.svg)](https://www.buymeacoffee.com/erdogant)
+[![DOI](https://zenodo.org/badge/257025146.svg)](https://zenodo.org/badge/latestdoi/257025146)
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
 
 
@@ -272,17 +273,6 @@ hgb.plot_validation()
 </p>
 
 
-
-#### Citation
-Please cite hgboost in your publications if this is useful for your research. Here is an example BibTeX entry:
-```BibTeX
-@misc{erdogant2020hgboost,
-  title={hgboost},
-  author={Erdogan Taskesen},
-  year={2020},
-  howpublished={\url{https://github.com/erdogant/hgboost}},
-}
-```
 
 **References**
 
