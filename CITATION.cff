@@ -1,0 +1,26 @@
+# YAML 1.2
+---
+authors: 
+  -
+    family-names: Taskesen
+    given-names: Erdogan
+    orcid: "https://orcid.org/0000-0002-3430-9618"
+cff-version: "1.1.0"
+date-released: 2020-10-07
+keywords: 
+  - "python"
+  - "xgboost"
+  - "catboost"
+  - "lightboost"
+  - "gridsearch"
+  - "crossvalidation"
+  - "hyperoptimization"
+  - "two-class-classification"
+  - "multi-class-classification"
+  - "regression"
+license: "MIT"
+message: "If you use this software, please cite it using these metadata."
+repository-code: "https://github.com/erdogant/hgboost"
+title: "hgboost is a python package for hyperparameter optimization for xgboost, catboost and lightboost for both classification and regression tasks."
+version: "1.0.0"
+...
