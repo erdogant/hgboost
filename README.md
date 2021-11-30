@@ -274,17 +274,6 @@ hgb.plot_validation()
 
 
 
-#### Citation
-Please cite hgboost in your publications if this is useful for your research. Here is an example BibTeX entry:
-```BibTeX
-@misc{erdogant2020hgboost,
-  title={hgboost},
-  author={Erdogan Taskesen},
-  year={2020},
-  howpublished={\url{https://github.com/erdogant/hgboost}},
-}
-```
-
 **References**
 
     * http://hyperopt.github.io/hyperopt/
