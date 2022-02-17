@@ -36,7 +36,7 @@
 
 ## Documentation/Notebooks
 
-* [**hgboost documentation pages (Sphinx)**](https://erdogant.github.io/hgboost/)
+* hgboost documentation pages (Sphinx) <a href="https://erdogant.github.io/hgboost/"> <img src="https://img.shields.io/badge/Sphinx-Docs-Green" alt="Open documentation pages"/> </a>
 * Regression example <a href="https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open regression example In Colab"/> </a>
 * Classification example <a href="https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open classification example In Colab"/> </a>
 
