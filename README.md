@@ -37,18 +37,11 @@
 ## Documentation/Notebooks
 
 * [**hgboost documentation pages (Sphinx)**](https://erdogant.github.io/hgboost/)
+* Regression example <a href="https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open regression example In Colab"/> </a>
+* Classification example <a href="https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open classification example In Colab"/> </a>
 
-* Regression example 
-<a href="https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open regression example In Colab"/>
-</a>
 
-* Classification example 
-<a href="https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open classification example In Colab"/>
-</a>
-
-**Schematic overview of hgboost**
+### Schematic overview of hgboost
 
 <p align="center">
   <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/schematic_overview.png" width="600" />
