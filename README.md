@@ -8,14 +8,12 @@
 [![Project Status](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![Downloads](https://pepy.tech/badge/hgboost/month)](https://pepy.tech/project/hgboost/month)
 [![Downloads](https://pepy.tech/badge/hgboost)](https://pepy.tech/project/hgboost)
+[![DOI](https://zenodo.org/badge/257025146.svg)](https://zenodo.org/badge/latestdoi/257025146)
 [![Sphinx](https://img.shields.io/badge/Sphinx-Docs-Green)](https://erdogant.github.io/hgboost/)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb)
-[![BuyMeCoffee](https://img.shields.io/badge/buymea-coffee-yellow.svg)](https://www.buymeacoffee.com/erdogant)
-[![DOI](https://zenodo.org/badge/257025146.svg)](https://zenodo.org/badge/latestdoi/257025146)
+<!---[![BuyMeCoffee](https://img.shields.io/badge/buymea-coffee-yellow.svg)](https://www.buymeacoffee.com/erdogant)-->
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
 
-
-    Star it if you like it!
 
 ``hgboost`` is short for **Hyperoptimized Gradient Boosting** and is a python package for hyperparameter optimization for *xgboost*, *catboost* and *lightboost* using cross-validation, and evaluating the results on an independent validation set.
 ``hgboost`` can be applied for classification and regression tasks.
@@ -31,10 +29,17 @@
     * 7. Return model, space and test/evaluation results.
     * 8. Makes insightful plots.
 
-**Documentation**
+# 
+**Star this repo if you like it! ⭐️**
+#
 
-* API Documentation: https://erdogant.github.io/hgboost/
-* Github: https://github.com/erdogant/hgboost/
+
+## Documentation/Notebooks
+
+* [**hgboost documentation pages (Sphinx)**](https://erdogant.github.io/hgboost/)
+* [**Notebook with examples**](https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb)
+
+## Examples
 
 Regression example 
 <a href="https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb">
