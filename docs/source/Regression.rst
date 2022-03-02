@@ -66,3 +66,11 @@ The specific list of parameters used for lightboost: :func:`hgboost.hgboost.hgbo
     'eval_metric'       : 'l2'
     'early_stopping_rounds' : 25
 
+
+.. raw:: html
+
+	<hr>
+	<center>
+		<script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
+	</center>
+	<hr>

@@ -54,8 +54,9 @@ Content
 
 .. toctree::
   :maxdepth: 1
-  :caption: Code Documentation
-  
+  :caption: Documentation
+
+  Blog
   Coding quality
   hgboost.hgboost
 
@@ -71,34 +72,36 @@ Quick install
 
 
 
+Quick install
+---------------
+
+.. code-block:: console
+
+   pip install hgboost
+
+
 Source code and issue tracker
 ------------------------------
 
-Available on Github, `erdogant/hgboost <https://github.com/erdogant/hgboost/>`_.
+`Github hgboost <https://github.com/erdogant/hgboost/>`_.
 Please report bugs, issues and feature extensions there.
 
-Colab notebooks
+
+Citing hgboost
+------------------
+
+The bibtex can be found in the right side menu at the `github page <https://github.com/erdogant/hgboost/>`_.
+
+
+Sponsor this project
 ------------------------------
 
-Some of the described examples can also be found in the notebooks:
-    * See `classification Colab notebook`_. 
-    * See `regression Colab notebook`_. 
+If you like this project, **star** this repo and become a **sponsor**!
+Read more why this is important on my sponsor page!
 
-.. _classification Colab notebook: https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb
+.. raw:: html
 
-.. _regression Colab notebook: https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb
-
-
-Citing *hgboost*
-----------------
-Here is an example BibTeX entry:
-
-@misc{erdogant2020hgboost,
-  title={hgboost},
-  author={Erdogan Taskesen},
-  year={2020},
-  howpublished={\url{https://github.com/erdogant/hgboost}}}
-
+	<iframe src="https://github.com/sponsors/erdogant/button" title="Sponsor erdogant" height="35" width="116" style="border: 0;"></iframe>
 
 
 Indices and tables
@@ -107,3 +110,13 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+.. raw:: html
+
+	<hr>
+	<center>
+		<script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
+	</center>
+	<hr>
+

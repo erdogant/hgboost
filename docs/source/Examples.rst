@@ -571,3 +571,13 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.plot_cv`
    +----------+
    | |figS9|  |
    +----------+
+
+
+
+.. raw:: html
+
+	<hr>
+	<center>
+		<script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
+	</center>
+	<hr>
