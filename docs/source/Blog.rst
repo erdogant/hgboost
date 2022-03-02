@@ -5,7 +5,7 @@
 Blog
 '''''''''''''''''''''
 
-.. tip::
+.. note::
 	`Medium Blog: Coming soon (Wishfull thinking) <https://towardsdatascience.com/creating-beautiful-stand-alone-interactive-d3-charts-with-python-804117cb95a7>`_
 
 Github
@@ -36,7 +36,7 @@ Colab Regression Notebook
 Sponsor this project
 '''''''''''''''''''''
 
-.. note::
+.. tip::
 	If you like this project, star this repo at the github page and become a sponsor!
 	Read more why this is important on my sponsor page. The sponsor button will direct you to the sponsor github page.
 
