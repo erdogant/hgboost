@@ -89,8 +89,8 @@ import hgboost as hgboost
 * [Example: Plot searched parameter space](https://erdogant.github.io/hgboost/pages/html/Examples.html#plot-params)
 
 <p align="left">
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_params_clf_1.png" width="600" />
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_params_clf_2.png" width="600" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_params_clf_1.png" width="400" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_params_clf_2.png" width="400" />
   </a>
 </p>
 
@@ -109,8 +109,8 @@ import hgboost as hgboost
 * [Example: Tree plot](https://erdogant.github.io/hgboost/pages/html/Examples.html#treeplot)
 
 <p align="left">
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/treeplot_clf_1.png" width="600" />
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/treeplot_clf_2.png" width="600" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/treeplot_clf_1.png" width="400" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/treeplot_clf_2.png" width="400" />
   </a>
 </p>
 
