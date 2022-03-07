@@ -146,6 +146,7 @@ import hgboost as hgboost
 
 * [Example: Create ensemble model for Regression](https://erdogant.github.io/hgboost/pages/html/Examples.html#ensemble-regression)
 
+#
 
 #### Classification example for xgboost, catboost and lightboost:
 ```python
@@ -178,30 +179,6 @@ results = hgb.xgboost(X, y, pos_label='survived')
 ```
 
 
-#### Another Example
-
-```python
-
-from hgboost import hgboost
-
-hgb = hgboost(max_eval=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
-
-# Import data
-df = hgb.import_example()
-y = df['Age'].values
-del df['Age']
-I = ~np.isnan(y)
-X = hgb.preprocessing(df, verbose=0)
-X = X.loc[I,:]
-y = y[I]
-
-results = hgb.ensemble(X, y, methods=['xgb_reg','ctb_reg','lgb_reg'])
-
-# use the predictor
-y_pred, y_proba = hgb.predict(X)
-
-```
-
 ```python
 
 # Plot the ensemble classification validation results
@@ -216,6 +193,7 @@ hgb.plot_validation()
 </p>
 
 
+<hr>
 
 **References**
 
