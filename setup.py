@@ -22,7 +22,7 @@ setuptools.setup(
      description="hgboost is a python package for hyperparameter optimization for xgboost, catboost and lightboost for both classification and regression tasks.",
      long_description=long_description,
      long_description_content_type="text/markdown",
-     url="https://github.com/erdogant/hgboost",
+     url="https://erdogant.github.io/hgboost",
 	 download_url = 'https://github.com/erdogant/hgboost/archive/'+new_version+'.tar.gz',
      packages=setuptools.find_packages(), # Searches throughout all dirs for files to include
      include_package_data=True, # Must be true to include files depicted in MANIFEST.in

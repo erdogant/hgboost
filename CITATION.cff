@@ -20,7 +20,7 @@ keywords:
   - "regression"
 license: "MIT"
 message: "If you use this software, please cite it using these metadata."
-repository-code: "https://github.com/erdogant/hgboost"
+repository-code: "https://erdogant.github.io/hgboost"
 title: "hgboost is a python package for hyperparameter optimization for xgboost, catboost and lightboost for both classification and regression tasks."
 version: "1.0.0"
 ...
