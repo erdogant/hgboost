@@ -10,7 +10,7 @@
 [![Downloads](https://pepy.tech/badge/hgboost)](https://pepy.tech/project/hgboost)
 [![DOI](https://zenodo.org/badge/257025146.svg)](https://zenodo.org/badge/latestdoi/257025146)
 [![Sphinx](https://img.shields.io/badge/Sphinx-Docs-Green)](https://erdogant.github.io/hgboost/)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://erdogant.github.io/hgboost/pages/html/Blog.html#colab-classification-notebook)
 <!---[![BuyMeCoffee](https://img.shields.io/badge/buymea-coffee-yellow.svg)](https://www.buymeacoffee.com/erdogant)-->
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
 
@@ -30,15 +30,19 @@
     * 8. Makes insightful plots.
 
 # 
-**Star this repo if you like it! ⭐️**
-#
+**⭐️ Star this repo if you like it ⭐️**
+# 
+
+### [Documentation pages](https://erdogant.github.io/hgboost/)
+
+On the [documentation pages](https://erdogant.github.io/hgboost/) you can find detailed information about the working of the ``hgboost`` with many examples. 
 
 
-## Documentation/Notebooks
+## Colab Notebooks
 
-* <a href="https://erdogant.github.io/hgboost/"> <img src="https://img.shields.io/badge/Sphinx-Docs-Green" alt="Open documentation pages"/> </a> hgboost documentation pages
-* <a href="https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open regression example In Colab"/> </a> Regression example 
-* <a href="https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open classification example In Colab"/> </a> Classification example 
+* <a href="https://erdogant.github.io/hgboost/pages/html/Blog.html#colab-regression-notebook"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open regression example In Colab"/> </a> Regression example 
+
+* <a href="https://erdogant.github.io/hgboost/pages/html/Blog.html#colab-classification-notebook"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open classification example In Colab"/> </a> Classification example 
 
 
 ### Schematic overview of hgboost
@@ -49,40 +53,102 @@
 
 
 ### Installation Environment
-* Install hgboost from PyPI (recommended). hgboost is compatible with Python 3.6+ and runs on Linux, MacOS X and Windows. 
-* A new environment is recommended and created as following: 
 
 ```python
-conda create -n env_hgboost python=3.6
+conda create -n env_hgboost python=3.8
 conda activate env_hgboost
 ```
 
-### Install newest version hgboost from pypi
+### Install from pypi
 
 ```bash
 pip install hgboost
+pip install -U hgboost # Force update
 
 ```
-
-**Force to install latest version**
-
-```bash
-pip install -U hgboost
-```
-
-### Install from github-source
-
-```bash
-pip install git+https://github.com/erdogant/hgboost#egg=master
-```  
 
 #### Import hgboost package
 ```python
 import hgboost as hgboost
 ```
 
-#### Classification example for xgboost, catboost and lightboost:
+#### Examples
 
+* [Example: Fit catboost by hyperoptimization and cross-validation](https://erdogant.github.io/hgboost/pages/html/Examples.html#catboost)
+
+#
+
+* [Example: Fit lightboost by hyperoptimization and cross-validation](https://erdogant.github.io/hgboost/pages/html/Examples.html#lightboost)
+
+#
+
+* [Example: Fit xgboost by hyperoptimization and cross-validation](https://erdogant.github.io/hgboost/pages/html/Examples.html#xgboost-two-class)
+
+#
+
+* [Example: Plot searched parameter space](https://erdogant.github.io/hgboost/pages/html/Examples.html#plot-params)
+
+<p align="left">
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_params_clf_1.png" width="400" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_params_clf_2.png" width="400" />
+  </a>
+</p>
+
+#
+
+* [Example: plot summary](https://erdogant.github.io/hgboost/pages/html/Examples.html#plot-summary)
+
+<p align="left">
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_clf.png" width="600" />
+  </a>
+</p>
+
+
+#
+
+* [Example: Tree plot](https://erdogant.github.io/hgboost/pages/html/Examples.html#treeplot)
+
+<p align="left">
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/treeplot_clf_1.png" width="400" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/treeplot_clf_2.png" width="400" />
+  </a>
+</p>
+
+
+#
+
+* [Example: Plot the validation results](https://erdogant.github.io/hgboost/pages/html/Examples.html#plot-validation)
+
+<p align="left">
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_1.png" width="600" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_2.png" width="400" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_3.png" width="600" />
+</p>
+
+#
+
+* [Example: Plot the cross-validation results](https://erdogant.github.io/hgboost/pages/html/Examples.html#plot-cv)
+
+<p align="left">
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_cv_clf.png" width="600" />
+</p>
+
+
+#
+
+* [Example: use the learned model to make new predictions](https://erdogant.github.io/hgboost/pages/html/hgboost.hgboost.html?highlight=predict#hgboost.hgboost.hgboost.predict)
+
+#
+
+* [Example: Create ensemble model for Classification](https://erdogant.github.io/hgboost/pages/html/Examples.html#ensemble-classification)
+
+#
+
+* [Example: Create ensemble model for Regression](https://erdogant.github.io/hgboost/pages/html/Examples.html#ensemble-regression)
+
+#
+
+#### Classification example for xgboost, catboost and lightboost:
 ```python
 
 # Load library
@@ -90,30 +156,6 @@ from hgboost import hgboost
 
 # Initialization
 hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
-
-```
-
-```python
-
-# Import data
-df = hgb.import_example()
-y = df['Survived'].values
-y = y.astype(str)
-y[y=='1']='survived'
-y[y=='0']='dead'
-
-# Preprocessing by encoding variables
-del df['Survived']
-X = hgb.preprocessing(df)
-
-```
-
-```python
-# Fit catboost by hyperoptimization and cross-validation
-results = hgb.catboost(X, y, pos_label='survived')
-
-# Fit lightboost by hyperoptimization and cross-validation
-results = hgb.lightboost(X, y, pos_label='survived')
 
 # Fit xgboost by hyperoptimization and cross-validation
 results = hgb.xgboost(X, y, pos_label='survived')
@@ -134,125 +176,8 @@ results = hgb.xgboost(X, y, pos_label='survived')
 # [hgboost] >Evalute best [xgb_clf] model on independent validation dataset (179 samples, 20.00%).
 # [hgboost] >[auc] on independent validation dataset: -0.832
 # [hgboost] >Retrain [xgb_clf] on the entire dataset with the optimal parameters settings.
-
 ```
 
-
-```python
-
-# Plot searched parameter space 
-hgb.plot_params()
-
-```
-
-<p align="center">
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_params_clf_1.png" width="600" />
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_params_clf_2.png" width="600" />
-</p>
-
-
-```python
-
-# Plot summary results
-hgb.plot()
-
-```
-
-<p align="center">
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_clf.png" width="600" />
-</p>
-
-
-```python
-
-# Plot the best tree
-hgb.treeplot()
-
-```
-
-<p align="center">
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/treeplot_clf_1.png" width="600" />
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/treeplot_clf_2.png" width="600" />
-</p>
-
-
-```python
-
-# Plot the validation results
-hgb.plot_validation()
-
-```
-
-<p align="center">
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_1.png" width="600" />
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_2.png" width="400" />
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_validation_clf_3.png" width="600" />
-</p>
-
-
-```python
-
-# Plot the cross-validation results
-hgb.plot_cv()
-
-```
-
-<p align="center">
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_cv_clf.png" width="600" />
-</p>
-
-
-```python
-
-# use the learned model to make new predictions.
-y_pred, y_proba = hgb.predict(X)
-
-```
-
-### Create ensemble model for Classification
-
-```python
-
-from hgboost import hgboost
-
-hgb = hgboost(max_eval=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
-
-# Import data
-df = hgb.import_example()
-y = df['Survived'].values
-del df['Survived']
-X = hgb.preprocessing(df, verbose=0)
-
-results = hgb.ensemble(X, y, pos_label=1)
-
-# use the predictor
-y_pred, y_proba = hgb.predict(X)
-
-```
-
-### Create ensemble model for Regression
-
-```python
-
-from hgboost import hgboost
-
-hgb = hgboost(max_eval=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
-
-# Import data
-df = hgb.import_example()
-y = df['Age'].values
-del df['Age']
-I = ~np.isnan(y)
-X = hgb.preprocessing(df, verbose=0)
-X = X.loc[I,:]
-y = y[I]
-
-results = hgb.ensemble(X, y, methods=['xgb_reg','ctb_reg','lgb_reg'])
-
-# use the predictor
-y_pred, y_proba = hgb.predict(X)
-
-```
 
 ```python
 
@@ -263,11 +188,14 @@ hgb.plot_validation()
 
 <p align="center">
   <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_ensemble_clf_1.png" width="600" />
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_ensemble_clf_2.png" width="400" />
-  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_ensemble_clf_3.png" width="600" />
 </p>
 
+<p align="center">
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_ensemble_clf_2.png" width="400" />
+  <img src="https://github.com/erdogant/hgboost/blob/master/docs/figs/plot_ensemble_clf_3.png" width="400" />
+</p>
 
+<hr>
 
 **References**
 
