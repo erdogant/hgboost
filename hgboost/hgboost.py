@@ -1175,82 +1175,96 @@ class hgboost:
         # Density plot for each parameter
         fig, ax = plt.subplots(nrRows, nrCols, figsize=figsize)
         i_row = -1
-        for i, param in enumerate(params):
-            # Get row number
-            i_col = np.mod(i, nrCols)
-            # Make new column
-            if i_col == 0: i_row = i_row + 1
-            if self.verbose>=5: print('>Plot row: %.0d, col: %.0d' %(i_row, i_col))
-            # Retrieve the data from the seperate plots
-            y_data = sns.distplot(summary_results[param], hist=False, kde=True, ax=ax[i_row][i_col]).get_lines()[0].get_data()[1]
-            # y_data = linefit.get_lines()[0].get_data()[1]
 
-            # Make density
-            sns.distplot(summary_results[param],
-                         hist=False,
-                         kde=True,
-                         rug=True,
-                         color='darkblue',
-                         kde_kws={'shade': shade, 'linewidth': 1, 'color': color_params[i, :]},
-                         rug_kws={'color': 'black'},
-                         ax=ax[i_row][i_col])
+        i=0
+        for param in params:
+            try:
+                # Get row number
+                i_col = np.mod(i, nrCols)
+                # Make new column
+                if i_col == 0: i_row = i_row + 1
+                if self.verbose>=5: print('>Plot row: %.0d, col: %.0d' %(i_row, i_col))
+                # Retrieve the data from the seperate plots
+                y_data = sns.distplot(summary_results[param], hist=False, kde=True, ax=ax[i_row][i_col]).get_lines()[0].get_data()[1]
+                # y_data = linefit.get_lines()[0].get_data()[1]
 
-            getvals = df_summary[param].values
-            if len(y_data)>0:
-                # Plot the top n (not the first because that one is plotted in green)
-                ax[i_row][i_col].vlines(getvals[1:top_n], np.min(y_data), np.max(y_data), linewidth=1, colors='k', linestyles='dashed', label='Top ' + str(top_n) + ' models')
-                # Plot the best (without cv)
-                ax[i_row][i_col].vlines(getvals[idx_best], np.min(y_data), np.max(y_data), linewidth=2, colors='g', linestyles='dashed', label='Best (without cv)')
-                # Plot the best (with cv)
+                # Make density
+                sns.distplot(summary_results[param],
+                             hist=False,
+                             kde=True,
+                             rug=True,
+                             color='darkblue',
+                             kde_kws={'shade': shade, 'linewidth': 1, 'color': color_params[i, :]},
+                             rug_kws={'color': 'black'},
+                             ax=ax[i_row][i_col])
+
+                getvals = df_summary[param].values
+                if len(y_data)>0:
+                    # Plot the top n (not the first because that one is plotted in green)
+                    ax[i_row][i_col].vlines(getvals[1:top_n], np.min(y_data), np.max(y_data), linewidth=1, colors='k', linestyles='dashed', label='Top ' + str(top_n) + ' models')
+                    # Plot the best (without cv)
+                    ax[i_row][i_col].vlines(getvals[idx_best], np.min(y_data), np.max(y_data), linewidth=2, colors='g', linestyles='dashed', label='Best (without cv)')
+                    # Plot the best (with cv)
+                    if self.cv is not None:
+                        ax[i_row][i_col].vlines(getvals[idx_best_cv], np.min(y_data), np.max(y_data), linewidth=2, colors='r', linestyles='dotted', label='Best ' + str(self.cv) + '-fold cv')
+
                 if self.cv is not None:
-                    ax[i_row][i_col].vlines(getvals[idx_best_cv], np.min(y_data), np.max(y_data), linewidth=2, colors='r', linestyles='dotted', label='Best ' + str(self.cv) + '-fold cv')
-
-            if self.cv is not None:
-                ax[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, getvals[idx_best_cv], self.cv)))
-            else:
-                ax[i_row][i_col].set_title(('%s: %.3g' %(param, getvals[idx_best])))
-            ax[i_row][i_col].set_ylabel('Density')
-            ax[i_row][i_col].grid(True)
-            ax[i_row][i_col].legend(loc='upper right')
-            # print(param)
-            # print(i_col)
-            # print(i_row)
+                    ax[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, getvals[idx_best_cv], self.cv)))
+                else:
+                    ax[i_row][i_col].set_title(('%s: %.3g' %(param, getvals[idx_best])))
+                ax[i_row][i_col].set_ylabel('Density')
+                ax[i_row][i_col].grid(True)
+                ax[i_row][i_col].legend(loc='upper right')
+                # print(param)
+                # print(i_col)
+                # print(i_row)
+                i=i+1
+            except:
+                pass
 
         # Scatter plot
         df_sum = summary_results.sort_values(by='tid', ascending=True)
         idx_best = np.where(df_sum[colbest])[0]
+
         if self.cv is not None:
             idx_best_cv = np.where(df_sum[colbest_cv])[0]
+        df_sum = df_sum.fillna(0)
+        # df_sum = df_sum[list(params)+['tid']]
 
         fig2, ax2 = plt.subplots(nrRows, nrCols, figsize=figsize)
         i_row = -1
-        for i, param in enumerate(params):
-            # Get row number
-            i_col = np.mod(i, nrCols)
-            # Make new column
-            if i_col == 0: i_row = i_row + 1
-            # Make the plot
-            sns.regplot('tid', param, data=df_sum, ax=ax2[i_row][i_col], color=color_params[i, :])
-
-            # Scatter top n values
-            ax2[i_row][i_col].scatter(df_summary['tid'].values[1:top_n], df_summary[param].values[1:top_n], s=50, color='k', marker='.', label='Top ' + str(top_n) + ' models')
-
-            # Scatter best value
-            ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best], df_sum[param].values[idx_best], s=100, color='g', marker='*', label='Best (without cv)')
-
-            # Scatter best cv
-            if self.cv is not None:
-                ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best_cv], df_sum[param].values[idx_best], s=100, color='r', marker='x', label='Best ' + str(self.cv) + '-fold cv')
-
-            # Set labels
-            ax2[i_row][i_col].set(xlabel='iteration', ylabel='{}'.format(param), title='{} over Search'.format(param))
-            if self.cv is not None:
-                ax2[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, df_sum[param].values[idx_best_cv], self.cv)))
-            else:
-                ax2[i_row][i_col].set_title(('%s: %.3g' %(param, df_sum[param].values[idx_best])))
-
-            ax2[i_row][i_col].grid(True)
-            ax2[i_row][i_col].legend(loc='upper right')
+        i=0
+        for param in params:
+            try:
+                # Get row number
+                i_col = np.mod(i, nrCols)
+                # Make new column
+                if i_col == 0: i_row = i_row + 1
+                # Make the plot
+                sns.regplot('tid', param, data=df_sum, ax=ax2[i_row][i_col], color=color_params[i, :])
+    
+                # Scatter top n values
+                ax2[i_row][i_col].scatter(df_summary['tid'].values[1:top_n], df_summary[param].values[1:top_n], s=50, color='k', marker='.', label='Top ' + str(top_n) + ' models')
+    
+                # Scatter best value
+                ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best], df_sum[param].values[idx_best], s=100, color='g', marker='*', label='Best (without cv)')
+    
+                # Scatter best cv
+                if self.cv is not None:
+                    ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best_cv], df_sum[param].values[idx_best], s=100, color='r', marker='x', label='Best ' + str(self.cv) + '-fold cv')
+    
+                # Set labels
+                ax2[i_row][i_col].set(xlabel='iteration', ylabel='{}'.format(param), title='{} over Search'.format(param))
+                if self.cv is not None:
+                    ax2[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, df_sum[param].values[idx_best_cv], self.cv)))
+                else:
+                    ax2[i_row][i_col].set_title(('%s: %.3g' %(param, df_sum[param].values[idx_best])))
+    
+                ax2[i_row][i_col].grid(True)
+                ax2[i_row][i_col].legend(loc='upper right')
+                i=i+1
+            except:
+                pass
 
         if return_ax:
             return ax, ax2
