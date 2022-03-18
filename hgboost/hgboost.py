@@ -1381,7 +1381,7 @@ class hgboost:
 
     def save(self, filepath='hgboost_model.pkl', overwrite=False, verbose=3):
         """Save learned model in pickle file.
-    
+
         Parameters
         ----------
         filepath : str, (default: 'hgboost_model.pkl')
@@ -1390,12 +1390,12 @@ class hgboost:
             Overwite file if exists.
         verbose : int, optional
             Show message. A higher number gives more informatie. The default is 3.
-    
+
         Returns
         -------
         bool : [True, False]
             Status whether the file is saved.
-    
+
         """
         if (filepath is None) or (filepath==''):
             filepath = 'hgboost_model.pkl'
