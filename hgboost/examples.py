@@ -25,19 +25,24 @@ print(dir(hgboost))
 # print(hgboost.__version__)
 
 # %%
-hg = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
-df = hg.import_example()
-y = df['Survived'].values
-del df['Survived']
-X = hg.preprocessing(df, verbose=0)
+# hg = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+# df = hg.import_example()
+# y = df['Survived'].values
+# del df['Survived']
+# X = hg.preprocessing(df, verbose=0)
 
-# Fit
-results = hg.xgboost(X, y, pos_label=1)
+# # Fit
+# results = hg.xgboost(X, y, pos_label=1)
+
+# %%
+
+# results['model']
+# results['params']
 
 # %% HYPEROPTIMIZED CLASSIFICATION XGBOOST
-hgb_xgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
-hgb_cat = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
-hgb_light = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+hgb_xgb = hgboost(max_eval=5, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+hgb_cat = hgboost(max_eval=5, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+hgb_light = hgboost(max_eval=5, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
 
 # Import data
 df = hgb_xgb.import_example()
@@ -56,6 +61,18 @@ hgb_xgb.plot()
 hgb_xgb.treeplot()
 hgb_xgb.plot_validation()
 hgb_xgb.plot_cv()
+
+hgb_cat.plot_params()
+hgb_cat.plot()
+hgb_cat.treeplot()
+hgb_cat.plot_validation()
+hgb_cat.plot_cv()
+
+hgb_light.plot_params()
+hgb_light.plot()
+hgb_light.treeplot()
+hgb_light.plot_validation()
+hgb_light.plot_cv()
 
 # use the predictor
 y_pred, y_proba = hgb_xgb.predict(X)
@@ -96,22 +113,34 @@ y = df['Age'].values
 del df['Age']
 I = ~np.isnan(y)
 X = hgb.preprocessing(df, verbose=0)
-X = X.loc[I,:]
+X = X.loc[I, :]
 y = y[I]
 
 # Fit
-results = hgb.xgboost_reg(X, y, eval_metric='mse')
-results = hgb.xgboost_reg(X, y, eval_metric='rmse')
-results = hgb.xgboost_reg(X, y, eval_metric='mae')
-results = hgb.catboost_reg(X, y, eval_metric='mae')
-results = hgb.lightboost_reg(X, y, eval_metric='mae')
+results = hgb_xgb.xgboost_reg(X, y, eval_metric='mse')
+# results = hgb_xgb.xgboost_reg(X, y, eval_metric='rmse')
+# results = hgb_xgb.xgboost_reg(X, y, eval_metric='mae')
+results = hgb_cat.catboost_reg(X, y, eval_metric='mae')
+results = hgb_light.lightboost_reg(X, y, eval_metric='mae')
 
 # Make some plots
-hgb.plot_params()
-hgb.plot()
-hgb.treeplot()
-hgb.plot_validation()
-hgb.plot_cv()
+hgb_xgb.plot_params()
+hgb_xgb.plot()
+hgb_xgb.treeplot()
+hgb_xgb.plot_validation()
+hgb_xgb.plot_cv()
+
+hgb_cat.plot_params()
+hgb_cat.plot()
+hgb_cat.treeplot()
+hgb_cat.plot_validation()
+hgb_cat.plot_cv()
+
+hgb_light.plot_params()
+hgb_light.plot()
+hgb_light.treeplot()
+hgb_light.plot_validation()
+hgb_light.plot_cv()
 
 # use the predictor
 y_pred, y_proba = hgb.predict(X)
@@ -126,7 +155,7 @@ y = df['Survived'].values
 del df['Survived']
 X = hgb.preprocessing(df, verbose=0)
 
-results = hgb.ensemble(X, y, pos_label=1, methods=['xgb_clf','ctb_clf','lgb_clf'])
+results = hgb.ensemble(X, y, pos_label=1, methods=['xgb_clf', 'ctb_clf', 'lgb_clf'])
 
 # use the predictor
 y_pred, y_proba = hgb.predict(X)
@@ -144,10 +173,10 @@ y = df['Age'].values
 del df['Age']
 I = ~np.isnan(y)
 X = hgb.preprocessing(df, verbose=0)
-X = X.loc[I,:]
+X = X.loc[I, :]
 y = y[I]
 
-results = hgb.ensemble(X, y, methods=['xgb_reg','ctb_reg','lgb_reg'])
+results = hgb.ensemble(X, y, methods=['xgb_reg', 'ctb_reg', 'lgb_reg'])
 
 # use the predictor
 y_pred, y_proba = hgb.predict(X)
@@ -189,3 +218,5 @@ hgb.plot()
 hgb.treeplot()
 hgb.plot_validation()
 hgb.plot_cv()
+
+# %%

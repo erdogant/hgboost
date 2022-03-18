@@ -2,6 +2,7 @@ from hgboost import hgboost
 import pandas as pd
 import numpy as np
 
+
 def xgboost_reg():
     ############################## CLASSIFICATION########################
     # Check whether all combinations of parameters runs like a charm
