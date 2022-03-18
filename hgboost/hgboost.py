@@ -1218,7 +1218,7 @@ class hgboost:
                 # print(param)
                 # print(i_col)
                 # print(i_row)
-                i=i+1
+                i = i + 1
             except:
                 pass
 
