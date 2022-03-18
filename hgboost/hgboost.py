@@ -151,7 +151,7 @@ class hgboost:
         # Set validation set
         self._set_validation_set(X, y)
         # Find best parameters
-        self.model, self.results=self._HPOpt()
+        self.model, self.results = self._HPOpt()
         # Fit on all data using best parameters
         if self.verbose>=3: print('[hgboost] >Retrain [%s] on the entire dataset with the optimal parameters settings.' %(self.method))
         self.model.fit(X, y)
@@ -587,15 +587,15 @@ class hgboost:
 
         if self.verbose>=3: print('[hgboost] >Train-set: %s ' %(str(self.X_train.shape)))
         if self.verbose>=3: print('[hgboost] >Test-set: %s ' %(str(self.X_test.shape)))
-        if self.verbose>=3: print('[hgboost] >Hyperparameter optimization..')
+        if self.verbose>=3: print('[hgboost] >Searching across hyperparameter space for best performing parameters.')
 
         # Hyperoptimization to find best performing model. Set the trials which is the object where all the HPopt results are stored.
         trials=Trials()
         best_params = fmin(fn=fn, space=self.space, algo=self.algo, max_evals=self.max_eval, trials=trials, show_progressbar=disable)
         # Summary results
-        results_summary, model = self._to_df(trials, verbose=self.verbose)
+        results_summary, model, best_params = self._to_df(trials, best_params, verbose=self.verbose)
 
-        # Cross-validation over the top n models. To speed up we can decide to further test only the best performing ones. The best performing model is returned.
+        # Cross-validation over the top n models. To speed up we can decide to test only the best performing ones. The best performing model is returned.
         if self.cv is not None:
             model, results_summary, best_params = self._cv(results_summary, self.space, best_params)
 
@@ -735,9 +735,35 @@ class hgboost:
         return out
 
     # Transform results into dataframe
-    def _to_df(self, trials, verbose=3):
+    def _to_df(self, trials, best_params=None, verbose=3):
+        if verbose>=3: print('[hgboost]> Collecting the hyper-parameters from the [%.0d] trials.' %(len(trials.trials)))
+
         # Combine params with scoring results
-        df_params = pd.DataFrame(trials.vals)
+        model_params = [*self.space['model_params'].keys()]
+        if best_params is not None:
+            model_params = np.array(model_params + [*best_params.keys()])
+            model_params = list(np.unique(model_params))
+
+        # model_params = [*trials.vals.keys()]
+        df_params = pd.DataFrame(index=np.arange(0, len(trials.trials)), columns=model_params)
+
+        # Gather all hyperparameter settings.
+        # The trials.vals stores the index for some parameters instead of the real values.
+        gather_params_legacy = False
+        for i, trial in enumerate(trials.trials):
+            for param in model_params:
+                try:
+                    if 'ctb' in self.method:
+                        df_params[param].iloc[i] = trial['result']['model'].get_all_params().get(param)
+                    else:
+                        df_params[param].iloc[i] = getattr(trial['result']['model'], param)
+                except:
+                    if verbose>=3: print('[hgboost]> Skip [%s]' %(param))
+                    gather_params_legacy = True
+
+        # The trials.vals stores the index for some parameters instead of the real values.
+        if gather_params_legacy:
+            df_params = pd.DataFrame(trials.vals)
         df_scoring = pd.DataFrame(trials.results)
         df = pd.concat([df_params, df_scoring], axis=1)
         df['tid'] = trials.tids
@@ -746,21 +772,34 @@ class hgboost:
         Iloc = df['status']=='ok'
         df = df.loc[Iloc, :]
 
-        # Retrieve best model
+        # Retrieve idx for best model.
+        idx = np.where(trials.best_trial['tid']==df['tid'])[0][0]
+        # Als retrieve best model based on loss-score.
         if self.greater_is_better:
             df['loss'] = df['loss'] * -1
-            idx = df['loss'].argmax()
+            idx_best_loss = df['loss'].argmax()
         else:
-            idx = df['loss'].argmin()
+            idx_best_loss = df['loss'].argmin()
+
+        if idx!=idx_best_loss:
+            print('[hgboost] >[Warning]> Best model of hyperOpt does not have best loss score(?)')
 
         model = df['model'].iloc[idx]
         score = df['loss'].iloc[idx]
         df['best'] = False
         df['best'].iloc[idx] = True
 
+        # Get best_params
+        try:
+            best_params = df[best_params].iloc[idx].to_dict()
+            # Should be the same as:
+            # trials.best_trial['result']['model']
+        except:
+            pass
+
         # Return
         if verbose>=3: print('[hgboost] >Best performing [%s] model: %s=%g' %(self.method, self.eval_metric, score))
-        return(df, model)
+        return(df, model, best_params)
 
     # Predict
     def predict(self, X, model=None):
@@ -1102,6 +1141,12 @@ class hgboost:
         ascending = False if self.greater_is_better else True
         summary_results = self.results['summary'].copy()
         summary_results = summary_results.loc[~summary_results['default_params'], :]
+
+        # Only numerical columns
+        # summary_results = summary_results._get_numeric_data()
+        # summary_results = summary_results.select_dtypes(include= np.number)
+        # params1 = summary_results.columns
+
 
         # Sort data based on loss
         colname = 'loss'
@@ -1641,7 +1686,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
         space['model_params']=xgb_clf_params
         space['fit_params']={'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
 
-        if verbose>=3: print('[hgboost] >Number of hyperparameters in gridsearch space is [%.0d], loss function: [%s].' %(len([*space['model_params']]), eval_metric))
+        if verbose>=3: print('[hgboost] >[%.0d] hyperparameters in gridsearch space. Used loss function: [%s].' %(len([*space['model_params']]), eval_metric))
         return(space)
 
 
