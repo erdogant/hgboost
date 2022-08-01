@@ -67,10 +67,16 @@ Content
 
 .. toctree::
   :maxdepth: 1
-  :caption: Methods
+  :caption: Background
 
   Algorithms
   Cross validation and hyperparameter tuning
+
+
+.. toctree::
+  :maxdepth: 1
+  :caption: Methods
+
   Classification
   Regression
   Performance

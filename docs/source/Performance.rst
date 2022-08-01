@@ -64,6 +64,15 @@ Probability graph
 The probability graph plots the probabilities of the samples being classified.
 
 
+GPU support
+-----------
+
+All boosting methods seperately support GPU usage, however it is not always possible to enable GPU usage in its full extention because of the optimization that is performed in, among others, Hyperopt. Although GPUs can improve compution time, much larger gains in speed can often be achieved by a careful choice of algorithms.
+
+   * GPU support for *catboost* is fully **disabled** because multiple evluation sets are readily optimized and such approach is not GPU supported. 
+   * GPU support for **xgboost** is set as following: ``tree_method='auto'`` and the ``predictor='auto'``. When 'gpu_hist' is used (instead of 'auto'), it randomly runs out of memory and requires various other optimizations.
+
+
 .. raw:: html
 
 	<hr>

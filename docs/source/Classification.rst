@@ -27,7 +27,7 @@ The specific list of parameters used for xgboost: :func:`hgboost.hgboost.hgboost
 
     # Parameters:
     'learning_rate'     : hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.5), base = 10, num = 1000))
-    'max_depth'         : hp.choice('max_depth', range(5, 75, 1))
+    'max_depth'         : hp.choice('max_depth', range(5, 32, 1))
     'min_child_weight'  : hp.quniform('min_child_weight', 1, 10, 1)
     'gamma'             : hp.choice('gamma', [0.5, 1, 1.5, 2, 5])
     'subsample'         : hp.quniform('subsample', 0.1, 1, 0.01)

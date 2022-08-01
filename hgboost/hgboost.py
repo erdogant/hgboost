@@ -42,7 +42,7 @@ import copy
 class hgboost:
     """Create a class hgboost that is instantiated with the desired method."""
 
-    def __init__(self, max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, is_unbalance=True, random_state=None, n_jobs=-1, verbose=3):
+    def __init__(self, max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, is_unbalance=True, random_state=None, n_jobs=-1, gpu=False, verbose=3):
         """Initialize hgboost with user-defined parameters.
 
         Parameters
@@ -72,6 +72,10 @@ class hgboost:
         n_jobs : int, (default : -1)
             The number of jobs to run in parallel for fit. None means 1 unless in a joblib.parallel_backend context.
             -1 means using all processors.
+        gpu : bool, (default : False)
+            Computing using either GPU or CPU. Note that GPU usage is not very well supported because various optimizations are performed during training/testing/crossvalidation.
+            True: Use GPU.
+            False: Use CPU.
         verbose : int, (default : 3)
             Print progress to screen.
             0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE
@@ -104,6 +108,7 @@ class hgboost:
         self.n_jobs=n_jobs
         self.verbose=verbose
         self.is_unbalance = is_unbalance
+        self.gpu = gpu
 
     def _fit(self, X, y, pos_label=None):
         """Fit the best performing model.
@@ -162,7 +167,7 @@ class hgboost:
         # Gather for method, the default metric and greater is better.
         self.eval_metric, self.greater_is_better =_check_eval_metric(self.method, eval_metric, greater_is_better)
         # Import search space for the specific function
-        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, y=y, pos_label=self.pos_label, is_unbalance=self.is_unbalance, verbose=self.verbose)
+        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, y=y, pos_label=self.pos_label, is_unbalance=self.is_unbalance, gpu=self.gpu, verbose=self.verbose)
         self.space = params
         # Fit model
         self.results = self._fit(X, y, pos_label=self.pos_label)
@@ -173,7 +178,7 @@ class hgboost:
         # Gather for method, the default metric and greater is better.
         self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
         # Import search space for the specific function
-        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, verbose=self.verbose)
+        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, gpu=self.gpu, verbose=self.verbose)
         self.space = params
         # Fit model
         self.results = self._fit(X, y)
@@ -285,6 +290,9 @@ class hgboost:
 
         """
         if self.verbose>=3: print('[hgboost] >Start hgboost regression..')
+        if self.gpu:
+            print('[hgboost] >GPU for catboost is not supported. It throws an error because multiple evaluation sets are readily optimized.')
+            self.gpu=False
         # Method
         self.method='ctb_reg'
         # Run method
@@ -368,6 +376,9 @@ class hgboost:
 
         """
         if self.verbose>=3: print('[hgboost] >Start hgboost classification..')
+        if self.gpu:
+            print('[hgboost] >GPU for catboost is not supported. It throws an error because I am readily optimizing across multiple evaluation sets.')
+
         self.method = 'ctb_clf'
         self.pos_label = pos_label
         # Run method
@@ -700,7 +711,7 @@ class hgboost:
 
     def lgb_reg(self, space):
         """Train lightboost regression model."""
-        reg = lgb.LGBMRegressor(**space['model_params'], n_jobs=self.n_jobs, verbosity=0)
+        reg = lgb.LGBMRegressor(**space['model_params'], n_jobs=self.n_jobs, verbosity=-1)
         out, _ = self._train_model(reg, space)
         return out
 
@@ -724,7 +735,7 @@ class hgboost:
 
     def lgb_clf(self, space):
         """Train lightboost classification model."""
-        clf = lgb.LGBMClassifier(**space['model_params'], n_jobs=self.n_jobs, verbosity=0)
+        clf = lgb.LGBMClassifier(**space['model_params'], n_jobs=self.n_jobs, verbosity=-1)
         out, _ = self._train_model(clf, space)
         return out
 
@@ -1086,7 +1097,7 @@ class hgboost:
         if self.val_size is None:
             print('[hgboost] >No validation set found. Hint: use the parameter [val_size=0.2] first <return>')
             return None
-        
+
         title = 'Results on independent validation set'
         if ('_clf' in self.method) and not ('_multi' in self.method):
             if (self.results.get('val_results', None)) is not None:
@@ -1146,7 +1157,6 @@ class hgboost:
         # summary_results = summary_results._get_numeric_data()
         # summary_results = summary_results.select_dtypes(include= np.number)
         # params1 = summary_results.columns
-
 
         # Sort data based on loss
         colname = 'loss'
@@ -1242,27 +1252,27 @@ class hgboost:
                 if i_col == 0: i_row = i_row + 1
                 # Make the plot
                 sns.regplot('tid', param, data=df_sum, ax=ax2[i_row][i_col], color=color_params[i, :])
-    
+
                 # Scatter top n values
                 ax2[i_row][i_col].scatter(df_summary['tid'].values[1:top_n], df_summary[param].values[1:top_n], s=50, color='k', marker='.', label='Top ' + str(top_n) + ' models')
-    
+
                 # Scatter best value
                 ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best], df_sum[param].values[idx_best], s=100, color='g', marker='*', label='Best (without cv)')
-    
+
                 # Scatter best cv
                 if self.cv is not None:
                     ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best_cv], df_sum[param].values[idx_best], s=100, color='r', marker='x', label='Best ' + str(self.cv) + '-fold cv')
-    
+
                 # Set labels
                 ax2[i_row][i_col].set(xlabel='iteration', ylabel='{}'.format(param), title='{} over Search'.format(param))
                 if self.cv is not None:
                     ax2[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, df_sum[param].values[idx_best_cv], self.cv)))
                 else:
                     ax2[i_row][i_col].set_title(('%s: %.3g' %(param, df_sum[param].values[idx_best])))
-    
+
                 ax2[i_row][i_col].grid(True)
                 ax2[i_row][i_col].legend(loc='upper right')
-                i=i+1
+                i = i + 1
             except:
                 pass
 
@@ -1563,7 +1573,7 @@ def import_example(data='titanic', url=None, sep=',', verbose=3):
 
 
 # %% Set the search spaces
-def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=False, verbose=3):
+def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=False, gpu=False, verbose=3):
     # choice : categorical variables
     # quniform : discrete uniform (integers spaced evenly)
     # uniform: continuous uniform (floats spaced evenly)
@@ -1572,8 +1582,17 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
     if eval_metric is None: raise ValueError('[hgboost] >eval_metric must be provided.')
     if verbose>=3: print('[hgboost] >Collecting %s parameters.' %(fn_name))
 
-    # XGB parameters
+    ############### XGB parameters ###############
     if fn_name=='xgb_reg':
+        # Enable/Disable GPU
+        if gpu:
+            # 'gpu_hist' Equivalent to the XGBoost fast histogram algorithm. Much faster and uses considerably less memory. NOTE: May run very slowly on GPUs older than Pascal architecture.
+            tree_method = 'auto'  # 'gpu_hist' gives throws random errors
+            predictor = 'gpu_predictor'
+        else:
+            tree_method = 'hist'
+            predictor = 'cpu_predictor'
+
         xgb_reg_params = {
             'learning_rate': hp.quniform('learning_rate', 0.05, 0.31, 0.05),
             'max_depth': hp.choice('max_depth', np.arange(5, 30, 1, dtype=int)),
@@ -1582,20 +1601,29 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
             'reg_lambda': hp.choice('reg_lambda', [0.1, 1.0, 5.0, 10.0, 50.0, 100.0]),
             'subsample': hp.uniform('subsample', 0.5, 1),
             'n_estimators': hp.choice('n_estimators', range(20, 205, 5)),
+            'tree_method': tree_method,
+            'gpu_id': 0,
+            'predictor': predictor,
         }
         space = {}
         space['model_params'] = xgb_reg_params
         space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
         return(space)
 
-    # LightGBM parameters
+    ############### LightGBM regression parameters ###############
     if fn_name=='lgb_reg':
+        # Enable/Disable GPU
+        device = 'gpu' if gpu else 'cpu'
+
         lgb_reg_params = {
             'learning_rate': hp.quniform('learning_rate', 0.05, 0.31, 0.05),
             'max_depth': hp.choice('max_depth', np.arange(5, 30, 1, dtype=int)),
             'min_child_weight': hp.choice('min_child_weight', np.arange(1, 8, 1, dtype=int)),
             'subsample': hp.uniform('subsample', 0.8, 1),
             'n_estimators': hp.choice('n_estimators', range(20, 205, 5)),
+            'device': device,
+            'gpu_platform_id': 0,
+            'gpu_device_id': 0,
         }
         space = {}
         space['model_params'] = lgb_reg_params
@@ -1603,21 +1631,30 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
 
         return(space)
 
-    # CatBoost regression parameters
+    ############### CatBoost regression parameters ###############
     if fn_name=='ctb_reg':
+        # Enable/Disable GPU
+        task_type = 'CPU' if gpu else 'CPU'
+
+        # Catboost parameters
         ctb_reg_params = {
             'learning_rate': hp.quniform('learning_rate', 0.05, 0.31, 0.05),
             'max_depth': hp.choice('max_depth', np.arange(2, 16, 1, dtype=int)),
             'colsample_bylevel': hp.choice('colsample_bylevel', np.arange(0.3, 0.8, 0.1)),
             'n_estimators': hp.choice('n_estimators', range(20, 205, 5)),
+            'task_type': task_type,
+            'devices': '0',
         }
         space = {}
         space['model_params'] = ctb_reg_params
         space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
         return(space)
 
-    # CatBoost classification parameters
+    ############### CatBoost classification parameters ###############
     if fn_name=='ctb_clf':
+        # Enable/Disable GPU
+        task_type = 'CPU' if gpu else 'CPU'
+
         # Class sizes
         if is_unbalance:
             # https://catboost.ai/docs/concepts/python-reference_parameters-list.html#python-reference_parameters-list
@@ -1633,15 +1670,20 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
             'l2_leaf_reg': hp.choice('l2_leaf_reg', np.arange(1, 100, 2)),
             'border_count': hp.choice('border_count', np.arange(5, 200, 1)),
             'thread_count': 4,
-            'scale_pos_weight' : scale_pos_weight,
+            'scale_pos_weight': scale_pos_weight,
+            'task_type': task_type,
+            'devices': '0',
         }
         space={}
         space['model_params']=ctb_clf_params
         space['fit_params']={'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
         return(space)
 
-    # LightBoost classification parameters
+    ############### LightBoost classification parameters ###############
     if fn_name=='lgb_clf':
+        # Enable/Disable GPU
+        device = 'gpu' if gpu else 'cpu'
+
         # Class sizes
         if is_unbalance:
             if verbose>=3: print('[hgboost] >Correct for unbalanced classes using [is_unbalance]..')
@@ -1663,22 +1705,38 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
             'subsample': hp.quniform('subsample', 0.5, 1, 100),
             'bagging_fraction': hp.choice('bagging_fraction', np.arange(0.2, 1, 0.2)),
             'is_unbalance': hp.choice('is_unbalance', is_unbalance),
+            'device': device,
+            'gpu_platform_id': 0,
+            'gpu_device_id': 0,
         }
         space={}
         space['model_params']=lgb_clf_params
         space['fit_params']={'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
         return(space)
 
+    ############### XGboost classification parameters ###############
     if 'xgb_clf' in fn_name:
+        # Enable/Disable GPU
+        if gpu:
+            # 'gpu_hist' Equivalent to the XGBoost fast histogram algorithm. Much faster and uses considerably less memory. NOTE: May run very slowly on GPUs older than Pascal architecture.
+            tree_method = 'auto'  # 'gpu_hist' gives throws random errors
+            predictor = 'gpu_predictor'
+        else:
+            tree_method = 'hist'
+            predictor = 'cpu_predictor'
+
         xgb_clf_params={
             'learning_rate': hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.5), base=10, num=1000)),
-            'max_depth': hp.choice('max_depth', range(5, 75, 1)),
+            'max_depth': hp.choice('max_depth', range(5, 32, 1)),
             'min_child_weight': hp.quniform('min_child_weight', 1, 10, 1),
             'gamma': hp.choice('gamma', [0.5, 1, 1.5, 2, 5]),
             'subsample': hp.quniform('subsample', 0.1, 1, 0.01),
             'n_estimators': hp.choice('n_estimators', range(20, 205, 5)),
             'booster': 'gbtree',
             'colsample_bytree': hp.quniform('colsample_bytree', 0.1, 1.0, 0.01),
+            'tree_method': tree_method,
+            'gpu_id': 0,
+            'predictor': predictor,
         }
 
         if fn_name=='xgb_clf':
