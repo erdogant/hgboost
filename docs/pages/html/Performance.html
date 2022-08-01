@@ -172,6 +172,19 @@ on a set of test data for which the true values are known. It allows the visuali
 <li><p>GPU support for <strong>xgboost</strong> is set as following: <code class="docutils literal notranslate"><span class="pre">tree_method='auto'</span></code> and the <code class="docutils literal notranslate"><span class="pre">predictor='auto'</span></code>. When ‘gpu_hist’ is used (instead of ‘auto’), it randomly runs out of memory and requires various other optimizations.</p></li>
 </ul>
 </div></blockquote>
+<p>GPU usage can be enabled as following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
+<span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
+
+<span class="c1"># Initialize</span>
+<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">gpu</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Fit with any of the boosting methods</span>
+<span class="n">hgb</span><span class="o">.</span><span class="n">xgboost</span><span class="p">()</span>
+<span class="n">hgb</span><span class="o">.</span><span class="n">catboost</span><span class="p">()</span>
+<span class="n">hgb</span><span class="o">.</span><span class="n">lightboost</span><span class="p">()</span>
+</pre></div>
+</div>
 <hr>
 <center>
         <script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>

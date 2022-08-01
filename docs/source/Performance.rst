@@ -73,6 +73,23 @@ All boosting methods seperately support GPU usage, however it is not always poss
    * GPU support for **xgboost** is set as following: ``tree_method='auto'`` and the ``predictor='auto'``. When 'gpu_hist' is used (instead of 'auto'), it randomly runs out of memory and requires various other optimizations.
 
 
+GPU usage can be enabled as following:
+
+.. code:: python
+
+    # Import library
+    from hgboost import hgboost
+    
+    # Initialize
+    hgb = hgboost(gpu=True)
+
+    # Fit with any of the boosting methods
+    hgb.xgboost()
+    hgb.catboost()
+    hgb.lightboost()
+
+
+
 .. raw:: html
 
 	<hr>
