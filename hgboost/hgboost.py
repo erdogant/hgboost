@@ -251,7 +251,6 @@ class hgboost:
             * val_results: Results on independent validation dataset.
 
         """
-
         if self.verbose>=3: print('[hgboost] >Start hgboost regression..')
         # Method
         self.method='lgb_reg'
