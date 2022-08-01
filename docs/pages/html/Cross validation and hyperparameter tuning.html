@@ -130,8 +130,8 @@ This will provide an unbiased result of the final model fit on the training data
 Evalution is performed in a 5-fold crossvalidation approach.</p>
 </dd>
 </dl>
-<p>The use of a validation set is optional. When setting <code class="docutils literal notranslate"><span class="pre">val_size=None</span></code> in <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost" title="hgboost.hgboost.hgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code></a>, there are more samples included in the train/testset for parameter hyperoptimizatoin.
-The use of the test set is not optional. The test_size should be larger then 0 <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost" title="hgboost.hgboost.hgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code></a> to make sure we derive a robust model.
+<p>The use of a validation set is optional. When setting <code class="docutils literal notranslate"><span class="pre">val_size=None</span></code> in <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code>, there are more samples included in the train/testset for parameter hyperoptimizatoin.
+The use of the test set is not optional. The test_size should be larger then 0 <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code> to make sure we derive a robust model.
 Note that <code class="docutils literal notranslate"><span class="pre">val_size</span></code> can be set to very low sizes but keep in mind that this would lead in a poorly (over)trained models.</p>
 </section>
 <section id="hyperparameter-optimization">
@@ -139,7 +139,7 @@ Note that <code class="docutils literal notranslate"><span class="pre">val_size<
 <p>In <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> we incorporated hyperparameter optimization using a <code class="docutils literal notranslate"><span class="pre">hyperopt</span></code>. The goal is to evaluate the value of the combination of parameters in the learning process.</p>
 <p>We evaluate in total thousands of parameter combinations in the learning process.
 To ensure stability, the k-fold crossvalidation comes into play which leads to even more evaluations. To keep the computation costs low, we can decide to only cross-validate the top k detected models
-using the parameter <code class="docutils literal notranslate"><span class="pre">top_cv_evals=10</span></code> in <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost" title="hgboost.hgboost.hgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code></a>. By default, we enable parallel processing.
+using the parameter <code class="docutils literal notranslate"><span class="pre">top_cv_evals=10</span></code> in <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code>. By default, we enable parallel processing.
 Each fit is scored based on the desired evaluation metric and the parameters of the best fit are used.</p>
 <p>The specific list of parameter used for tuning are lised in section <strong>classification</strong> and <strong>regression</strong>.</p>
 <hr>

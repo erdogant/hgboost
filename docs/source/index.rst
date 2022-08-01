@@ -15,6 +15,40 @@ hgboost's documentation!
     * 7. Return model, space and test/evaluation results.
     * 8. Makes insightful plots.
 
+.. _schematic_overview:
+
+.. figure:: ../figs/schematic_overview.png
+
+
+Sponsor
+=======
+**This library is created and maintained in my free time**, and I like to work on my open-source libraries!
+If you like this library too, you can help by becoming a sponsor! The easiest way is by simply following me on medium, and it will cost you nothing! Simply go to my `medium profile <https://erdogant.medium.com/>`_ and press "follow".
+Read more on my `sponsor github page <https://github.com/sponsors/erdogant/>`_ why this is important. This also gives you various other ways to sponsor me!
+
+
+Star is important too!
+======================
+If you like this project, **star** this repo at the github page! This is important because only then I know how much you like it :)
+
+
+Quick install
+=============
+.. code-block:: console
+
+   pip install hgboost
+
+
+Github
+======
+`Github hgboost <https://github.com/erdogant/hgboost/>`_.
+Please report bugs, issues and feature extensions there.
+
+
+Citing hgboost
+==============
+The bibtex can be found in the right side menu at the `github page <https://github.com/erdogant/hgboost/>`_.
+
 
 Content
 =======
@@ -60,48 +94,6 @@ Content
   Coding quality
   hgboost.hgboost
 
-
-
-Quick install
--------------
-
-.. code-block:: console
-
-   pip install hgboost
-
-
-
-
-Quick install
----------------
-
-.. code-block:: console
-
-   pip install hgboost
-
-
-Source code and issue tracker
-------------------------------
-
-`Github hgboost <https://github.com/erdogant/hgboost/>`_.
-Please report bugs, issues and feature extensions there.
-
-
-Citing hgboost
-------------------
-
-The bibtex can be found in the right side menu at the `github page <https://github.com/erdogant/hgboost/>`_.
-
-
-Sponsor this project
-------------------------------
-
-If you like this project, **star** this repo and become a **sponsor**!
-Read more why this is important on my sponsor page!
-
-.. raw:: html
-
-	<iframe src="https://github.com/sponsors/erdogant/button" title="Sponsor erdogant" height="35" width="116" style="border: 0;"></iframe>
 
 
 Indices and tables
