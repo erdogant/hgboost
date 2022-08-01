@@ -1,103 +1,106 @@
 from hgboost import hgboost
 import pandas as pd
 import numpy as np
+import unittest
 
 
-def xgboost_reg():
-    ############################## CLASSIFICATION########################
-    # Check whether all combinations of parameters runs like a charm
-    #####################################################################
-    from hgboost import hgboost
-    X, y = get_data_reg()
-
-    # Set all parameters to be evaluated
-    max_evals = [None, 10]
-    cvs = [None, 5, 11]
-    val_sizes = [None, 0.2]
-    test_sizes = [None, 0.2]
-    methods = ['xgb_reg','ctb_reg','lgb_reg']
-    pos_labels = [None, 0, 2, 'value not in y']
-    top_cv_evals = [None, 1, 20]
-    thresholds = [None, 0.5]
-    eval_metrics = [None,'mae']
-
-    # Evaluate across all paramters
-    out = run_over_all_input_parameters_reg(X, y, max_evals, cvs, val_sizes, methods, pos_labels, test_sizes, top_cv_evals, thresholds, eval_metrics)
-
-
-def xgboost():
-    ############################## CLASSIFICATION########################
-    # Check whether all combinations of parameters runs like a charm
-    #####################################################################
-    from hgboost import hgboost
-    X, y = get_data()
-
-    # Set all parameters to be evaluated
-    max_evals = [None, 10]
-    cvs = [None, 5, 11]
-    val_sizes = [None, 0.2]
-    test_sizes = [None, 0.2]
-    methods = ['xgb_clf', 'xgb_clf_multi']
-    pos_labels = [None, 0, 2, 'value not in y']
-    top_cv_evals = [None, 1, 20]
-    thresholds = [None, 0.5]
-    eval_metrics = [None,'f1']
+class TestXGBOOST(unittest.TestCase):
     
-    # Evaluate across all paramters
-    out = run_over_all_input_parameters(X, y, max_evals, cvs, val_sizes, methods, pos_labels, test_sizes, top_cv_evals, thresholds, eval_metrics)
-
+    def xgboost_reg():
+        ############################## CLASSIFICATION########################
+        # Check whether all combinations of parameters runs like a charm
+        #####################################################################
+        from hgboost import hgboost
+        X, y = get_data_reg()
     
-def catboost():
-    ############################## CLASSIFICATION########################
-    # Check whether all combinations of parameters runs like a charm
-    #####################################################################
-    from hgboost import hgboost
-    X, y = get_data()
-
-    # Set all parameters to be evaluated
-    max_evals = [None, 10]
-    cvs = [None, 5, 11]
-    val_sizes = [None, 0.2]
-    test_sizes = [None, 0.2]
-    pos_labels = [None, 0, 2, 'value not in y']
-    top_cv_evals = [None, 1, 20]
-    thresholds = [None, 0.5]
-    eval_metrics = [None,'f1']
-    methods = ['ctb_clf']
-
-    # Evaluate across all paramters
-    out = run_over_all_input_parameters(X, y, max_evals, cvs, val_sizes, methods, pos_labels, test_sizes, top_cv_evals, thresholds, eval_metrics)
-
-
-def lightboost():
-    ############################## CLASSIFICATION########################
-    # Check whether all combinations of parameters runs like a charm
-    #####################################################################
-    from hgboost import hgboost
-    X, y = get_data()
-
-    # Set all parameters to be evaluated
-    max_evals = [None, 10]
-    cvs = [None, 5, 11]
-    val_sizes = [None, 0.2]
-    test_sizes = [None, 0.2]
-    pos_labels = [None, 0, 2, 'value not in y']
-    top_cv_evals = [None, 1, 20]
-    thresholds = [None, 0.5]
-    eval_metrics = [None,'f1']
-    methods = ['lgb_clf']
-
-    # Evaluate across all paramters
-    out = run_over_all_input_parameters(X, y, max_evals, cvs, val_sizes, methods, pos_labels, test_sizes, top_cv_evals, thresholds, eval_metrics)
-
-
-def lightboost_reg():
-    pass
-
-def catboost_reg():
-    pass
-
-# %%
+        # Set all parameters to be evaluated
+        max_evals = [None, 10]
+        cvs = [None, 5, 11]
+        val_sizes = [None, 0.2]
+        test_sizes = [0.2]
+        methods = ['xgb_reg','ctb_reg','lgb_reg']
+        pos_labels = [None, 0, 2, 'value not in y']
+        top_cv_evals = [None, 1, 20]
+        thresholds = [0.5]
+        eval_metrics = [None,'mae']
+    
+        # Evaluate across all paramters
+        out = run_over_all_input_parameters_reg(X, y, max_evals, cvs, val_sizes, methods, pos_labels, test_sizes, top_cv_evals, thresholds, eval_metrics)
+    
+    
+    def xgboost():
+        ############################## CLASSIFICATION########################
+        # Check whether all combinations of parameters runs like a charm
+        #####################################################################
+        from hgboost import hgboost
+        X, y = get_data()
+    
+        # Set all parameters to be evaluated
+        max_evals = [None, 10]
+        cvs = [None, 5, 11]
+        val_sizes = [None, 0.2]
+        test_sizes = [None, 0.2]
+        methods = ['xgb_clf', 'xgb_clf_multi']
+        pos_labels = [None, 0, 2, 'value not in y']
+        top_cv_evals = [None, 1, 20]
+        thresholds = [None, 0.5]
+        eval_metrics = [None,'f1']
+        
+        # Evaluate across all paramters
+        out = run_over_all_input_parameters(X, y, max_evals, cvs, val_sizes, methods, pos_labels, test_sizes, top_cv_evals, thresholds, eval_metrics)
+    
+        
+    def catboost():
+        ############################## CLASSIFICATION########################
+        # Check whether all combinations of parameters runs like a charm
+        #####################################################################
+        from hgboost import hgboost
+        X, y = get_data()
+    
+        # Set all parameters to be evaluated
+        max_evals = [None, 10]
+        cvs = [None, 5, 11]
+        val_sizes = [None, 0.2]
+        test_sizes = [None, 0.2]
+        pos_labels = [None, 0, 2, 'value not in y']
+        top_cv_evals = [None, 1, 20]
+        thresholds = [None, 0.5]
+        eval_metrics = [None,'f1']
+        methods = ['ctb_clf']
+    
+        # Evaluate across all paramters
+        out = run_over_all_input_parameters(X, y, max_evals, cvs, val_sizes, methods, pos_labels, test_sizes, top_cv_evals, thresholds, eval_metrics)
+    
+    
+    def lightboost():
+        ############################## CLASSIFICATION########################
+        # Check whether all combinations of parameters runs like a charm
+        #####################################################################
+        from hgboost import hgboost
+        X, y = get_data()
+    
+        # Set all parameters to be evaluated
+        max_evals = [None, 10]
+        cvs = [None, 5, 11]
+        val_sizes = [None, 0.2]
+        test_sizes = [None, 0.2]
+        pos_labels = [None, 0, 2, 'value not in y']
+        top_cv_evals = [None, 1, 20]
+        thresholds = [None, 0.5]
+        eval_metrics = [None,'f1']
+        methods = ['lgb_clf']
+    
+        # Evaluate across all paramters
+        out = run_over_all_input_parameters(X, y, max_evals, cvs, val_sizes, methods, pos_labels, test_sizes, top_cv_evals, thresholds, eval_metrics)
+    
+    
+    def lightboost_reg():
+        pass
+    
+    def catboost_reg():
+        pass
+    
+    # %%
 def run_over_all_input_parameters_reg(X, y, max_evals, cvs, val_sizes, methods, pos_labels, test_sizes, top_cv_evals, thresholds, eval_metrics):
     random_state = 42
     out = []
