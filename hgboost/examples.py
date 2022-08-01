@@ -19,31 +19,16 @@
 # plotting
 
 # %%
-import numpy as np
-from hgboost import hgboost
-print(dir(hgboost))
+# import numpy as np
+# from hgboost import hgboost
+# print(dir(hgboost))
 # print(hgboost.__version__)
 
-# %%
-hg = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, verbose=3)
-df = hg.import_example()
-y = df['Survived'].values
-del df['Survived']
-X = hg.preprocessing(df, verbose=0)
-
-# # Fit
-results = hg.xgboost(X, y, pos_label=1)
-
-# %%
-hg.save('test')
-hg.load('test')
-# results['model']
-# results['params']
-
 # %% HYPEROPTIMIZED CLASSIFICATION XGBOOST
-hgb_xgb = hgboost(max_eval=5, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, verbose=3)
-hgb_cat = hgboost(max_eval=5, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, verbose=3)
-hgb_light = hgboost(max_eval=5, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, verbose=3)
+from hgboost import hgboost
+hgb_xgb = hgboost(max_eval=5, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, gpu=True, verbose=3)
+hgb_cat = hgboost(max_eval=5, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, gpu=True, verbose=3)
+hgb_light = hgboost(max_eval=5, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, gpu=True, verbose=3)
 
 # Import data
 df = hgb_xgb.import_example()
@@ -80,6 +65,24 @@ y_pred, y_proba = hgb_xgb.predict(X)
 y_pred, y_proba = hgb_cat.predict(X)
 y_pred, y_proba = hgb_light.predict(X)
 
+# %%
+hg = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, gpu=True, verbose=3)
+df = hg.import_example()
+y = df['Survived'].values
+del df['Survived']
+X = hg.preprocessing(df, verbose=0)
+
+# # Fit
+results = hg.xgboost(X, y, pos_label=1)
+
+# %%
+hg.save('test')
+hg.load('test')
+# results['model']
+# results['params']
+
+
+
 
 # %% HYPEROPTIMIZED MULTI-CLASS XGBOOST
 hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
@@ -106,21 +109,26 @@ y_pred, y_proba = hgb.predict(X)
 
 
 # %% HYPEROPTIMIZED REGRESSION-XGBOOST
-hgb = hgboost(max_eval=50, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=4)
+import numpy as np
+from hgboost import hgboost
+
+hgb_xgb = hgboost(max_eval=50, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=4, gpu=True)
+hgb_cat = hgboost(max_eval=50, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=4, gpu=True)
+hgb_light = hgboost(max_eval=50, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=4, gpu=True)
 
 # Import data
-df = hgb.import_example()
+df = hgb_xgb.import_example()
 y = df['Age'].values
 del df['Age']
 I = ~np.isnan(y)
-X = hgb.preprocessing(df, verbose=0)
+X = hgb_xgb.preprocessing(df, verbose=0)
 X = X.loc[I, :]
 y = y[I]
 
 # Fit
 results = hgb_xgb.xgboost_reg(X, y, eval_metric='mse')
-results = hgb_xgb.xgboost_reg(X, y, eval_metric='rmse')
-results = hgb_xgb.xgboost_reg(X, y, eval_metric='mae')
+# results = hgb_xgb.xgboost_reg(X, y, eval_metric='rmse')
+# results = hgb_xgb.xgboost_reg(X, y, eval_metric='mae')
 results = hgb_cat.catboost_reg(X, y, eval_metric='mae')
 results = hgb_light.lightboost_reg(X, y, eval_metric='mae')
 
