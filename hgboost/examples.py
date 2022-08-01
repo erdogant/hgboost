@@ -156,7 +156,7 @@ y_pred, y_proba = hgb.predict(X)
 
 
 # %% ENSEMBLE CLASSIFIER
-hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, gpu=True, verbose=3)
 
 # Import data
 df = hgb.import_example()
