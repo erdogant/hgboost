@@ -15,6 +15,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -110,7 +111,7 @@
              
   <hr class="docutils" id="code-directive" />
 <section id="classification">
-<h1>Classification<a class="headerlink" href="#classification" title="Permalink to this headline"></a></h1>
+<h1>Classification<a class="headerlink" href="#classification" title="Permalink to this heading"></a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> method consists 3 <strong>classification</strong> methods: <code class="docutils literal notranslate"><span class="pre">xgboost</span></code>, <code class="docutils literal notranslate"><span class="pre">catboost</span></code>, <code class="docutils literal notranslate"><span class="pre">lightboost</span></code>.
 Each algorithm provides hyperparameters that must very likely be tuned for a specific dataset.
 Although there are many hyperparameters to tune, some are more important the others. The parameters used in <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> are lised below:</p>
@@ -126,8 +127,8 @@ Although there are many hyperparameters to tune, some are more important the oth
 </dd>
 </dl>
 <section id="xgboost">
-<h2>xgboost<a class="headerlink" href="#xgboost" title="Permalink to this headline"></a></h2>
-<p>The specific list of parameters used for xgboost: <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost()</span></code></p>
+<h2>xgboost<a class="headerlink" href="#xgboost" title="Permalink to this heading"></a></h2>
+<p>The specific list of parameters used for xgboost: <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.xgboost" title="hgboost.hgboost.hgboost.xgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Parameters:</span>
 <span class="s1">&#39;learning_rate&#39;</span>     <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">0.005</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">base</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">num</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">))</span>
 <span class="s1">&#39;max_depth&#39;</span>         <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;max_depth&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -148,8 +149,8 @@ Although there are many hyperparameters to tune, some are more important the oth
 </div>
 </section>
 <section id="catboost">
-<h2>catboost<a class="headerlink" href="#catboost" title="Permalink to this headline"></a></h2>
-<p>The specific list of parameters used for catboost: <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.catboost()</span></code></p>
+<h2>catboost<a class="headerlink" href="#catboost" title="Permalink to this heading"></a></h2>
+<p>The specific list of parameters used for catboost: <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.catboost" title="hgboost.hgboost.hgboost.catboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.catboost()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;learning_rate&#39;</span>     <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">0.005</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">0.31</span><span class="p">),</span> <span class="n">base</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">num</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">))</span>
 <span class="s1">&#39;depth&#39;</span>             <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;max_depth&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">))</span>
 <span class="s1">&#39;iterations&#39;</span>        <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;iterations&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
@@ -161,8 +162,8 @@ Although there are many hyperparameters to tune, some are more important the oth
 </div>
 </section>
 <section id="lightboost">
-<h2>lightboost<a class="headerlink" href="#lightboost" title="Permalink to this headline"></a></h2>
-<p>The specific list of parameters used for lightboost: <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.lightboost()</span></code></p>
+<h2>lightboost<a class="headerlink" href="#lightboost" title="Permalink to this heading"></a></h2>
+<p>The specific list of parameters used for lightboost: <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.lightboost" title="hgboost.hgboost.hgboost.lightboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.lightboost()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Parameters:</span>
 <span class="s1">&#39;learning_rate&#39;</span>     <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">0.005</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">base</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">num</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">))</span>
 <span class="s1">&#39;max_depth&#39;</span>         <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;max_depth&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>

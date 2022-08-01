@@ -15,6 +15,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -111,18 +112,18 @@
              
   <hr class="docutils" id="code-directive" />
 <section id="performance">
-<h1>Performance<a class="headerlink" href="#performance" title="Permalink to this headline"></a></h1>
+<h1>Performance<a class="headerlink" href="#performance" title="Permalink to this heading"></a></h1>
 <p>To measure the goodness of fit we use various evaluation metrics to check the classification model’s performance.
-The performance is computed using the evaluation metric <code class="docutils literal notranslate"><span class="pre">eval_metric</span></code> in <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code>.</p>
+The performance is computed using the evaluation metric <code class="docutils literal notranslate"><span class="pre">eval_metric</span></code> in <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost" title="hgboost.hgboost.hgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code></a>.</p>
 <dl class="simple">
 <dt>Default <code class="docutils literal notranslate"><span class="pre">eval_metric</span></code> are as following:</dt><dd><ul class="simple">
-<li><p>‘rmse’  : lightboost_reg  <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.lightboost_reg()</span></code></p></li>
-<li><p>‘rmse’  : catboost_reg    <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.catboost_reg()</span></code></p></li>
-<li><p>‘rmse’  : xgboost_reg     <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost_reg()</span></code></p></li>
-<li><p>‘auc’   : xgboost         <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost()</span></code> (two-class)</p></li>
-<li><p>‘kappa’ : xgboost         <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost()</span></code> (multi-class)</p></li>
-<li><p>‘auc’   : lightboost      <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.lightboost()</span></code></p></li>
-<li><p>‘auc’   : catboost        <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.catboost()</span></code></p></li>
+<li><p>‘rmse’  : lightboost_reg  <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.lightboost_reg" title="hgboost.hgboost.hgboost.lightboost_reg"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.lightboost_reg()</span></code></a></p></li>
+<li><p>‘rmse’  : catboost_reg    <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.catboost_reg" title="hgboost.hgboost.hgboost.catboost_reg"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.catboost_reg()</span></code></a></p></li>
+<li><p>‘rmse’  : xgboost_reg     <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.xgboost_reg" title="hgboost.hgboost.hgboost.xgboost_reg"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost_reg()</span></code></a></p></li>
+<li><p>‘auc’   : xgboost         <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.xgboost" title="hgboost.hgboost.hgboost.xgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost()</span></code></a> (two-class)</p></li>
+<li><p>‘kappa’ : xgboost         <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.xgboost" title="hgboost.hgboost.hgboost.xgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost()</span></code></a> (multi-class)</p></li>
+<li><p>‘auc’   : lightboost      <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.lightboost" title="hgboost.hgboost.hgboost.lightboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.lightboost()</span></code></a></p></li>
+<li><p>‘auc’   : catboost        <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.catboost" title="hgboost.hgboost.hgboost.catboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.catboost()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -131,7 +132,7 @@ After learning a model, and predicting new samples with it, each sample will get
 In case of our two-class approach the simple rule account: <strong>P(class of interest) = 1-P(class rest)</strong>
 The threshold is used on the probabilities to devide samples into one of the classes.</p>
 <section id="auc">
-<h2>AUC<a class="headerlink" href="#auc" title="Permalink to this headline"></a></h2>
+<h2>AUC<a class="headerlink" href="#auc" title="Permalink to this heading"></a></h2>
 <p>The Area Under The Curve (AUC) and Receiver Operating Characteristics curve (ROC) are one of the most important evaluation metrics for checking any classification model’s performance.
 In our case we have a classification task, the probability ranges between [0-1], and the threshold for classification is set at 0.5 in case of two-class classification, where &lt;=0.5 is class 1 and &gt;0.5 is the other class.
 This value can be tweaked to either reduce the number of False positives or True Negatives <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.plot_validation()</span></code>.</p>
@@ -143,19 +144,19 @@ It describes <em>how much</em> the model is capable of distinguishing between th
 </figure>
 </section>
 <section id="confusion-matrix">
-<h2>Confusion matrix<a class="headerlink" href="#confusion-matrix" title="Permalink to this headline"></a></h2>
+<h2>Confusion matrix<a class="headerlink" href="#confusion-matrix" title="Permalink to this heading"></a></h2>
 <p>A confusion matrix is a table that is often used to describe the performance of a classification model (or “classifier”)
 on a set of test data for which the true values are known. It allows the visualization of the performance of an algorithm.</p>
 </section>
 <section id="kappa-score">
-<h2>Kappa score<a class="headerlink" href="#kappa-score" title="Permalink to this headline"></a></h2>
+<h2>Kappa score<a class="headerlink" href="#kappa-score" title="Permalink to this heading"></a></h2>
 <p>Cohen’s kappa coefficient is a statistic that is used to measure inter-rated reliability for qualitative (categorical) items.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scoring</span> <span class="o">=</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">cohen_kappa_score</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="probability-graph">
-<h2>Probability graph<a class="headerlink" href="#probability-graph" title="Permalink to this headline"></a></h2>
+<h2>Probability graph<a class="headerlink" href="#probability-graph" title="Permalink to this heading"></a></h2>
 <p>The probability graph plots the probabilities of the samples being classified.</p>
 <hr>
 <center>
