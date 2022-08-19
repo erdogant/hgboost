@@ -1,40 +1,38 @@
-.. _code_directive:
+Splitting the data set into a train, test, and evaluation set is an important step.
+***********************************************************************************
 
--------------------------------------
+For supervised machine learning tasks it is very important to split the data into separate parts to avoid overfitting when learning the model. Overfitting is when the model fits (or learns) on the data too well and then fails to reliably predict on (new) unseen data. The most common manner is to split data set is into a trainset, and an independent validationset. However, when we also perform hyperparameter tuning, such as in boosting algorithms, it also requires a testset. The model can now see the data, learn from the data, and finally we can describe the stability of the model. Thus for boosting algorithms we devide the data into three parts, namely: trainset, testset and validationset. Each set has a different role, and is explained below.
 
-Cross validation and hyperparameter tuning
-'''''''''''''''''''''''''''''''''''''''''''
 
-*Cross validation* and *hyperparameter tuning* are two tasks that we do together in the data pipeline.
-*Cross validation* is the process of training learners using one set of data and testing it using a different set. We set a default of **5-fold crossvalidation** to evalute our results.
-*Parameter tuning* is the process of selecting the values for a model’s parameters that maximize the accuracy of the model.
-
-.. _grid_search_cross_validation:
-
-.. figure:: ../figs/grid_search_cross_validation.png
-
- 
-Training and testing
---------------------
+Train, test and validationset
+------------------------------
 
 The model *sees* and *learns* from the data. To ensure stability in the model and results, we devide the data set into three parts with different sizes, namely: train-set, test-set and validation-set.
 Each set has a different role, and is explained below.
 
-Validation dataset
-    20% of all the data is used when the ``hgboost`` determined the best model  using the train and test sets.
-    This will provide an unbiased result of the final model fit on the training dataset.
+The Trainset
+	This is the part where the model sees and learns from the data. It consists typically 70% or 80% of the samples to determine the best fit (in a 5 fold-cross validation scheme) across the thousands of possible hyperparameters.
 
-Train dataset
-    After excluding the validation set, we take 80% of the data to fit the model. The model sees and learns from this data.
+The validation set
+	The remaining 30% or 20% of the samples in the data is kept independent, and used in the final stage to get an unbiased evaluation of the model fit. It is important to realize that this set can only be used once. Or in other words, if the model is further optimized after getting new insights on this validation set, you need another independent set to evaluate the final model performance.
 
-Test dataset
-    The remaining 20% of the data training data is to evaluate the learned model and provides an unbiased evaluation of a model fit after tuning model hyperparameters.
-    Evalution is performed in a 5-fold crossvalidation approach.
+The testset
+	This set contains typically 20% of the samples of the trainingset, and is is used to evaluate the model performance for the specific set of hyperparameters that are used to fit the model during the learning proces. Note that the testset contains a fixed set of samples, and therefore we can compare the model performance across the models for which the fit is based on different hyperparameters.
 
 
-The use of a validation set is optional. When setting ``val_size=None`` in :func:`hgboost.hgboost.hgboost`, there are more samples included in the train/testset for parameter hyperoptimizatoin.
-The use of the test set is not optional. The test_size should be larger then 0 :func:`hgboost.hgboost.hgboost` to make sure we derive a robust model.
-Note that ``val_size`` can be set to very low sizes but keep in mind that this would lead in a poorly (over)trained models.
+With ``hgboost`` we will first determine the best model using the train and test sets. After evaluating all hyperparameters, and selection of the best model, we will test the reliability of the model performance on an independent and unseen data set.
+The use of a validation set is optional but it is strongly encouraged to use it. When setting ``val_size=None`` in :func:`hgboost.hgboost.hgboost`, there are more samples included in the train/testset for parameter hyperoptimization. Note that ``val_size`` can also be set to very low percentages but keep in mind that it then also may lead in a poorly overtrained model. The use of the testset should always be larger then 0 :func:`hgboost.hgboost.hgboost`. 
+
+
+Cross validation and hyperparameter tuning
+------------------------------------------
+
+*Cross validation* and *hyperparameter tuning* are two tasks that we do together in the data pipeline.
+*Cross validation* is the process of training learners using one set of data and testing it using a different set. We set a default of **5-fold crossvalidation** to evalute our results. *Parameter tuning* is the process of selecting the values for a model’s parameters that maximize the accuracy of the model.
+
+.. _grid_search_cross_validation:
+
+.. figure:: ../figs/grid_search_cross_validation.png
 
 
 Hyperparameter optimization
@@ -42,10 +40,7 @@ Hyperparameter optimization
 
 In ``hgboost`` we incorporated hyperparameter optimization using a ``hyperopt``. The goal is to evaluate the value of the combination of parameters in the learning process.
 
-We evaluate in total thousands of parameter combinations in the learning process.
-To ensure stability, the k-fold crossvalidation comes into play which leads to even more evaluations. To keep the computation costs low, we can decide to only cross-validate the top k detected models
-using the parameter ``top_cv_evals=10`` in :func:`hgboost.hgboost.hgboost`. By default, we enable parallel processing.
-Each fit is scored based on the desired evaluation metric and the parameters of the best fit are used.
+We evaluate thousands of parameter combinations in the learning process. To ensure stability, the k-fold crossvalidation comes into play. To keep the computation costs low, we can decide to only cross-validate the top k detected models using the parameter ``top_cv_evals=10`` in :func:`hgboost.hgboost.hgboost`. By default, we enable parallel processing. Each fit is scored based on the desired evaluation metric and the parameters of the best fit are used.
 
 The specific list of parameter used for tuning are lised in section **classification** and **regression**.
 
