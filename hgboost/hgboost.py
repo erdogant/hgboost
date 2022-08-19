@@ -58,9 +58,9 @@ class hgboost:
             If set to None, each iteration (max_eval) is tested.
             If set to 0, cross validation is not performed.
         test_size : float, (default : 0.2)
-            Splitting train/test set with test_size=0.2 and train=1-test_size.
+            Percentage split for the testset based on the total dataset.
         val_size : float, (default : 0.2)
-            Setup the validation set. This part is kept entirely separate from the test-size.
+            Percentage split for the validationset based on the total dataset. This part is kept untouched, and used only once to determine the model performance.
         is_unbalance : Bool, (default: True)
             Control the balance of positive and negative weights, useful for unbalanced classes.
             xgboost clf : sum(negative instances) / sum(positive instances)
@@ -132,12 +132,13 @@ class hgboost:
 
         Returns
         -------
-        results : dict
-            * best_params: Best performing parameters.
-            * summary: Summary of the models with the loss and other variables.
-            * trials: All model results.
+        results: dict
+            * best_params: The best model parameters
+            * summary: Model parameters and performance for all evaluations.
+            * trials: Hyperopt object with the trials.
             * model: Best performing model.
             * val_results: Results on independent validation dataset.
+            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
 
         """
         # Check input data
@@ -206,15 +207,16 @@ class hgboost:
 
         Returns
         -------
-        results : dict
-            * best_params: Best performing parameters.
-            * summary: Summary of the models with the loss and other variables.
-            * trials: All model results.
+        results: dict
+            * best_params: The best model parameters
+            * summary: Model parameters and performance for all evaluations.
+            * trials: Hyperopt object with the trials.
             * model: Best performing model.
             * val_results: Results on independent validation dataset.
+            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
 
         """
-        if self.verbose>=3: print('[hgboost] >Start hgboost regression..')
+        if self.verbose>=3: print('[hgboost] >Start hgboost regression.')
         # Method
         self.method='xgb_reg'
         # Run method
@@ -243,15 +245,16 @@ class hgboost:
 
         Returns
         -------
-        results : dict
-            * best_params: Best performing parameters.
-            * summary: Summary of the models with the loss and other variables.
-            * trials: All model results.
+        results: dict
+            * best_params: The best model parameters
+            * summary: Model parameters and performance for all evaluations.
+            * trials: Hyperopt object with the trials.
             * model: Best performing model.
             * val_results: Results on independent validation dataset.
+            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
 
         """
-        if self.verbose>=3: print('[hgboost] >Start hgboost regression..')
+        if self.verbose>=3: print('[hgboost] >Start hgboost regression.')
         # Method
         self.method='lgb_reg'
         # Run method
@@ -280,15 +283,16 @@ class hgboost:
 
         Returns
         -------
-        results : dict.
-            * best_params: Best performing parameters.
-            * summary: Summary of the models with the loss and other variables.
-            * trials: All model results.
+        results: dict
+            * best_params: The best model parameters
+            * summary: Model parameters and performance for all evaluations.
+            * trials: Hyperopt object with the trials.
             * model: Best performing model.
             * val_results: Results on independent validation dataset.
+            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
 
         """
-        if self.verbose>=3: print('[hgboost] >Start hgboost regression..')
+        if self.verbose>=3: print('[hgboost] >Start hgboost regression.')
         if self.gpu:
             print('[hgboost] >GPU for catboost is not supported. It throws an error because multiple evaluation sets are readily optimized.')
             self.gpu=False
@@ -327,15 +331,16 @@ class hgboost:
 
         Returns
         -------
-        results : dict.
-            * best_params: Best performing parameters.
-            * summary: Summary of the models with the loss and other variables.
-            * trials: All model results.
+        results: dict
+            * best_params: The best model parameters
+            * summary: Model parameters and performance for all evaluations.
+            * trials: Hyperopt object with the trials.
             * model: Best performing model.
             * val_results: Results on independent validation dataset.
+            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
 
         """
-        if self.verbose>=3: print('[hgboost] >Start hgboost classification..')
+        if self.verbose>=3: print('[hgboost] >Start hgboost classification.')
         self.method = method
         self.pos_label = pos_label
         # Run method
@@ -366,15 +371,16 @@ class hgboost:
 
         Returns
         -------
-        results : dict.
-            * best_params: Best performing parameters.
-            * summary: Summary of the models with the loss and other variables.
-            * trials: All model results.
+        results: dict
+            * best_params: The best model parameters
+            * summary: Model parameters and performance for all evaluations.
+            * trials: Hyperopt object with the trials.
             * model: Best performing model.
             * val_results: Results on independent validation dataset.
+            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
 
         """
-        if self.verbose>=3: print('[hgboost] >Start hgboost classification..')
+        if self.verbose>=3: print('[hgboost] >Start hgboost classification.')
         if self.gpu:
             print('[hgboost] >GPU for catboost is not supported. It throws an error because I am readily optimizing across multiple evaluation sets.')
 
@@ -408,15 +414,16 @@ class hgboost:
 
         Returns
         -------
-        results : dict
-            * best_params: Best performing parameters.
-            * summary: Summary of the models with the loss and other variables.
-            * trials: All model results.
+        results: dict
+            * best_params: The best model parameters
+            * summary: Model parameters and performance for all evaluations.
+            * trials: Hyperopt object with the trials.
             * model: Best performing model.
             * val_results: Results on independent validation dataset.
+            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
 
         """
-        if self.verbose>=3: print('[hgboost] >Start hgboost classification..')
+        if self.verbose>=3: print('[hgboost] >Start hgboost classification.')
         self.method = 'lgb_clf'
         self.pos_label = pos_label
         # Run method
@@ -456,11 +463,14 @@ class hgboost:
 
         Returns
         -------
-        results : dict
-            * best_params: Best performing parameters.
-            * summary: Summary of the models with the loss and other variables.
-            * model: Ensemble of the best performing models.
+        results: dict
+            * best_params: The best model parameters
+            * summary: Model parameters and performance for all evaluations.
+            * trials: Hyperopt object with the trials.
+            * model: Best performing model.
             * val_results: Results on independent validation dataset.
+            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
+
         """
         # Store parameters in object
         self.results = {}
@@ -543,7 +553,7 @@ class hgboost:
 
         Description
         -----------
-        Here we separate a small part of the data as the validation set.
+        Here we separate the data as the validation set.
         * The new data is stored in self.X and self.y
         * The validation X and y are stored in self.X_val and self.y_val
         """
@@ -568,20 +578,20 @@ class hgboost:
         -----------
         Minimize a function over a hyperparameter space.
         More realistically: *explore* a function over a hyperparameter space
-        according to a given algorithm, allowing up to a certain number of
-        function evaluations.  As points are explored, they are accumulated in
-        "trials".
+        according to a given algorithm, allowing up to a certain number of function evaluations.
+        As points are explored, they are accumulated in "trials".
 
         Returns
         -------
         model : object
             Fitted model.
-        results : dict
-            * best_params: Best performing parameters.
-            * summary: Summary of the models with the loss and other variables.
-            * trials: All model results.
+        results: dict
+            * best_params: The best model parameters
+            * summary: Model parameters and performance for all evaluations.
+            * trials: Hyperopt object with the trials.
             * model: Best performing model.
             * val_results: Results on independent validation dataset.
+            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
 
         """
         # Import the desired model-function for the classification/regression
@@ -595,9 +605,9 @@ class hgboost:
         elif '_reg' in self.method:
             self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True)
 
-        if self.verbose>=3: print('[hgboost] >Train-set: %s ' %(str(self.X_train.shape)))
         if self.verbose>=3: print('[hgboost] >Test-set: %s ' %(str(self.X_test.shape)))
-        if self.verbose>=3: print('[hgboost] >Searching across hyperparameter space for best performing parameters.')
+        if self.verbose>=3: print('[hgboost] >Train-set: %s ' %(str(self.X_train.shape)))
+        if self.verbose>=3: print('[hgboost] >Searching across hyperparameter space for best performing parameters using maximum nr. evaluations: %.0d' %(self.max_eval))
 
         # Hyperoptimization to find best performing model. Set the trials which is the object where all the HPopt results are stored.
         trials=Trials()
@@ -620,7 +630,7 @@ class hgboost:
         # Validation error
         val_results = None
         if (self.val_size is not None):
-            if self.verbose>=3: print('[hgboost] >Evalute best [%s] model on validation dataset (%.0f samples, %.2g%%)' %(self.method, len(self.y_val), self.val_size * 100))
+            if self.verbose>=3: print('[hgboost] >Evaluate best [%s] model on validation dataset (%.0f samples, %.2g%%)' %(self.method, len(self.y_val), self.val_size * 100))
             # Evaluate results
             val_score, val_results = self._eval(self.X_val, self.y_val, model, verbose=2)
             val_score_basic, val_results_basic = self._eval(self.X_val, self.y_val, model_basic, verbose=2)
@@ -628,7 +638,7 @@ class hgboost:
             comparison_results['Model with default parameters (validation set)'] = val_results_basic
             if self.verbose>=3: print('[hgboost] >[%s]: %.4g using HyperOptimized parameters on validation set.' %(self.eval_metric, val_score['loss']))
             if self.verbose>=3: print('[hgboost] >[%s]: %.4g using default (not optimized) parameters on validation set.' %(self.eval_metric, val_score_basic['loss']))
-            # Store validation results
+            # Store Validation results
             results_summary = _store_validation_scores(results_summary, best_params, model_basic, val_score_basic, val_score, self.greater_is_better)
 
         # Remove the model column
@@ -671,7 +681,7 @@ class hgboost:
                 score.pop('model')
                 scores.append(score)
 
-            # Store mean and std summary
+            # Compute the mean and std of the p-best-performing models across the k-fold crossvalidation.
             results_summary['loss_mean'].iloc[i] = pd.DataFrame(scores)['loss'].mean()
             results_summary['loss_std'].iloc[i] = pd.DataFrame(scores)['loss'].std()
 
@@ -1657,7 +1667,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
         # Class sizes
         if is_unbalance:
             # https://catboost.ai/docs/concepts/python-reference_parameters-list.html#python-reference_parameters-list
-            if verbose>=3: print('[hgboost] >Correct for unbalanced classes using [auto_class_weights]..')
+            if verbose>=3: print('[hgboost] >Correct for unbalanced classes using [auto_class_weights].')
             scale_pos_weight = np.sum(y!=pos_label) / np.sum(y==pos_label)
         else:
             scale_pos_weight = hp.choice('scale_pos_weight', np.arange(1, 101, 9))
@@ -1713,7 +1723,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
         space['fit_params']={'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
         return(space)
 
-    ############### XGboost classification parameters ###############
+    # ############## XGboost classification parameters ###############
     if 'xgb_clf' in fn_name:
         # Enable/Disable GPU
         if gpu:
