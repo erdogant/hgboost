@@ -26,12 +26,15 @@
 
 # %% HYPEROPTIMIZED CLASSIFICATION XGBOOST
 from hgboost import hgboost
-hgb_xgb = hgboost(max_eval=5, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, gpu=True, verbose=3)
-hgb_cat = hgboost(max_eval=5, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, gpu=True, verbose=3)
-hgb_light = hgboost(max_eval=5, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, gpu=True, verbose=3)
+hgb_xgb = hgboost(max_eval=25, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, gpu=False, verbose=3)
+hgb_cat = hgboost(max_eval=25, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, gpu=False, verbose=3)
+hgb_light = hgboost(max_eval=25, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, gpu=False, verbose=3)
 
 # Import data
 df = hgb_xgb.import_example()
+del df['PassengerId']
+del df['Name']
+
 y = df['Survived'].values
 del df['Survived']
 X = hgb_xgb.preprocessing(df, verbose=0)
@@ -64,6 +67,24 @@ hgb_light.plot_cv()
 y_pred, y_proba = hgb_xgb.predict(X)
 y_pred, y_proba = hgb_cat.predict(X)
 y_pred, y_proba = hgb_light.predict(X)
+
+import matplotlib.pyplot as plt
+plt.figure();plt.plot(results['summary']['loss'])
+
+#     booster colsample_bytree gamma  ... best_cv loss_validation default_params
+# 0    gbtree             0.55     2  ...     0.0             NaN          False
+# 1    gbtree             0.56     1  ...     0.0             NaN          False
+# 2    gbtree             0.64     5  ...     0.0             NaN          False
+# 3    gbtree             0.59     5  ...     0.0             NaN          False
+# 4    gbtree             0.22   1.5  ...     0.0             NaN          False
+# ..      ...              ...   ...  ...     ...             ...            ...
+# 246  gbtree              0.8     2  ...     0.0             NaN          False
+# 247  gbtree             0.45     1  ...     0.0             NaN          False
+# 248  gbtree             0.88   0.5  ...     0.0             NaN          False
+# 249  gbtree             0.57     1  ...     0.0             NaN          False
+# 250     NaN                1     0  ...     NaN         0.85415           True
+
+# [251 rows x 23 columns]
 
 # %%
 hg = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, gpu=True, verbose=3)

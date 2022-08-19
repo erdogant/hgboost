@@ -1,19 +1,20 @@
 hgboost's documentation!
 ========================
 
-``hgboost`` is short for Hyperoptimized Gradient Boosting and is a python package for hyperparameter optimization for xgboost, catboost and lightboost using cross-validation, and evaluating the results on an independent validation set.
-``hgboost`` can be applied for classification and regression tasks.
+The Hyperoptimized Gradient Boosting library (``hgboost``), is a Python package for hyperparameter optimization for XGBoost, LightBoost, and CatBoost. It will carefully split the dataset into a train, test, and an independent validation set. Within the train-test set there is the inner loop for optimizing the hyperparameters using Bayesian optimization that is based on Hyperopt and, the outer loop to test how well the best-performing models can generalize using an external k-fold cross validation. This will select the most robust model with the highest performance.
 
 ``hgboost`` is fun because:
 
-    * 1. Hyperoptimization of the Parameter-space using bayesian approach.
-    * 2. Determines the best scoring model(s) using k-fold cross validation.
-    * 3. Evaluates best model on independent evaluation set.
-    * 4. Fit model on entire input-data using the best model.
-    * 5. Works for classification and regression
-    * 6. Creating a super-hyperoptimized model by an ensemble of all individual optimized models.
-    * 7. Return model, space and test/evaluation results.
-    * 8. Makes insightful plots.
+	* 1. It consists three of the most popular decision tree algorithms; XGBoost, LightBoost and Catboost.
+	* 2. It consists the most popular hyperparameter optimization library for Bayesian Optimization; Hyperopt.
+	* 3. An automated manner to split the data set into a train-test and independent validation to reliably determine the model performance.
+	* 4. The pipeline has a nested scheme with an inner loop for hyperparameter optimization and an outer loop with k-fold crossvalidation to determine the most robust and best-performing model.
+	* 5. It can handle both classification and regression tasks.
+	* 6. It is easy to go wild and create a multi-class model or an ensemble of boosted decision tree models.
+	* 7. It takes care of unbalanced datasets.
+	* 8. It aims to create explainable results for the hyperparameter search-space, and model performance results by creating insightful plots.
+	* 9. It is open-source.
+	* 10. It is documented with many examples.
 
 .. _schematic_overview:
 
