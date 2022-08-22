@@ -159,7 +159,8 @@ class hgboost:
         # Find best parameters
         self.model, self.results = self._HPOpt()
         # Fit on all data using best parameters
-        if self.verbose>=3: print('[hgboost] >Retrain [%s] on the entire dataset with the optimal parameters settings.' %(self.method))
+        if self.verbose>=3: print('[hgboost] >*********************************************************************************')
+        if self.verbose>=3: print('[hgboost] >Retrain [%s] on the entire dataset with the optimal hyperparameters.' %(self.method))
         self.model.fit(X, y)
         # Return
         return self.results
@@ -187,7 +188,7 @@ class hgboost:
         if self.verbose>=3: print('[hgboost] >Fin!')
 
     def xgboost_reg(self, X, y, eval_metric='rmse', greater_is_better=False, params='default'):
-        """Xgboost Regression with parameter hyperoptimization.
+        """Xgboost Regression with hyperparameter optimization.
 
         Parameters
         ----------
@@ -225,7 +226,7 @@ class hgboost:
         return self.results
 
     def lightboost_reg(self, X, y, eval_metric='rmse', greater_is_better=False, params='default'):
-        """Light Regression with parameter hyperoptimization.
+        """Light Regression with hyperparameter optimization.
 
         Parameters
         ----------
@@ -263,7 +264,7 @@ class hgboost:
         return self.results
 
     def catboost_reg(self, X, y, eval_metric='rmse', greater_is_better=False, params='default'):
-        """Catboost Regression with parameter hyperoptimization.
+        """Catboost Regression with hyperparameter optimization.
 
         Parameters
         ----------
@@ -304,7 +305,7 @@ class hgboost:
         return self.results
 
     def xgboost(self, X, y, pos_label=None, method='xgb_clf', eval_metric=None, greater_is_better=None, params='default'):
-        """Xgboost Classification with parameter hyperoptimization.
+        """Xgboost Classification with hyperparameter optimization.
 
         Parameters
         ----------
@@ -349,7 +350,7 @@ class hgboost:
         return self.results
 
     def catboost(self, X, y, pos_label=None, eval_metric='auc', greater_is_better=True, params='default'):
-        """Catboost Classification with parameter hyperoptimization.
+        """Catboost Classification with hyperparameter optimization.
 
         Parameters
         ----------
@@ -392,7 +393,7 @@ class hgboost:
         return self.results
 
     def lightboost(self, X, y, pos_label=None, eval_metric='auc', greater_is_better=True, params='default'):
-        """Lightboost Classification with parameter hyperoptimization.
+        """Lightboost Classification with hyperparameter optimization.
 
         Parameters
         ----------
@@ -432,7 +433,7 @@ class hgboost:
         return self.results
 
     def ensemble(self, X, y, pos_label=None, methods=['xgb_clf', 'ctb_clf', 'lgb_clf'], eval_metric=None, greater_is_better=None, voting='soft'):
-        """Ensemble Classification with parameter hyperoptimization.
+        """Ensemble Classification with hyperparameter optimization.
 
         Description
         -----------
@@ -557,6 +558,7 @@ class hgboost:
         * The new data is stored in self.X and self.y
         * The validation X and y are stored in self.X_val and self.y_val
         """
+        if self.verbose>=3: print('[hgboost] >*********************************************************************************')
         if self.verbose>=3: print('[hgboost] >Total dataset: %s ' %(str(X.shape)))
 
         if (self.val_size is not None):
@@ -576,7 +578,7 @@ class hgboost:
 
         Description
         -----------
-        Minimize a function over a hyperparameter space.
+        Minimize a function over the hyperparameter search space.
         More realistically: *explore* a function over a hyperparameter space
         according to a given algorithm, allowing up to a certain number of function evaluations.
         As points are explored, they are accumulated in "trials".
@@ -607,13 +609,14 @@ class hgboost:
 
         if self.verbose>=3: print('[hgboost] >Test-set: %s ' %(str(self.X_test.shape)))
         if self.verbose>=3: print('[hgboost] >Train-set: %s ' %(str(self.X_train.shape)))
+        if self.verbose>=3: print('[hgboost] >*********************************************************************************')
         if self.verbose>=3: print('[hgboost] >Searching across hyperparameter space for best performing parameters using maximum nr. evaluations: %.0d' %(self.max_eval))
 
         # Hyperoptimization to find best performing model. Set the trials which is the object where all the HPopt results are stored.
         trials=Trials()
         best_params = fmin(fn=fn, space=self.space, algo=self.algo, max_evals=self.max_eval, trials=trials, show_progressbar=disable)
         # Summary results
-        results_summary, model, best_params = self._to_df(trials, best_params, verbose=self.verbose)
+        results_summary, model, best_params = self._to_df(trials, best_params)
 
         # Cross-validation over the top n models. To speed up we can decide to test only the best performing ones. The best performing model is returned.
         if self.cv is not None:
@@ -630,13 +633,17 @@ class hgboost:
         # Validation error
         val_results = None
         if (self.val_size is not None):
-            if self.verbose>=3: print('[hgboost] >Evaluate best [%s] model on validation dataset (%.0f samples, %.2g%%)' %(self.method, len(self.y_val), self.val_size * 100))
             # Evaluate results
+            if self.verbose>=3: print('[hgboost] >*********************************************************************************')
+            if self.verbose>=3: print('[hgboost] >Evaluate best [%s] model on validation dataset (%.0f samples, %.2g%%)' %(self.method, len(self.y_val), self.val_size * 100))
+            # With hyperparameter optimization.
             val_score, val_results = self._eval(self.X_val, self.y_val, model, verbose=2)
+            # With defaults parameters.
             val_score_basic, val_results_basic = self._eval(self.X_val, self.y_val, model_basic, verbose=2)
-            comparison_results['Model with HyperOptimized parameters (validation set)'] = val_results
+            # Store
+            comparison_results['Model with optimized hyperparameters (validation set)'] = val_results
             comparison_results['Model with default parameters (validation set)'] = val_results_basic
-            if self.verbose>=3: print('[hgboost] >[%s]: %.4g using HyperOptimized parameters on validation set.' %(self.eval_metric, val_score['loss']))
+            if self.verbose>=3: print('[hgboost] >[%s]: %.4g using optimized hyperparameters on validation set.' %(self.eval_metric, val_score['loss']))
             if self.verbose>=3: print('[hgboost] >[%s]: %.4g using default (not optimized) parameters on validation set.' %(self.eval_metric, val_score_basic['loss']))
             # Store Validation results
             results_summary = _store_validation_scores(results_summary, best_params, model_basic, val_score_basic, val_score, self.greater_is_better)
@@ -661,14 +668,15 @@ class hgboost:
 
         # Determine maximum folds
         top_cv_evals = np.minimum(results_summary.shape[0], self.top_cv_evals)
-        idx = results_summary['loss'].sort_values(ascending=ascending).index[0:top_cv_evals]
-        if self.verbose>=3: print('[hgboost] >%.0d-fold cross validation for the top %.0d scoring models, Total nr. tests: %.0f' %(self.cv, len(idx), self.cv * len(idx)))
-        disable = (True if (self.verbose==0 or self.verbose>3) else False)
+        idx_top_models = results_summary['loss'].sort_values(ascending=ascending).index[0:top_cv_evals]
+        if self.verbose>=3: print('[hgboost] >*********************************************************************************')
+        if self.verbose>=3: print('[hgboost] >%.0d-fold cross validation for the top %.0d scoring models, Total nr. tests: %.0f' %(self.cv, len(idx_top_models), self.cv * len(idx_top_models)))
+        disable = (False if (self.verbose<3) else True)
 
-        # Run over the top-scoring models.
-        for i in tqdm(idx, disable=disable):
+        # For each model, compute the performance.
+        for idx in tqdm(idx_top_models, disable=disable):
             scores = []
-            # Run over the cross-validations
+            # Do the k-fold cross-validation
             for k in np.arange(0, self.cv):
                 # Split train-test set
                 if '_clf' in self.method:
@@ -676,14 +684,14 @@ class hgboost:
                 elif '_reg' in self.method:
                     self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=None, shuffle=True)
 
-                # Evaluate model
-                score, _ = self._train_model(results_summary['model'].iloc[i], space)
+                # Evaluate the top10 best performing models
+                score, _ = self._train_model(results_summary['model'].iloc[idx], space)
                 score.pop('model')
                 scores.append(score)
 
             # Compute the mean and std of the p-best-performing models across the k-fold crossvalidation.
-            results_summary['loss_mean'].iloc[i] = pd.DataFrame(scores)['loss'].mean()
-            results_summary['loss_std'].iloc[i] = pd.DataFrame(scores)['loss'].std()
+            results_summary['loss_mean'].iloc[idx] = pd.DataFrame(scores)['loss'].mean()
+            results_summary['loss_std'].iloc[idx] = pd.DataFrame(scores)['loss'].std()
 
         # Negate scoring if required. The hpopt is optimized for loss functions (lower is better). Therefore we need to set eg the auc to negative and here we need to return.
         if self.greater_is_better:
@@ -692,7 +700,8 @@ class hgboost:
         else:
             idx_best = results_summary['loss_mean'].argmin()
 
-        # Get best performing model based on the mean scores.
+        # Get best k-fold CV performing model based on the mean scores.
+        if self.verbose>=3: print('[hgboost] >[%s] (average): %.4g Best %.0d-fold CV model using optimized hyperparameters.' %(self.eval_metric, results_summary['loss_mean'].iloc[idx_best], self.cv))
         model = results_summary['model'].iloc[idx_best]
         results_summary['best_cv'] = False
         results_summary['best_cv'].iloc[idx_best] = True
@@ -755,8 +764,8 @@ class hgboost:
         return out
 
     # Transform results into dataframe
-    def _to_df(self, trials, best_params=None, verbose=3):
-        if verbose>=3: print('[hgboost]> Collecting the hyper-parameters from the [%.0d] trials.' %(len(trials.trials)))
+    def _to_df(self, trials, best_params=None):
+        if self.verbose>=3: print('[hgboost]> Collecting the hyperparameters from the [%.0d] trials.' %(len(trials.trials)))
 
         # Combine params with scoring results
         model_params = [*self.space['model_params'].keys()]
@@ -778,7 +787,7 @@ class hgboost:
                     else:
                         df_params[param].iloc[i] = getattr(trial['result']['model'], param)
                 except:
-                    if verbose>=3: print('[hgboost]> Skip [%s]' %(param))
+                    if self.verbose>=3: print('[hgboost]> Skip [%s]' %(param))
                     gather_params_legacy = True
 
         # The trials.vals stores the index for some parameters instead of the real values.
@@ -802,23 +811,23 @@ class hgboost:
             idx_best_loss = df['loss'].argmin()
 
         if idx!=idx_best_loss:
-            print('[hgboost] >[Warning]> Best model of hyperOpt does not have best loss score(?)')
+            if self.verbose>=4: print('[hgboost] >[Warning]> Best model of hyperOpt does not have best loss score(?)')
 
-        model = df['model'].iloc[idx]
-        score = df['loss'].iloc[idx]
+        model = df['model'].iloc[idx_best_loss]
+        score = df['loss'].iloc[idx_best_loss]
         df['best'] = False
-        df['best'].iloc[idx] = True
+        df['best'].iloc[idx_best_loss] = True
 
         # Get best_params
         try:
-            best_params = df[best_params].iloc[idx].to_dict()
+            best_params = df[best_params].iloc[idx_best_loss].to_dict()
             # Should be the same as:
             # trials.best_trial['result']['model']
         except:
             pass
 
         # Return
-        if verbose>=3: print('[hgboost] >Best performing [%s] model: %s=%g' %(self.method, self.eval_metric, score))
+        if self.verbose>=3: print('[hgboost] >[%s]: %.4g Best performing model across %.0d iterations using Bayesian Optimization with Hyperopt.' %(self.eval_metric, score, df.shape[0]))
         return(df, model, best_params)
 
     # Predict
@@ -1039,7 +1048,8 @@ class hgboost:
             return None
 
         print('[hgboost] >%.0d-fold crossvalidation is performed with [%s]' %(self.cv, self.method))
-        disable = (True if (self.verbose==0 or self.verbose>3) else False)
+        disable = (False if (self.verbose<3) else True)
+
         ax = None
 
         # Make model by using all default parameters
@@ -1288,7 +1298,7 @@ class hgboost:
         if return_ax:
             return ax, ax2
 
-    def plot(self, ylim=None, figsize=(15, 10), return_ax=False):
+    def plot(self, ylim=None, figsize=(15, 10), plot2=True, return_ax=False):
         """Plot the summary results.
 
         Parameters
@@ -1315,9 +1325,9 @@ class hgboost:
 
         # Plot comparison between hyperoptimized vs basic model
         if (self.results.get('comparison_results', None) is not None) and ([*self.results['comparison_results'].values()][0] is not None):
-            cle.plot_cross(self.results['comparison_results'], title='Comparison between model with HyperOptimized vs default parameters on validation set.')
+            cle.plot_cross(self.results['comparison_results'], title='Comparison between model with optimized hyperparamters vs. default parameters on validation set.')
 
-        if hasattr(self.model, 'evals_result'):
+        if hasattr(self.model, 'evals_result') and plot2:
             _, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
         else:
             _, ax1 = plt.subplots(1, 1, figsize=figsize)
@@ -1352,7 +1362,7 @@ class hgboost:
         ax1.legend()
         if ylim is not None: ax1.set_ylim(ylim)
 
-        if hasattr(self.model, 'evals_result'):
+        if hasattr(self.model, 'evals_result') and plot2:
             eval_metric = [*self.model.evals_result()['validation_0'].keys()][0]
             ax2.plot([*self.model.evals_result()['validation_0'].values()][0], label='Train error')
             ax2.plot([*self.model.evals_result()['validation_1'].values()][0], label='Test error')
