@@ -24,6 +24,139 @@
 # print(dir(hgboost))
 # print(hgboost.__version__)
 
+# %% HYPEROPTIMIZED REGRESSION-XGBOOST
+import numpy as np
+from hgboost import hgboost
+
+hgb_xgb = hgboost(max_eval=250, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
+hgb_cat = hgboost(max_eval=250, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
+hgb_light = hgboost(max_eval=250, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
+
+# Import data
+df = hgb_xgb.import_example()
+y = df['Age'].values
+df.drop(['Age', 'PassengerId', 'Name'], axis=1, inplace=True)
+
+# Preprocessing
+X = hgb_xgb.preprocessing(df, verbose=0)
+I = ~np.isnan(y)
+X = X.loc[I, :]
+y = y[I]
+
+# Fit
+results = hgb_xgb.xgboost_reg(X, y, eval_metric='mae')
+results2 = hgb_cat.catboost_reg(X, y, eval_metric='mae')
+results3 = hgb_light.lightboost_reg(X, y, eval_metric='mae')
+
+# hgb_xgb.save('c:\\temp\\hgb_xgb.pkl')
+# hgb_cat.save('c:\\temp\\hgb_cat.pkl')
+# hgb_light.save('c:\\temp\\hgb_light.pkl')
+
+# Make some plots
+hgb_xgb.plot_params()
+hgb_xgb.plot(ylim=[8.5, 13], plot2=False)
+hgb_xgb.plot_validation()
+hgb_xgb.plot_cv()
+hgb_xgb.treeplot(plottype='vertical')
+
+hgb_cat.plot_params()
+hgb_cat.plot(ylim=[8, 12])
+hgb_cat.treeplot()
+hgb_cat.plot_validation()
+hgb_cat.plot_cv()
+
+hgb_light.plot_params()
+hgb_light.plot(ylim=[8, 12])
+hgb_light.treeplot()
+hgb_light.plot_validation()
+hgb_light.plot_cv()
+
+# use the predictor
+# y_pred, y_proba = hgb.predict(X)
+
+# %% HYPEROPTIMIZED regression XGBOOST
+from hgboost import hgboost
+import pandas as pd
+file = "C://Users//playground//Downloads//Dataset//Dataset//Training//Features_Variant_1.csv"
+df = pd.read_csv(file, header=None)
+y = df.loc[:,53].values
+X  = df.loc[:,:52] 
+
+hgb_xgb = hgboost(max_eval=10, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=4)
+results = hgb_xgb.xgboost_reg(X, y, eval_metric='mae')
+# Baseline MAE is 11.31
+
+hgb_xgb.plot_params()
+hgb_xgb.plot()
+hgb_xgb.treeplot()
+hgb_xgb.plot_validation()
+hgb_xgb.plot_cv()
+
+
+
+from sklearn.metrics import mean_absolute_error
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+# X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=.1, random_state=42)
+
+model = LinearRegression().fit(hgb_xgb.X_train, hgb_xgb.y_train)
+model.score(hgb_xgb.X_train, hgb_xgb.y_train)
+model.score(hgb_xgb.X_val, hgb_xgb.y_val)
+ 
+# "Learn" the mean from the training data
+mean_train = np.mean(y_train)
+# Get predictions on the test set
+baseline_predictions = np.ones(y_test.shape) * mean_train
+# Compute MAE
+mae_baseline = mean_absolute_error(y_test, baseline_predictions)
+print("Baseline MAE is {:.2f}".format(mae_baseline))
+# Baseline MAE is 11.31
+
+
+# %% HYPEROPTIMIZED regression XGBOOST
+from hgboost import hgboost
+
+from sklearn.datasets import fetch_california_housing, load_diabetes
+df = fetch_california_housing(as_frame=True)
+df = df['frame']
+y = df['MedHouseVal'].values
+del df['MedHouseVal']
+del df['Latitude']
+del df['Longitude']
+
+df = load_diabetes(as_frame=True)
+df = df['frame']
+y = df['target'].values
+del df['target']
+
+
+hgb_xgb = hgboost(max_eval=50, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=4)
+results = hgb_xgb.xgboost_reg(df, y, eval_metric='mae')
+
+# Make some plots
+hgb_xgb.plot_params()
+hgb_xgb.plot()
+hgb_xgb.treeplot()
+hgb_xgb.plot_validation()
+hgb_xgb.plot_cv()
+
+# BAseline simple regression
+model = LinearRegression().fit(hgb_xgb.X_train, hgb_xgb.y_train)
+model.score(hgb_xgb.X_train, hgb_xgb.y_train)
+model.score(hgb_xgb.X_test, hgb_xgb.y_test)
+model.score(hgb_xgb.X_val, hgb_xgb.y_val)
+ 
+# "Learn" the mean from the training data
+mean_train = np.mean(hgb_xgb.y_train)
+# Get predictions on the test set
+baseline_predictions = np.ones(hgb_xgb.y_test.shape) * mean_train
+# Compute MAE
+mae_baseline = mean_absolute_error(hgb_xgb.y_test, baseline_predictions)
+print("Baseline MAE is {:.2f}".format(mae_baseline))
+# Baseline MAE is 11.31
+
+
 # %% HYPEROPTIMIZED CLASSIFICATION XGBOOST
 from hgboost import hgboost
 hgb_xgb = hgboost(max_eval=25, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, gpu=False, verbose=3)
@@ -40,7 +173,7 @@ del df['Survived']
 X = hgb_xgb.preprocessing(df, verbose=0)
 
 # Fit
-results = hgb_xgb.xgboost(X, y, pos_label=1)
+results = hgb_xgb.xgboost(df, y<0, pos_label=1)
 results = hgb_cat.catboost(X, y, pos_label=1)
 results = hgb_light.lightboost(X, y, pos_label=1)
 
@@ -129,51 +262,7 @@ hgb.plot_cv()
 y_pred, y_proba = hgb.predict(X)
 
 
-# %% HYPEROPTIMIZED REGRESSION-XGBOOST
-import numpy as np
-from hgboost import hgboost
 
-hgb_xgb = hgboost(max_eval=50, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=4, gpu=True)
-hgb_cat = hgboost(max_eval=50, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=4, gpu=True)
-hgb_light = hgboost(max_eval=50, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=4, gpu=True)
-
-# Import data
-df = hgb_xgb.import_example()
-y = df['Age'].values
-del df['Age']
-I = ~np.isnan(y)
-X = hgb_xgb.preprocessing(df, verbose=0)
-X = X.loc[I, :]
-y = y[I]
-
-# Fit
-results = hgb_xgb.xgboost_reg(X, y, eval_metric='mse')
-# results = hgb_xgb.xgboost_reg(X, y, eval_metric='rmse')
-# results = hgb_xgb.xgboost_reg(X, y, eval_metric='mae')
-results = hgb_cat.catboost_reg(X, y, eval_metric='mae')
-results = hgb_light.lightboost_reg(X, y, eval_metric='mae')
-
-# Make some plots
-hgb_xgb.plot_params()
-hgb_xgb.plot()
-hgb_xgb.treeplot()
-hgb_xgb.plot_validation()
-hgb_xgb.plot_cv()
-
-hgb_cat.plot_params()
-hgb_cat.plot()
-hgb_cat.treeplot()
-hgb_cat.plot_validation()
-hgb_cat.plot_cv()
-
-hgb_light.plot_params()
-hgb_light.plot()
-hgb_light.treeplot()
-hgb_light.plot_validation()
-hgb_light.plot_cv()
-
-# use the predictor
-y_pred, y_proba = hgb.predict(X)
 
 
 # %% ENSEMBLE CLASSIFIER
