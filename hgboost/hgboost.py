@@ -1150,7 +1150,7 @@ class hgboost:
         Parameters
         ----------
         top_n : int, (default : 10)
-            Top n paramters that scored highest are plotted in red.
+            Top n parameters that scored highest are plotted with a black dashed vertical line.
         shade : bool, (default : True)
             Fill the density plot.
         figsize: tuple, default (15,15)
@@ -1179,7 +1179,7 @@ class hgboost:
 
         # Sort data based on loss
         colname = 'loss'
-        colbest = 'best'
+        colbest = 'best' # best without cv
         if self.cv is not None:
             colname_cv = 'loss_mean'
             colbest_cv = 'best_cv'
@@ -1189,6 +1189,7 @@ class hgboost:
 
         # Sort on best loss
         df_summary = summary_results.sort_values(by=colnames, ascending=ascending)
+        df_summary.reset_index(inplace=True, drop=True)
 
         # Get parameters for best scoring model
         idx_best = np.where(df_summary[colbest])[0]
@@ -1231,8 +1232,10 @@ class hgboost:
                 if len(y_data)>0:
                     # Plot the top n (not the first because that one is plotted in green)
                     ax[i_row][i_col].vlines(getvals[1:top_n], np.min(y_data), np.max(y_data), linewidth=1, colors='k', linestyles='dashed', label='Top ' + str(top_n) + ' models')
+
                     # Plot the best (without cv)
                     ax[i_row][i_col].vlines(getvals[idx_best], np.min(y_data), np.max(y_data), linewidth=2, colors='g', linestyles='dashed', label='Best (without cv)')
+
                     # Plot the best (with cv)
                     if self.cv is not None:
                         ax[i_row][i_col].vlines(getvals[idx_best_cv], np.min(y_data), np.max(y_data), linewidth=2, colors='r', linestyles='dotted', label='Best ' + str(self.cv) + '-fold cv')
@@ -1252,13 +1255,15 @@ class hgboost:
                 pass
 
         # Scatter plot
-        df_sum = summary_results.sort_values(by='tid', ascending=True)
-        idx_best = np.where(df_sum[colbest])[0]
+        df_sum = self.results['summary'].copy()
+        df_sum = df_sum.loc[~df_sum['default_params'], :]
+        df_sum = df_sum.sort_values(by='tid', ascending=True)
+        df_sum.reset_index(inplace=True, drop=True)
+        idx_best_without_cv = np.where(df_sum[colbest])[0]
 
         if self.cv is not None:
             idx_best_cv = np.where(df_sum[colbest_cv])[0]
         df_sum = df_sum.fillna(0)
-        # df_sum = df_sum[list(params)+['tid']]
 
         fig2, ax2 = plt.subplots(nrRows, nrCols, figsize=figsize)
         i_row = -1
@@ -1272,22 +1277,22 @@ class hgboost:
                 # Make the plot
                 sns.regplot('tid', param, data=df_sum, ax=ax2[i_row][i_col], color=color_params[i, :])
 
-                # Scatter top n values
+                # Scatter top n values, start with 1 because the 0 is, based on the ranking, with CV.
                 ax2[i_row][i_col].scatter(df_summary['tid'].values[1:top_n], df_summary[param].values[1:top_n], s=50, color='k', marker='.', label='Top ' + str(top_n) + ' models')
 
                 # Scatter best value
-                ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best], df_sum[param].values[idx_best], s=100, color='g', marker='*', label='Best (without cv)')
+                ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best_without_cv], df_sum[param].values[idx_best_without_cv], s=100, color='g', marker='*', label='Best (without cv)')
 
                 # Scatter best cv
                 if self.cv is not None:
-                    ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best_cv], df_sum[param].values[idx_best], s=100, color='r', marker='x', label='Best ' + str(self.cv) + '-fold cv')
+                    ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best_cv], df_sum[param].values[idx_best_cv], s=100, color='r', marker='x', label='Best ' + str(self.cv) + '-fold cv')
 
                 # Set labels
                 ax2[i_row][i_col].set(xlabel='iteration', ylabel='{}'.format(param), title='{} over Search'.format(param))
                 if self.cv is not None:
                     ax2[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, df_sum[param].values[idx_best_cv], self.cv)))
                 else:
-                    ax2[i_row][i_col].set_title(('%s: %.3g' %(param, df_sum[param].values[idx_best])))
+                    ax2[i_row][i_col].set_title(('%s: %.3g' %(param, df_sum[param].values[idx_best_without_cv])))
 
                 ax2[i_row][i_col].grid(True)
                 ax2[i_row][i_col].legend(loc='upper right')
