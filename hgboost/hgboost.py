@@ -133,12 +133,12 @@ class hgboost:
         Returns
         -------
         results: dict
-            * best_params: The best model parameters
-            * summary: Model parameters and performance for all evaluations.
+            * best_params (dict): containing the  optimized model hyperparameters.
+            * summary (DataFrame): containing the parameters and performance for all evaluations.
             * trials: Hyperopt object with the trials.
-            * model: Best performing model.
-            * val_results: Results on independent validation dataset.
-            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
+            * model (object): Final optimized model based on the k-fold crossvalidation, with the hyperparameters as described in "params".
+            * val_results (dict): Results of the final model on independent validation dataset.
+            * dict: comparison_results: Comparison between HyperOptimized parameters vs. default parameters.
 
         """
         # Check input data
@@ -209,12 +209,12 @@ class hgboost:
         Returns
         -------
         results: dict
-            * best_params: The best model parameters
-            * summary: Model parameters and performance for all evaluations.
+            * best_params (dict): containing the  optimized model hyperparameters.
+            * summary (DataFrame): containing the parameters and performance for all evaluations.
             * trials: Hyperopt object with the trials.
-            * model: Best performing model.
-            * val_results: Results on independent validation dataset.
-            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
+            * model (object): Final optimized model based on the k-fold crossvalidation, with the hyperparameters as described in "params".
+            * val_results (dict): Results of the final model on independent validation dataset.
+            * comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.
 
         """
         if self.verbose>=3: print('[hgboost] >Start hgboost regression.')
@@ -247,12 +247,12 @@ class hgboost:
         Returns
         -------
         results: dict
-            * best_params: The best model parameters
-            * summary: Model parameters and performance for all evaluations.
+            * best_params (dict): containing the  optimized model hyperparameters.
+            * summary (DataFrame): containing the parameters and performance for all evaluations.
             * trials: Hyperopt object with the trials.
-            * model: Best performing model.
-            * val_results: Results on independent validation dataset.
-            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
+            * model (object): Final optimized model based on the k-fold crossvalidation, with the hyperparameters as described in "params".
+            * val_results (dict): Results of the final model on independent validation dataset.
+            * comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.
 
         """
         if self.verbose>=3: print('[hgboost] >Start hgboost regression.')
@@ -285,12 +285,12 @@ class hgboost:
         Returns
         -------
         results: dict
-            * best_params: The best model parameters
-            * summary: Model parameters and performance for all evaluations.
+            * best_params (dict): containing the  optimized model hyperparameters.
+            * summary (DataFrame): containing the parameters and performance for all evaluations.
             * trials: Hyperopt object with the trials.
-            * model: Best performing model.
-            * val_results: Results on independent validation dataset.
-            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
+            * model (object): Final optimized model based on the k-fold crossvalidation, with the hyperparameters as described in "params".
+            * val_results (dict): Results of the final model on independent validation dataset.
+            * comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.
 
         """
         if self.verbose>=3: print('[hgboost] >Start hgboost regression.')
@@ -333,12 +333,12 @@ class hgboost:
         Returns
         -------
         results: dict
-            * best_params: The best model parameters
-            * summary: Model parameters and performance for all evaluations.
+            * best_params (dict): containing the  optimized model hyperparameters.
+            * summary (DataFrame): containing the parameters and performance for all evaluations.
             * trials: Hyperopt object with the trials.
-            * model: Best performing model.
-            * val_results: Results on independent validation dataset.
-            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
+            * model (object): Final optimized model based on the k-fold crossvalidation, with the hyperparameters as described in "params".
+            * val_results (dict): Results of the final model on independent validation dataset.
+            * comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.
 
         """
         if self.verbose>=3: print('[hgboost] >Start hgboost classification.')
@@ -373,12 +373,12 @@ class hgboost:
         Returns
         -------
         results: dict
-            * best_params: The best model parameters
-            * summary: Model parameters and performance for all evaluations.
+            * best_params (dict): containing the  optimized model hyperparameters.
+            * summary (DataFrame): containing the parameters and performance for all evaluations.
             * trials: Hyperopt object with the trials.
-            * model: Best performing model.
-            * val_results: Results on independent validation dataset.
-            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
+            * model (object): Final optimized model based on the k-fold crossvalidation, with the hyperparameters as described in "params".
+            * val_results (dict): Results of the final model on independent validation dataset.
+            * comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.
 
         """
         if self.verbose>=3: print('[hgboost] >Start hgboost classification.')
@@ -416,12 +416,12 @@ class hgboost:
         Returns
         -------
         results: dict
-            * best_params: The best model parameters
-            * summary: Model parameters and performance for all evaluations.
+            * best_params (dict): containing the  optimized model hyperparameters.
+            * summary (DataFrame): containing the parameters and performance for all evaluations.
             * trials: Hyperopt object with the trials.
-            * model: Best performing model.
-            * val_results: Results on independent validation dataset.
-            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
+            * model (object): Final optimized model based on the k-fold crossvalidation, with the hyperparameters as described in "params".
+            * val_results (dict): Results of the final model on independent validation dataset.
+            * comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.
 
         """
         if self.verbose>=3: print('[hgboost] >Start hgboost classification.')
@@ -465,12 +465,12 @@ class hgboost:
         Returns
         -------
         results: dict
-            * best_params: The best model parameters
-            * summary: Model parameters and performance for all evaluations.
+            * best_params (dict): containing the  optimized model hyperparameters.
+            * summary (DataFrame): containing the parameters and performance for all evaluations.
             * trials: Hyperopt object with the trials.
-            * model: Best performing model.
-            * val_results: Results on independent validation dataset.
-            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
+            * model (object): Final optimized model based on the k-fold crossvalidation, with the hyperparameters as described in "params".
+            * val_results (dict): Results of the final model on independent validation dataset.
+            * comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.
 
         """
         # Store parameters in object
@@ -588,12 +588,12 @@ class hgboost:
         model : object
             Fitted model.
         results: dict
-            * best_params: The best model parameters
-            * summary: Model parameters and performance for all evaluations.
+            * best_params (dict): containing the  optimized model hyperparameters.
+            * summary (DataFrame): containing the parameters and performance for all evaluations.
             * trials: Hyperopt object with the trials.
-            * model: Best performing model.
-            * val_results: Results on independent validation dataset.
-            * comparison_results: Comparison between HyperOptimized parameters vs. default parameters
+            * model (object): Final optimized model based on the k-fold crossvalidation, with the hyperparameters as described in "params".
+            * val_results (dict): Results of the final model on independent validation dataset.
+            * comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.
 
         """
         # Import the desired model-function for the classification/regression
