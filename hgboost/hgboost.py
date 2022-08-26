@@ -1337,8 +1337,9 @@ class hgboost:
         else:
             _, ax1 = plt.subplots(1, 1, figsize=figsize)
 
-        tmpdf = self.results['summary'].sort_values(by='tid', ascending=True)
+        tmpdf = self.results['summary'].sort_values(by='tid', ascending=True).copy()
         tmpdf = tmpdf.loc[~tmpdf['loss'].isna(), :]
+        tmpdf.reset_index(drop=True, inplace=True)
 
         # Plot results with testsize
         idx = np.where(tmpdf['best'].values)[0]
@@ -1355,7 +1356,7 @@ class hgboost:
             ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss_mean'].iloc[idx], colors='r', linestyles='dashed')
             best_loss = tmpdf['loss_mean'].iloc[idx]
             title = ('%s (%.0d-fold cv mean %s: %.3g)' %(self.method, self.cv, self.eval_metric, best_loss))
-            ax1.set_xlabel('Model number')
+            ax1.set_xlabel('Model iterations')
 
         # Plot all other evalution results
         ax1.scatter(tmpdf['tid'].values, tmpdf['loss'].values, s=10, label='All models')
@@ -1753,7 +1754,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
             'learning_rate': hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.5), base=10, num=1000)),
             'max_depth': hp.choice('max_depth', range(5, 32, 1)),
             'min_child_weight': hp.quniform('min_child_weight', 1, 10, 1),
-            'gamma': hp.choice('gamma', [0.5, 1, 1.5, 2, 5]),
+            'gamma': hp.choice('gamma', [0.5, 1, 1.5, 2, 3, 4, 5]),
             'subsample': hp.quniform('subsample', 0.1, 1, 0.01),
             'n_estimators': hp.choice('n_estimators', range(20, 205, 5)),
             'booster': 'gbtree',
