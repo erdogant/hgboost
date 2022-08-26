@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Regression" href="Regression.html" />
-    <link rel="prev" title="Splitting the data set into a train, test, and evaluation set" href="Cross%20validation%20and%20hyperparameter%20tuning.html" /> 
+    <link rel="prev" title="Splitting the data set" href="Cross%20validation%20and%20hyperparameter%20tuning.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -53,7 +53,7 @@
 <p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cross%20validation%20and%20hyperparameter%20tuning.html">Splitting the data set into a train, test, and evaluation set</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cross%20validation%20and%20hyperparameter%20tuning.html">Splitting the data set</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Methods</span></p>
 <ul class="current">
@@ -136,7 +136,7 @@ Although there are many hyperparameters to tune, some are more important the oth
 <span class="s1">&#39;learning_rate&#39;</span>     <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">0.005</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">base</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">num</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">))</span>
 <span class="s1">&#39;max_depth&#39;</span>         <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;max_depth&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 <span class="s1">&#39;min_child_weight&#39;</span>  <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">quniform</span><span class="p">(</span><span class="s1">&#39;min_child_weight&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="s1">&#39;gamma&#39;</span>             <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;gamma&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="s1">&#39;gamma&#39;</span>             <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;gamma&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 <span class="s1">&#39;subsample&#39;</span>         <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">quniform</span><span class="p">(</span><span class="s1">&#39;subsample&#39;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
 <span class="s1">&#39;n_estimators&#39;</span>      <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;n_estimators&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">205</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="s1">&#39;colsample_bytree&#39;</span>  <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">quniform</span><span class="p">(</span><span class="s1">&#39;colsample_bytree&#39;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
@@ -195,7 +195,7 @@ Although there are many hyperparameters to tune, some are more important the oth
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Cross%20validation%20and%20hyperparameter%20tuning.html" class="btn btn-neutral float-left" title="Splitting the data set into a train, test, and evaluation set" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Cross%20validation%20and%20hyperparameter%20tuning.html" class="btn btn-neutral float-left" title="Splitting the data set" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="Regression.html" class="btn btn-neutral float-right" title="Regression" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

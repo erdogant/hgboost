@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Splitting the data set into a train, test, and evaluation set &mdash; hgboost hgboost documentation</title>
+  <title>Splitting the data set &mdash; hgboost hgboost documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -53,7 +53,7 @@
 <p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Algorithms.html">Algorithms</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Splitting the data set into a train, test, and evaluation set</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Splitting the data set</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#train-test-and-validationset">Train, test and validationset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cross-validation-and-hyperparameter-tuning">Cross validation and hyperparameter tuning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#hyperparameter-optimization">Hyperparameter optimization</a></li>
@@ -102,7 +102,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Splitting the data set into a train, test, and evaluation set</li>
+      <li>Splitting the data set</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/Cross validation and hyperparameter tuning.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -112,8 +112,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="splitting-the-data-set-into-a-train-test-and-evaluation-set">
-<h1>Splitting the data set into a train, test, and evaluation set<a class="headerlink" href="#splitting-the-data-set-into-a-train-test-and-evaluation-set" title="Permalink to this heading"></a></h1>
+  <section id="splitting-the-data-set">
+<h1>Splitting the data set<a class="headerlink" href="#splitting-the-data-set" title="Permalink to this heading"></a></h1>
 <p>For supervised machine learning tasks it is very important to split the data into separate parts to avoid overfitting when learning the model. Overfitting is when the model fits (or learns) on the data too well and then fails to reliably predict on (new) unseen data. The most common manner is to split data set is into a trainset, and an independent validationset. However, when we also perform hyperparameter tuning, such as in boosting algorithms, it also requires a testset. The model can now see the data, learn from the data, and finally we can describe the stability of the model. Thus for boosting algorithms we devide the data into three parts, namely: trainset, testset and validationset. Each set has a different role, and is explained below.</p>
 <section id="train-test-and-validationset">
 <h2>Train, test and validationset<a class="headerlink" href="#train-test-and-validationset" title="Permalink to this heading"></a></h2>

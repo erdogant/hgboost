@@ -34,7 +34,7 @@ It is recommended to install ``hgboost`` from an isolated Python environment. Us
 
 .. code-block:: python
 
-    conda create -n env_hgboost python=3.6
+    conda create -n env_hgboost python=3.8
     conda activate env_hgboost
 
 
