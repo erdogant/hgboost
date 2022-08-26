@@ -28,7 +28,7 @@
 import numpy as np
 from hgboost import hgboost
 
-hgb_xgb = hgboost(max_eval=250, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
+hgb_xgb = hgboost(max_eval=25, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
 hgb_cat = hgboost(max_eval=250, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
 hgb_light = hgboost(max_eval=250, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
 
