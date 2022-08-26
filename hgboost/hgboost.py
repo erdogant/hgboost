@@ -1303,7 +1303,7 @@ class hgboost:
         if return_ax:
             return ax, ax2
 
-    def plot(self, ylim=None, figsize=(15, 10), plot2=True, return_ax=False):
+    def plot(self, ylim=None, figsize=(20, 15), plot2=True, return_ax=False):
         """Plot the summary results.
 
         Parameters
@@ -1341,25 +1341,37 @@ class hgboost:
         tmpdf = tmpdf.loc[~tmpdf['loss'].isna(), :]
         tmpdf.reset_index(drop=True, inplace=True)
 
+        # Make the plot
+        sns.regplot('tid', 'loss', data=tmpdf, ax=ax1, color='#23395d', scatter=True, fit_reg=True, label=str(tmpdf.shape[0])+' models iterations')
+        # Plot all other evalution results
+        # ax1.scatter(tmpdf['tid'].values, tmpdf['loss'].values, s=10, label=str(tmpdf.shape[0])+'models iterations')
+
         # Plot results with testsize
         idx = np.where(tmpdf['best'].values)[0]
         ax1.hlines(tmpdf['loss'].iloc[idx], 0, tmpdf['loss'].shape[0], colors='g', linestyles='dashed', label='Best model (without cv)')
-        ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss'].iloc[idx], colors='g', linestyles='dashed')
+        ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss_mean'].iloc[idx], colors='g', linestyles='dashed')
+
         best_loss = tmpdf['loss'].iloc[idx]
         title = ('%s (%s: %.3g)' %(self.method, self.eval_metric, best_loss))
 
         # Plot results with cv
         if self.cv is not None:
+            # Plot the top CVs for the top k models.
             ax1.errorbar(tmpdf['tid'], tmpdf['loss_mean'], tmpdf['loss_std'], marker='s', mfc='red', label=str(self.cv) + '-fold cv for top ' + str(self.top_cv_evals) + ' scoring models')
+            topk = np.where(~tmpdf['loss_mean'].isna())[0]
+
+            # Mark the best CV in Red
             idx = np.where(tmpdf['best_cv'].values)[0]
             ax1.hlines(tmpdf['loss_mean'].iloc[idx], 0, tmpdf['loss_mean'].shape[0], colors='r', linestyles='dotted', label='Best model (' + str(self.cv) + '-fold cv)')
             ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss_mean'].iloc[idx], colors='r', linestyles='dashed')
+            
+            # Highlight the top k best scoring models.
+            ax1.scatter(tmpdf['tid'].values[topk], tmpdf['loss'].values[topk], s=30, marker='s', label='Top ' + str(self.top_cv_evals) + ' scoring models', color='#960000')
+            
+            # Set title
             best_loss = tmpdf['loss_mean'].iloc[idx]
             title = ('%s (%.0d-fold cv mean %s: %.3g)' %(self.method, self.cv, self.eval_metric, best_loss))
             ax1.set_xlabel('Model iterations')
-
-        # Plot all other evalution results
-        ax1.scatter(tmpdf['tid'].values, tmpdf['loss'].values, s=10, label='All models')
 
         # Set labels
         ax1.set_title(title)
