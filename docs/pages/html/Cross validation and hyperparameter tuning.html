@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Splitting the data set into a train, test, and evaluation set is an important step. &mdash; hgboost hgboost documentation</title>
+  <title>Splitting the data set into a train, test, and evaluation set &mdash; hgboost hgboost documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -15,6 +15,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -52,7 +53,7 @@
 <p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Algorithms.html">Algorithms</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Splitting the data set into a train, test, and evaluation set is an important step.</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Splitting the data set into a train, test, and evaluation set</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#train-test-and-validationset">Train, test and validationset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cross-validation-and-hyperparameter-tuning">Cross validation and hyperparameter tuning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#hyperparameter-optimization">Hyperparameter optimization</a></li>
@@ -101,7 +102,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Splitting the data set into a train, test, and evaluation set is an important step.</li>
+      <li>Splitting the data set into a train, test, and evaluation set</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/Cross validation and hyperparameter tuning.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -111,11 +112,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="splitting-the-data-set-into-a-train-test-and-evaluation-set-is-an-important-step">
-<h1>Splitting the data set into a train, test, and evaluation set is an important step.<a class="headerlink" href="#splitting-the-data-set-into-a-train-test-and-evaluation-set-is-an-important-step" title="Permalink to this headline"></a></h1>
+  <section id="splitting-the-data-set-into-a-train-test-and-evaluation-set">
+<h1>Splitting the data set into a train, test, and evaluation set<a class="headerlink" href="#splitting-the-data-set-into-a-train-test-and-evaluation-set" title="Permalink to this heading"></a></h1>
 <p>For supervised machine learning tasks it is very important to split the data into separate parts to avoid overfitting when learning the model. Overfitting is when the model fits (or learns) on the data too well and then fails to reliably predict on (new) unseen data. The most common manner is to split data set is into a trainset, and an independent validationset. However, when we also perform hyperparameter tuning, such as in boosting algorithms, it also requires a testset. The model can now see the data, learn from the data, and finally we can describe the stability of the model. Thus for boosting algorithms we devide the data into three parts, namely: trainset, testset and validationset. Each set has a different role, and is explained below.</p>
 <section id="train-test-and-validationset">
-<h2>Train, test and validationset<a class="headerlink" href="#train-test-and-validationset" title="Permalink to this headline"></a></h2>
+<h2>Train, test and validationset<a class="headerlink" href="#train-test-and-validationset" title="Permalink to this heading"></a></h2>
 <p>The model <em>sees</em> and <em>learns</em> from the data. To ensure stability in the model and results, we devide the data set into three parts with different sizes, namely: train-set, test-set and validation-set.
 Each set has a different role, and is explained below.</p>
 <dl class="simple">
@@ -127,10 +128,10 @@ Each set has a different role, and is explained below.</p>
 </dd>
 </dl>
 <p>With <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> we will first determine the best model using the train and test sets. After evaluating all hyperparameters, and selection of the best model, we will test the reliability of the model performance on an independent and unseen data set.
-The use of a validation set is optional but it is strongly encouraged to use it. When setting <code class="docutils literal notranslate"><span class="pre">val_size=None</span></code> in <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code>, there are more samples included in the train/testset for parameter hyperoptimization. Note that <code class="docutils literal notranslate"><span class="pre">val_size</span></code> can also be set to very low percentages but keep in mind that it then also may lead in a poorly overtrained model. The use of the testset should always be larger then 0 <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code>.</p>
+The use of a validation set is optional but it is strongly encouraged to use it. When setting <code class="docutils literal notranslate"><span class="pre">val_size=None</span></code> in <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost" title="hgboost.hgboost.hgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code></a>, there are more samples included in the train/testset for parameter hyperoptimization. Note that <code class="docutils literal notranslate"><span class="pre">val_size</span></code> can also be set to very low percentages but keep in mind that it then also may lead in a poorly overtrained model. The use of the testset should always be larger then 0 <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost" title="hgboost.hgboost.hgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code></a>.</p>
 </section>
 <section id="cross-validation-and-hyperparameter-tuning">
-<h2>Cross validation and hyperparameter tuning<a class="headerlink" href="#cross-validation-and-hyperparameter-tuning" title="Permalink to this headline"></a></h2>
+<h2>Cross validation and hyperparameter tuning<a class="headerlink" href="#cross-validation-and-hyperparameter-tuning" title="Permalink to this heading"></a></h2>
 <p><em>Cross validation</em> and <em>hyperparameter tuning</em> are two tasks that we do together in the data pipeline.
 <em>Cross validation</em> is the process of training learners using one set of data and testing it using a different set. We set a default of <strong>5-fold crossvalidation</strong> to evalute our results. <em>Parameter tuning</em> is the process of selecting the values for a model’s parameters that maximize the accuracy of the model.</p>
 <figure class="align-default" id="grid-search-cross-validation">
@@ -138,9 +139,9 @@ The use of a validation set is optional but it is strongly encouraged to use it.
 </figure>
 </section>
 <section id="hyperparameter-optimization">
-<h2>Hyperparameter optimization<a class="headerlink" href="#hyperparameter-optimization" title="Permalink to this headline"></a></h2>
+<h2>Hyperparameter optimization<a class="headerlink" href="#hyperparameter-optimization" title="Permalink to this heading"></a></h2>
 <p>In <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> we incorporated hyperparameter optimization using a <code class="docutils literal notranslate"><span class="pre">hyperopt</span></code>. The goal is to evaluate the value of the combination of parameters in the learning process.</p>
-<p>We evaluate thousands of parameter combinations in the learning process. To ensure stability, the k-fold crossvalidation comes into play. To keep the computation costs low, we can decide to only cross-validate the top k detected models using the parameter <code class="docutils literal notranslate"><span class="pre">top_cv_evals=10</span></code> in <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code>. By default, we enable parallel processing. Each fit is scored based on the desired evaluation metric and the parameters of the best fit are used.</p>
+<p>We evaluate thousands of parameter combinations in the learning process. To ensure stability, the k-fold crossvalidation comes into play. To keep the computation costs low, we can decide to only cross-validate the top k detected models using the parameter <code class="docutils literal notranslate"><span class="pre">top_cv_evals=10</span></code> in <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost" title="hgboost.hgboost.hgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code></a>. By default, we enable parallel processing. Each fit is scored based on the desired evaluation metric and the parameters of the best fit are used.</p>
 <p>The specific list of parameter used for tuning are lised in section <strong>classification</strong> and <strong>regression</strong>.</p>
 <hr>
 <center>

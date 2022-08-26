@@ -17,17 +17,12 @@ Saving a learned model can be done using the function :func:`hgboost.save`:
 
 .. code:: python
 
-    import hgboost
-
-    # Load example data
-    X,y_true = hgboost.load_example()
-
-    # Learn model
-    model = hgboost.fit_transform(X, y_true, pos_label='bad')
+    from hgboost import hgboost
 
     Save model
-    status = hgboost.save(model, 'learned_model_v1')
-
+    status = hgb.save(filepath='hgboost_model.pkl', overwrite=True)
+    # [pypickle] Pickle file saved: [hgboost_model.pkl]
+    # [hgboost] >Saving.. True
 
 
 Loading
@@ -37,10 +32,12 @@ Loading a learned model can be done using the function :func:`hgboost.load`:
 
 .. code:: python
 
-    import hgboost
+    from hgboost import hgboost
 
     # Load model
-    model = hgboost.load(model, 'learned_model_v1')
+    model = hgb.load(filepath='hgboost_model.pkl')
+    # [pypickle] Pickle file loaded: [hgboost_model.pkl]
+    # [hgboost] >Loading succesful!
 
 .. raw:: html
 

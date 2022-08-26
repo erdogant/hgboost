@@ -1,5 +1,5 @@
-Splitting the data set into a train, test, and evaluation set is an important step.
-***********************************************************************************
+Splitting the data set into a train, test, and evaluation set
+*************************************************************
 
 For supervised machine learning tasks it is very important to split the data into separate parts to avoid overfitting when learning the model. Overfitting is when the model fits (or learns) on the data too well and then fails to reliably predict on (new) unseen data. The most common manner is to split data set is into a trainset, and an independent validationset. However, when we also perform hyperparameter tuning, such as in boosting algorithms, it also requires a testset. The model can now see the data, learn from the data, and finally we can describe the stability of the model. Thus for boosting algorithms we devide the data into three parts, namely: trainset, testset and validationset. Each set has a different role, and is explained below.
 

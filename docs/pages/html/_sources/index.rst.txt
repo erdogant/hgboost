@@ -1,7 +1,7 @@
 hgboost's documentation!
 ========================
 
-The Hyperoptimized Gradient Boosting library (``hgboost``), is a Python package for hyperparameter optimization for XGBoost, LightBoost, and CatBoost. It will carefully split the dataset into a train, test, and an independent validation set. Within the train-test set there is the inner loop for optimizing the hyperparameters using Bayesian optimization that is based on Hyperopt and, the outer loop to test how well the best-performing models can generalize using an external k-fold cross validation. This will select the most robust model with the highest performance.
+The Hyperoptimized Gradient Boosting library (``hgboost``), is a Python package for hyperparameter optimization for **XGBoost**, **LightBoost**, and **CatBoost**. *HGBoost* will carefully split the dataset into a train, test, and an independent validation set. Within the train-test set there is the inner loop for optimizing the hyperparameters using Bayesian optimization (based on *Hyperopt*) and, the outer loop is to test how well the best-performing models can generalize using an external k-fold cross validation. This approach will select the most robust model with the highest performance.
 
 ``hgboost`` is fun because:
 
