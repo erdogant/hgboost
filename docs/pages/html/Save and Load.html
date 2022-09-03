@@ -15,7 +15,6 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -76,11 +75,11 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Blog.html">Blog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Blog.html#github">Github</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Blog.html#colab-classification-notebook">Colab Classification Notebook</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Blog.html#colab-regression-notebook">Colab Regression Notebook</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Blog.html#sponsor-this-project">Sponsor this project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html">Sponsor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#medium-blog">Medium Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#github">Github</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-classification-notebook">Colab Classification Notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-regression-notebook">Colab Regression Notebook</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hgboost.hgboost.html">API References</a></li>
 </ul>
@@ -113,13 +112,13 @@
              
   <hr class="docutils" id="code-directive" />
 <section id="save-and-load">
-<h1>Save and Load<a class="headerlink" href="#save-and-load" title="Permalink to this heading"></a></h1>
+<h1>Save and Load<a class="headerlink" href="#save-and-load" title="Permalink to this headline"></a></h1>
 <p>Saving and loading models is desired as the learning proces of a model for <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> can take up to hours.
-In order to accomplish this, we created two functions: function <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.save" title="hgboost.hgboost.hgboost.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.save()</span></code></a> and function <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.load" title="hgboost.hgboost.hgboost.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.load()</span></code></a>
+In order to accomplish this, we created two functions: function <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.save()</span></code> and function <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.load()</span></code>
 Below we illustrate how to save and load models.</p>
 <section id="saving">
-<h2>Saving<a class="headerlink" href="#saving" title="Permalink to this heading"></a></h2>
-<p>Saving a learned model can be done using the function <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.save" title="hgboost.hgboost.hgboost.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.save()</span></code></a>:</p>
+<h2>Saving<a class="headerlink" href="#saving" title="Permalink to this headline"></a></h2>
+<p>Saving a learned model can be done using the function <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.save()</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="n">Save</span> <span class="n">model</span>
@@ -130,8 +129,8 @@ Below we illustrate how to save and load models.</p>
 </div>
 </section>
 <section id="loading">
-<h2>Loading<a class="headerlink" href="#loading" title="Permalink to this heading"></a></h2>
-<p>Loading a learned model can be done using the function <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.load" title="hgboost.hgboost.hgboost.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.load()</span></code></a>:</p>
+<h2>Loading<a class="headerlink" href="#loading" title="Permalink to this headline"></a></h2>
+<p>Loading a learned model can be done using the function <code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.load()</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Load model</span>
