@@ -10,7 +10,8 @@
 [![Downloads](https://pepy.tech/badge/hgboost)](https://pepy.tech/project/hgboost)
 [![DOI](https://zenodo.org/badge/257025146.svg)](https://zenodo.org/badge/latestdoi/257025146)
 [![Sphinx](https://img.shields.io/badge/Sphinx-Docs-Green)](https://erdogant.github.io/hgboost/)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://erdogant.github.io/hgboost/pages/html/Blog.html#colab-classification-notebook)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://erdogant.github.io/hgboost/pages/html/Documentation.html#colab-classification-notebook)
+[![Medium](https://img.shields.io/badge/Medium-Blog-green)](https://erdogant.github.io/hgboost/pages/html/Documentation.html#medium-blog)
 <!---[![BuyMeCoffee](https://img.shields.io/badge/buymea-coffee-yellow.svg)](https://www.buymeacoffee.com/erdogant)-->
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
 
@@ -33,6 +34,12 @@
 **⭐️ Star this repo if you like it ⭐️**
 # 
 
+
+### Blogs
+
+Read the blog [A Guide to Find the Best Boosting Model using Bayesian Hyperparameter Tuning but without Overfitting.](https://erdogant.github.io/hgboost/pages/html/Documentation.html#medium-blog) to get a structured overview and usage of ``d3graph``.
+
+
 ### [Documentation pages](https://erdogant.github.io/hgboost/)
 
 On the [documentation pages](https://erdogant.github.io/hgboost/) you can find detailed information about the working of the ``hgboost`` with many examples. 
@@ -40,9 +47,9 @@ On the [documentation pages](https://erdogant.github.io/hgboost/) you can find d
 
 ## Colab Notebooks
 
-* <a href="https://erdogant.github.io/hgboost/pages/html/Blog.html#colab-regression-notebook"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open regression example In Colab"/> </a> Regression example 
+* <a href="https://erdogant.github.io/hgboost/pages/html/Documentation.html#colab-regression-notebook"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open regression example In Colab"/> </a> Regression example 
 
-* <a href="https://erdogant.github.io/hgboost/pages/html/Blog.html#colab-classification-notebook"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open classification example In Colab"/> </a> Classification example 
+* <a href="https://erdogant.github.io/hgboost/pages/html/Documentation.html#colab-classification-notebook"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open classification example In Colab"/> </a> Classification example 
 
 
 ### Schematic overview of hgboost
