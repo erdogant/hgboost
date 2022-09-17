@@ -36,6 +36,13 @@ Colab Regression Notebook
 .. _regression Colab notebook: https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb
 
 
+Citing
+#########
+
+.. note::
+	Bibtex can be found at the right side at the `github page <https://github.com/erdogant/hgboost/>`_.
+
+
 .. raw:: html
 
 	<hr>
