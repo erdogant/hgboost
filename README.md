@@ -37,7 +37,11 @@
 
 ### Blogs
 
-Read the blog [A Guide to Find the Best Boosting Model using Bayesian Hyperparameter Tuning but without Overfitting.](https://erdogant.github.io/hgboost/pages/html/Documentation.html#medium-blog) to get a structured overview and usage of ``d3graph``.
+**Medium Blog 1: **
+[The Best Boosting Model using Bayesian Hyperparameter Tuning but without Overfitting.](https://erdogant.github.io/hgboost/pages/html/Documentation.html#medium-blog)
+
+**Medium Blog 2: **
+[Create Explainable Gradient Boosting Classification models using Bayesian Hyperparameter Optimization.](https://erdogant.github.io/hgboost/pages/html/Documentation.html#medium-blog)
 
 
 ### [Documentation pages](https://erdogant.github.io/hgboost/)
