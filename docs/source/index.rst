@@ -29,7 +29,7 @@ The Hyperoptimized Gradient Boosting library (``hgboost``), is a Python package 
 
 You contribution is important
 ==============================
-If you ❤️ this project, **star** this repo at the `github page <https://github.com/erdogant/hgboost/>`_ and have a look at the `sponser page <https://github.com/erdogant/hgboost/pages/html/Documentation.html>`_!
+If you ❤️ this project, **star** this repo at the `github page <https://github.com/erdogant/hgboost/>`_ and have a look at the `sponser page <https://erdogant.github.io/hgboost/pages/html/Documentation.html>`_!
 
 
 Github
