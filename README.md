@@ -15,6 +15,7 @@
 <!---[![BuyMeCoffee](https://img.shields.io/badge/buymea-coffee-yellow.svg)](https://www.buymeacoffee.com/erdogant)-->
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
 
+--------------------------------------------------------------------
 
 ``hgboost`` is short for **Hyperoptimized Gradient Boosting** and is a python package for hyperparameter optimization for *xgboost*, *catboost* and *lightboost* using cross-validation, and evaluating the results on an independent validation set.
 ``hgboost`` can be applied for classification and regression tasks.
@@ -30,23 +31,27 @@
     * 7. Return model, space and test/evaluation results.
     * 8. Makes insightful plots.
 
-# 
-**⭐️ Star this repo if you like it ⭐️**
-# 
+--------------------------------------------------------------------
 
+**⭐️ Star this repo if you like it ⭐️**
+
+--------------------------------------------------------------------
 
 ### Blogs
 
-**Medium Blog 1: **
+Medium Blog 1: 
 [The Best Boosting Model using Bayesian Hyperparameter Tuning but without Overfitting.](https://erdogant.github.io/hgboost/pages/html/Documentation.html#medium-blog)
 
-**Medium Blog 2: **
+Medium Blog 2: 
 [Create Explainable Gradient Boosting Classification models using Bayesian Hyperparameter Optimization.](https://erdogant.github.io/hgboost/pages/html/Documentation.html#medium-blog)
 
+--------------------------------------------------------------------
 
 ### [Documentation pages](https://erdogant.github.io/hgboost/)
 
 On the [documentation pages](https://erdogant.github.io/hgboost/) you can find detailed information about the working of the ``hgboost`` with many examples. 
+
+--------------------------------------------------------------------
 
 
 ## Colab Notebooks
@@ -54,6 +59,8 @@ On the [documentation pages](https://erdogant.github.io/hgboost/) you can find d
 * <a href="https://erdogant.github.io/hgboost/pages/html/Documentation.html#colab-regression-notebook"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open regression example In Colab"/> </a> Regression example 
 
 * <a href="https://erdogant.github.io/hgboost/pages/html/Documentation.html#colab-classification-notebook"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open classification example In Colab"/> </a> Classification example 
+
+--------------------------------------------------------------------
 
 
 ### Schematic overview of hgboost
