@@ -40,57 +40,69 @@ import copy
 
 # %%
 class hgboost:
-    """Create a class hgboost that is instantiated with the desired method."""
+    """hgboost: Hyperoptimized Gradient Boosting.
+
+    Description
+    -----------
+    HGBoost stands for Hyperoptimized Gradient Boosting and is a Python package for hyperparameter optimization
+    for XGBoost, LightBoost, and CatBoost. It will carefully split the dataset into a train, test, and independent
+    validation set. Within the train-test set, there is the inner loop for optimizing the hyperparameters using
+    Bayesian optimization (with hyperopt) and, the outer loop to score how well the top performing models can
+    generalize based on k-fold cross validation. As such, it will make the best attempt to select the most robust
+    model with the best performance.
+
+    Parameters
+    ----------
+    max_eval : int, (default : 250)
+        Search space is created on the number of evaluations.
+    threshold : float, (default : 0.5)
+        Classification threshold. In case of two-class model this is 0.5
+    cv : int, optional (default : 5)
+        Cross-validation. Specifying the test size by test_size.
+    top_cv_evals : int, (default : 10)
+        Number of top best performing models that is evaluated.
+        If set to None, each iteration (max_eval) is tested.
+        If set to 0, cross validation is not performed.
+    test_size : float, (default : 0.2)
+        Percentage split for the testset based on the total dataset.
+    val_size : float, (default : 0.2)
+        Percentage split for the validationset based on the total dataset. This part is kept untouched, and used only once to determine the model performance.
+    is_unbalance : Bool, (default: True)
+        Control the balance of positive and negative weights, useful for unbalanced classes.
+        xgboost clf : sum(negative instances) / sum(positive instances)
+        catboost clf : sum(negative instances) / sum(positive instances)
+        lightgbm clf : balanced
+        False: grid search
+    random_state : int, (default : None)
+        Fix the random state for validation set and test set. Note that is not used for the crossvalidation.
+    n_jobs : int, (default : -1)
+        The number of jobs to run in parallel for fit. None means 1 unless in a joblib.parallel_backend context.
+        -1 means using all processors.
+    gpu : bool, (default : False)
+        Computing using either GPU or CPU. Note that GPU usage is not very well supported because various optimizations are performed during training/testing/crossvalidation.
+        True: Use GPU.
+        False: Use CPU.
+    verbose : int, (default : 3)
+        Print progress to screen.
+        0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE
+
+    Returns
+    -------
+    None.
+
+    References
+    ----------
+    * HGBoost: https://towardsdatascience.com/a-guide-to-find-the-best-boosting-model-using-bayesian-hyperparameter-tuning-but-without-c98b6a1ecac8
+    * Classifiction: https://erdogant.medium.com/hands-on-guide-for-hyperparameter-tuning-with-bayesian-optimization-for-classification-models-2002224bfa3d
+    * Github : https://github.com/erdogant/hgboost
+    * Documentation pages: https://erdogant.github.io/hgboost/
+    * Notebook Classification: https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb
+    * Notebook Regression: https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb
+
+    """
 
     def __init__(self, max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, is_unbalance=True, random_state=None, n_jobs=-1, gpu=False, verbose=3):
-        """Initialize hgboost with user-defined parameters.
-
-        Parameters
-        ----------
-        max_eval : int, (default : 250)
-            Search space is created on the number of evaluations.
-        threshold : float, (default : 0.5)
-            Classification threshold. In case of two-class model this is 0.5
-        cv : int, optional (default : 5)
-            Cross-validation. Specifying the test size by test_size.
-        top_cv_evals : int, (default : 10)
-            Number of top best performing models that is evaluated.
-            If set to None, each iteration (max_eval) is tested.
-            If set to 0, cross validation is not performed.
-        test_size : float, (default : 0.2)
-            Percentage split for the testset based on the total dataset.
-        val_size : float, (default : 0.2)
-            Percentage split for the validationset based on the total dataset. This part is kept untouched, and used only once to determine the model performance.
-        is_unbalance : Bool, (default: True)
-            Control the balance of positive and negative weights, useful for unbalanced classes.
-            xgboost clf : sum(negative instances) / sum(positive instances)
-            catboost clf : sum(negative instances) / sum(positive instances)
-            lightgbm clf : balanced
-            False: grid search
-        random_state : int, (default : None)
-            Fix the random state for validation set and test set. Note that is not used for the crossvalidation.
-        n_jobs : int, (default : -1)
-            The number of jobs to run in parallel for fit. None means 1 unless in a joblib.parallel_backend context.
-            -1 means using all processors.
-        gpu : bool, (default : False)
-            Computing using either GPU or CPU. Note that GPU usage is not very well supported because various optimizations are performed during training/testing/crossvalidation.
-            True: Use GPU.
-            False: Use CPU.
-        verbose : int, (default : 3)
-            Print progress to screen.
-            0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE
-
-        Returns
-        -------
-        None.
-
-        References
-        ----------
-        * https://github.com/hyperopt/hyperopt
-        * https://www.districtdatalabs.com/parameter-tuning-with-hyperopt
-        * https://scikit-learn.org/stable/modules/model_evaluation.html
-
-        """
+        """Initialize hgboost with user-defined parameters."""
         if (threshold is None) or (threshold <= 0): raise ValueError('[hgboost] >Error: [threshold] must be >0 and not [None]')
         if (max_eval is None) or (max_eval <= 0): max_eval=1
         if top_cv_evals is None: max_eval=0
