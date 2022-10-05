@@ -111,6 +111,9 @@
   <section id="hgboost-s-documentation">
 <h1>hgboost’s documentation!<a class="headerlink" href="#hgboost-s-documentation" title="Permalink to this heading"></a></h1>
 <p>The Hyperoptimized Gradient Boosting library (<code class="docutils literal notranslate"><span class="pre">hgboost</span></code>), is a Python package for hyperparameter optimization for <strong>XGBoost</strong>, <strong>LightBoost</strong>, and <strong>CatBoost</strong>. <em>HGBoost</em> will carefully split the dataset into a train, test, and an independent validation set. Within the train-test set there is the inner loop for optimizing the hyperparameters using Bayesian optimization (based on <em>Hyperopt</em>) and, the outer loop is to test how well the best-performing models can generalize using an external k-fold cross validation. This approach will select the most robust model with the highest performance.</p>
+<figure class="align-default" id="schematic-overview">
+<img alt="_images/schematic_overview.png" src="_images/schematic_overview.png" />
+</figure>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p><a class="reference external" href="https://towardsdatascience.com/a-guide-to-find-the-best-boosting-model-using-bayesian-hyperparameter-tuning-but-without-c98b6a1ecac8">Medium Blog 1: A Guide to Find the Best Boosting Model using Bayesian Hyperparameter Tuning but without Overfitting.</a></p>
@@ -164,9 +167,6 @@
 </li>
 </ul>
 </div></blockquote>
-<figure class="align-default" id="schematic-overview">
-<img alt="_images/schematic_overview.png" src="_images/schematic_overview.png" />
-</figure>
 </section>
 <section id="you-contribution-is-important">
 <h1>You contribution is important<a class="headerlink" href="#you-contribution-is-important" title="Permalink to this heading"></a></h1>
