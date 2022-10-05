@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quickstart &mdash; hgboost hgboost documentation</title>
+  <title>Installation &mdash; hgboost hgboost documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -48,10 +48,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#installation">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#create-environment">Create environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#tree-plot">Tree plot</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#create-conda-environment">Create conda environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pypi">Pypi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#github-source">Github source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#graphviz">Graphviz</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#uninstalling">Uninstalling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#remove-installation">Remove installation</a></li>
 </ul>
 </li>
 </ul>
@@ -103,7 +109,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Quickstart</li>
+      <li>Installation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/Installation.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -113,7 +119,49 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <hr class="docutils" id="code-directive" />
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
+<section id="create-conda-environment">
+<h2>Create conda environment<a class="headerlink" href="#create-conda-environment" title="Permalink to this heading"></a></h2>
+<p>It is recommended to install <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> from an isolated Python environment. Using Conda this can be done as following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">env_hgboost</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.10</span>
+<span class="n">conda</span> <span class="n">activate</span> <span class="n">env_hgboost</span>
+</pre></div>
+</div>
+</section>
+<section id="pypi">
+<h2>Pypi<a class="headerlink" href="#pypi" title="Permalink to this heading"></a></h2>
+<p>Install via <code class="docutils literal notranslate"><span class="pre">pip</span></code> (recommended):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install hgboost</span>
+</pre></div>
+</div>
+</section>
+<section id="github-source">
+<h2>Github source<a class="headerlink" href="#github-source" title="Permalink to this heading"></a></h2>
+<p>Install directly from github source (beta versions):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install git+https://github.com/erdogant/hgboost</span>
+</pre></div>
+</div>
+</section>
+<section id="graphviz">
+<h2>Graphviz<a class="headerlink" href="#graphviz" title="Permalink to this heading"></a></h2>
+<p>Tree plots are created using the <code class="docutils literal notranslate"><span class="pre">treeplot</span></code> package which contains the required graphviz libraries.
+In general, it should work out of the box for both Windows and Unix machines. However, in some cases it does require a manual installation of the graphviz package.
+Binaries for graphviz can be downloaded from the graphviz project homepage, and the Python wrapper installed from pypi with pip install graphviz.</p>
+<p>If you use the conda package manager, the graphviz binaries and the python package can be installed with conda install python-graphviz.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda install python-graphviz</span>
+</pre></div>
+</div>
+<p>If you use the pip package manager, try the Python wrapper installed from Pypi.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install graphviz</span>
+</pre></div>
+</div>
+<p>An alternative example how to download and install this for Unix machines:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt install python-pydot python-pydot-ng graphviz</span>
+</pre></div>
+</div>
+</section>
+</section>
 <section id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading"></a></h1>
 <p>A quick example how to learn a model on a given dataset.</p>
@@ -131,39 +179,13 @@
 </pre></div>
 </div>
 </section>
-<section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
-<section id="create-environment">
-<h2>Create environment<a class="headerlink" href="#create-environment" title="Permalink to this heading"></a></h2>
-<p>It is recommended to install <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> from an isolated Python environment. Using Conda this can be done as following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">env_hgboost</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.8</span>
-<span class="n">conda</span> <span class="n">activate</span> <span class="n">env_hgboost</span>
-</pre></div>
-</div>
-<p>Install via <code class="docutils literal notranslate"><span class="pre">pip</span></code> (recommended):</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install hgboost</span>
-</pre></div>
-</div>
-<p>Install directly from github source (beta versions):</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install git+https://github.com/erdogant/hgboost</span>
-</pre></div>
-</div>
-</section>
-<section id="tree-plot">
-<h2>Tree plot<a class="headerlink" href="#tree-plot" title="Permalink to this heading"></a></h2>
-<p>Tree plots are created using the <code class="docutils literal notranslate"><span class="pre">treeplot</span></code> package which contains the required graphviz libraries.
-In general, it should work out of the box for both Windows and Unix machines. However, in some cases it does require a manual installation of the graphviz package.
-Binaries for graphviz can be downloaded from the graphviz project homepage, and the Python wrapper installed from pypi with pip install graphviz.</p>
-<p>If you use the conda package manager, the graphviz binaries and the python package can be installed with conda install python-graphviz.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda install python-graphviz</span>
-</pre></div>
-</div>
-<p>If you use the pip package manager, try the Python wrapper installed from Pypi.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install graphviz</span>
-</pre></div>
-</div>
-<p>An alternative example how to download and install this for Unix machines:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt install python-pydot python-pydot-ng graphviz</span>
+<section id="uninstalling">
+<h1>Uninstalling<a class="headerlink" href="#uninstalling" title="Permalink to this heading"></a></h1>
+<section id="remove-installation">
+<h2>Remove installation<a class="headerlink" href="#remove-installation" title="Permalink to this heading"></a></h2>
+<p>Note that the removal of the environment will also remove the <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> installation.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install from Pypi:
+<span class="go">pip uninstall hgboost</span>
 </pre></div>
 </div>
 <hr>
