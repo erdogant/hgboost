@@ -15,7 +15,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -49,6 +51,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#installation">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#create-environment">Create environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tree-plot">Tree plot</a></li>
 </ul>
 </li>
 </ul>
@@ -112,7 +115,7 @@
              
   <hr class="docutils" id="code-directive" />
 <section id="quickstart">
-<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline"></a></h1>
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading"></a></h1>
 <p>A quick example how to learn a model on a given dataset.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
 <span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
@@ -129,9 +132,9 @@
 </div>
 </section>
 <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h1>
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
 <section id="create-environment">
-<h2>Create environment<a class="headerlink" href="#create-environment" title="Permalink to this headline"></a></h2>
+<h2>Create environment<a class="headerlink" href="#create-environment" title="Permalink to this heading"></a></h2>
 <p>It is recommended to install <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> from an isolated Python environment. Using Conda this can be done as following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">env_hgboost</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.8</span>
 <span class="n">conda</span> <span class="n">activate</span> <span class="n">env_hgboost</span>
@@ -143,6 +146,24 @@
 </div>
 <p>Install directly from github source (beta versions):</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install git+https://github.com/erdogant/hgboost</span>
+</pre></div>
+</div>
+</section>
+<section id="tree-plot">
+<h2>Tree plot<a class="headerlink" href="#tree-plot" title="Permalink to this heading"></a></h2>
+<p>Tree plots are created using the <code class="docutils literal notranslate"><span class="pre">treeplot</span></code> package which contains the required graphviz libraries.
+In general, it should work out of the box for both Windows and Unix machines. However, in some cases it does require a manual installation of the graphviz package.
+Binaries for graphviz can be downloaded from the graphviz project homepage, and the Python wrapper installed from pypi with pip install graphviz.</p>
+<p>If you use the conda package manager, the graphviz binaries and the python package can be installed with conda install python-graphviz.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda install python-graphviz</span>
+</pre></div>
+</div>
+<p>If you use the pip package manager, try the Python wrapper installed from Pypi.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install graphviz</span>
+</pre></div>
+</div>
+<p>An alternative example how to download and install this for Unix machines:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt install python-pydot python-pydot-ng graphviz</span>
 </pre></div>
 </div>
 <hr>
