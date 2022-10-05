@@ -1097,7 +1097,7 @@ class hgboost:
             fig, ax = plt.subplots(figsize=figsize)
             colors = colourmap.generate(len(cv_results), cmap=cmap)
             for i, key in enumerate(cv_results.keys()):
-                sns.regplot('y', 'y_pred', data=cv_results.get(key), ax=ax, color=colors[i, :], label=key)
+                sns.regplot(x='y', y='y_pred', data=cv_results.get(key), ax=ax, color=colors[i, :], label=key)
             ax.legend()
             ax.grid(True)
             ax.set_xlabel('True value')
@@ -1142,7 +1142,7 @@ class hgboost:
             df = pd.DataFrame(np.c_[self.y_val, y_pred], columns=['y', 'y_pred'])
 
             fig, ax = plt.subplots(figsize=figsize)
-            sns.regplot('y', 'y_pred', data=df, ax=ax, color='k', label='Validation set')
+            sns.regplot(x='y', y='y_pred', data=df, ax=ax, color='k', label='Validation set')
             ax.legend()
             ax.grid(True)
             ax.set_title(title)
@@ -1287,7 +1287,7 @@ class hgboost:
                 # Make new column
                 if i_col == 0: i_row = i_row + 1
                 # Make the plot
-                sns.regplot('tid', param, data=df_sum, ax=ax2[i_row][i_col], color=color_params[i, :])
+                sns.regplot(x='tid', y=param, data=df_sum, ax=ax2[i_row][i_col], color=color_params[i, :])
 
                 # Scatter top n values, start with 1 because the 0 is, based on the ranking, with CV.
                 ax2[i_row][i_col].scatter(df_summary['tid'].values[1:top_n], df_summary[param].values[1:top_n], s=50, color='k', marker='.', label='Top ' + str(top_n) + ' models')
@@ -1354,7 +1354,7 @@ class hgboost:
         tmpdf.reset_index(drop=True, inplace=True)
 
         # Make the plot
-        sns.regplot('tid', 'loss', data=tmpdf, ax=ax1, color='#23395d', scatter=True, fit_reg=True, label=str(tmpdf.shape[0])+' models iterations')
+        sns.regplot(x='tid', y='loss', data=tmpdf, ax=ax1, color='#23395d', scatter=True, fit_reg=True, label=str(tmpdf.shape[0])+' models iterations')
         # Plot all other evalution results
         # ax1.scatter(tmpdf['tid'].values, tmpdf['loss'].values, s=10, label=str(tmpdf.shape[0])+'models iterations')
 
