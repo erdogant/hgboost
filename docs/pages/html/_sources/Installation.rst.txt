@@ -51,12 +51,19 @@ If you use the pip package manager, try the Python wrapper installed from Pypi.
 
     pip install graphviz
 
-An alternative example how to download and install this for Unix machines:
+An alternative example is to download and install this for Unix machines:
 
 .. code-block:: console
 
     sudo apt install python-pydot python-pydot-ng graphviz
+    # or 
+    sudo apt install graphviz
 
+For Mac OS install it as follows:
+
+.. code-block:: console
+
+    brew install graphviz
 
 Quickstart
 ############
