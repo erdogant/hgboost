@@ -29,8 +29,8 @@ import numpy as np
 from hgboost import hgboost
 
 hgb_xgb = hgboost(max_eval=25, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
-hgb_cat = hgboost(max_eval=250, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
-hgb_light = hgboost(max_eval=250, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
+# hgb_cat = hgboost(max_eval=250, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
+# hgb_light = hgboost(max_eval=250, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
 
 # Import data
 df = hgb_xgb.import_example()
@@ -45,8 +45,8 @@ y = y[I]
 
 # Fit
 results = hgb_xgb.xgboost_reg(X, y, eval_metric='mae')
-results2 = hgb_cat.catboost_reg(X, y, eval_metric='mae')
-results3 = hgb_light.lightboost_reg(X, y, eval_metric='mae')
+# results2 = hgb_cat.catboost_reg(X, y, eval_metric='mae')
+# results3 = hgb_light.lightboost_reg(X, y, eval_metric='mae')
 
 # hgb_xgb.save('c:\\temp\\hgb_xgb.pkl')
 # hgb_cat.save('c:\\temp\\hgb_cat.pkl')

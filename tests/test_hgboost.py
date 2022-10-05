@@ -38,12 +38,12 @@ class TestXGBOOST(unittest.TestCase):
         # Set all parameters to be evaluated
         max_evals = [None, 10]
         cvs = [None, 5, 11]
-        val_sizes = [None, 0.2]
-        test_sizes = [None, 0.2]
+        val_sizes = [0.2]
+        test_sizes = [0.2]
         methods = ['xgb_clf', 'xgb_clf_multi']
-        pos_labels = [None, 0, 2, 'value not in y']
+        pos_labels = [0, 2, 'value not in y']
         top_cv_evals = [None, 1, 20]
-        thresholds = [None, 0.5]
+        thresholds = [0.5]
         eval_metrics = [None,'f1']
         
         # Evaluate across all paramters
