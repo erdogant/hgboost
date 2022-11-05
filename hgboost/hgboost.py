@@ -1538,9 +1538,11 @@ class hgboost:
         >>> iris = datasets.load_iris()
         >>> X = pd.DataFrame(iris.data, columns=iris['feature_names'])
         >>> y = iris.target
+        >>>
         >>> # Train model using user-defined parameters
         >>> hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
         >>> results = hgb.xgboost(X, y, method="xgb_clf_multi")
+        >>>
         >>> # Save
         >>> hgb.save(filepath='hgboost_model.pkl', overwrite=True)
         >>>
