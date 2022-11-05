@@ -799,7 +799,7 @@ class hgboost:
                     else:
                         df_params[param].iloc[i] = getattr(trial['result']['model'], param)
                 except:
-                    if self.verbose>=3: print('[hgboost]> Skip [%s]' %(param))
+                    if self.verbose>=4: print('[hgboost]> Skip [%s]' %(param))
                     gather_params_legacy = True
 
         # The trials.vals stores the index for some parameters instead of the real values.
@@ -1450,6 +1450,26 @@ class hgboost:
         verbose : int, optional
             Show message. A higher number gives more informatie. The default is 3.
 
+        Examples
+        --------
+        >>> # Initialize libraries
+        >>> from hgboost import hgboost
+        >>> import pandas as pd
+        >>> from sklearn import datasets
+        >>>
+        >>> # Load example dataset
+        >>> iris = datasets.load_iris()
+        >>> X = pd.DataFrame(iris.data, columns=iris['feature_names'])
+        >>> y = iris.target
+        >>>
+        >>> # Train model using user-defined parameters
+        >>> hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
+        >>> results = hgb.xgboost(X, y, method="xgb_clf_multi")
+        >>>
+        >>> # Save
+        >>> hgb.save(filepath='hgboost_model.pkl', overwrite=True)
+        >>>
+
         Returns
         -------
         bool : [True, False]
@@ -1481,12 +1501,24 @@ class hgboost:
         storedata['is_unbalance'] = self.is_unbalance
         # Save
         status = pypickle.save(filepath, storedata, overwrite=overwrite, verbose=verbose)
-        if verbose>=3: print('[hgboost] >Saving.. %s' %(status))
+        if status:
+            if verbose>=3: print('[hgboost] >Save model results.')
+            if verbose>=3: print('[hgboost] >Save user-defined parameters.')
+            if verbose>=3: print('[hgboost] >Save trained model.')
+            if verbose>=3: print('[hgboost] >Save succesful!')
+        else:
+            if verbose>=3: print('[hgboost] >Could not save. Tip: "hgb.save(overwrite=True)"')
         # return
         return status
 
     def load(self, filepath='hgboost_model.pkl', verbose=3):
         """Load learned model.
+
+        Description
+        -----------
+        The load function will restore the trained model and results.
+        In a fresh (new) start, you need to re-initialize the hgboost model first.
+        By loading the model, the user defined parameters are also restored.
 
         Parameters
         ----------
@@ -1495,9 +1527,35 @@ class hgboost:
         verbose : int, optional
             Show message. A higher number gives more information. The default is 3.
 
+        Examples
+        --------
+        >>> # Initialize libraries
+        >>> from hgboost import hgboost
+        >>> import pandas as pd
+        >>> from sklearn import datasets
+        >>>
+        >>> # Load example dataset
+        >>> iris = datasets.load_iris()
+        >>> X = pd.DataFrame(iris.data, columns=iris['feature_names'])
+        >>> y = iris.target
+        >>> # Train model using user-defined parameters
+        >>> hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
+        >>> results = hgb.xgboost(X, y, method="xgb_clf_multi")
+        >>> # Save
+        >>> hgb.save(filepath='hgboost_model.pkl', overwrite=True)
+        >>>
+        >>> # Load
+        >>> from hgboost import hgboost
+        >>> hgb = hgboost()
+        >>> results = hgb.load(filepath='hgboost_model.pkl')
+        >>>
+        >>> # Make predictions again with:
+        >>> y_pred, y_proba = hgb.predict(X)
+
         Returns
         -------
-        Object.
+        * dictionary containing model results.
+        * Object with trained model.
 
         """
         if (filepath is None) or (filepath==''):
@@ -1525,7 +1583,9 @@ class hgboost:
             self.random_state = storedata['random_state']
             self.n_jobs = storedata['n_jobs']
             self.verbose = storedata['verbose']
-
+            if verbose>=3: print('[hgboost] >Restore model results.')
+            if verbose>=3: print('[hgboost] >Restore user-defined parameters.')
+            if verbose>=3: print('[hgboost] >Restore trained model.')
             if verbose>=3: print('[hgboost] >Loading succesful!')
             # Return results
             return self.results
