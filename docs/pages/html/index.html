@@ -17,7 +17,6 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -31,6 +30,9 @@
         <div class="wy-side-nav-search" >
             <a href="#" class="icon icon-home"> hgboost
           </a>
+              <div class="version">
+                1.1.3
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -111,8 +113,15 @@
              
   <section id="hgboost-s-documentation">
 <h1>hgboost’s documentation!<a class="headerlink" href="#hgboost-s-documentation" title="Permalink to this heading"></a></h1>
-<p>The Hyperoptimized Gradient Boosting library (<code class="docutils literal notranslate"><span class="pre">hgboost</span></code>), is a Python package for hyperparameter optimization for <strong>XGBoost</strong>, <strong>LightBoost</strong>, and <strong>CatBoost</strong>. <em>HGBoost</em> will carefully split the dataset into a train, test, and an independent validation set. Within the train-test set there is the inner loop for optimizing the hyperparameters using Bayesian optimization (based on <em>Hyperopt</em>) and, the outer loop is to test how well the best-performing models can generalize using an external k-fold cross validation. This approach will select the most robust model with the highest performance.</p>
-<figure class="align-default" id="schematic-overview">
+<p><a class="reference external" href="https://erdogant.github.io/hgboost/"><img alt="|Python" src="https://img.shields.io/pypi/pyversions/hgboost.svg" /></a> <a class="reference external" href="https://pypi.org/project/hgboost/"><img alt="|Python Version" src="https://img.shields.io/pypi/v/hgboost.svg" /></a> <a class="reference external" href="https://erdogant.github.io/hgboost/"><img alt="Sphinx documentation" src="https://img.shields.io/badge/Sphinx-Docs-blue.svg" /></a> <a class="reference external" href="https://img.shields.io/github/stars/erdogant/hgboost"><img alt="Stars" src="https://img.shields.io/github/stars/erdogant/hgboost" /></a> <a class="reference external" href="https://github.com/erdogant/hgboost"><img alt="lines of code" src="https://sloc.xyz/github/erdogant/hgboost/?category=code" /></a> <a class="reference external" href="https://pepy.tech/project/hgboost"><img alt="Downloads per month" src="https://static.pepy.tech/personalized-badge/hgboost?period=month&amp;units=international_system&amp;left_color=grey&amp;right_color=brightgreen&amp;left_text=PyPI%20downloads/month" /></a> <a class="reference external" href="https://pepy.tech/project/hgboost"><img alt="Downloads in total" src="https://static.pepy.tech/personalized-badge/hgboost?period=total&amp;units=international_system&amp;left_color=grey&amp;right_color=brightgreen&amp;left_text=Downloads" /></a> <a class="reference external" href="https://github.com/erdogant/hgboost/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-green.svg" /></a> <a class="reference external" href="https://github.com/erdogant/hgboost/network"><img alt="Github Forks" src="https://img.shields.io/github/forks/erdogant/hgboost.svg" /></a> <a class="reference external" href="https://github.com/erdogant/hgboost/issues"><img alt="Open Issues" src="https://img.shields.io/github/issues/erdogant/hgboost.svg" /></a> <a class="reference external" href="http://www.repostatus.org/#active"><img alt="Project Status" src="http://www.repostatus.org/badges/latest/active.svg" /></a> <a class="reference external" href="https://erdogant.github.io/hgboost/pages/html/Documentation.html#medium-blog"><img alt="Medium Blog" src="https://img.shields.io/badge/Medium-Blog-green.svg" /></a> <a class="reference external" href="https://erdogant.github.io/hgboost/pages/html/Documentation.html#colab-notebook"><img alt="Colab example" src="https://colab.research.google.com/assets/colab-badge.svg" /></a> <a class="reference external" href="https://zenodo.org/badge/latestdoi/257025146"><img alt="Cite" src="https://zenodo.org/badge/257025146.svg" /></a> <a class="reference external" href="https://img.shields.io/github/repo-size/erdogant/hgboost"><img alt="repo-size" src="https://img.shields.io/github/repo-size/erdogant/hgboost" /></a> <a class="reference external" href="https://erdogant.github.io/hgboost/pages/html/Documentation.html#"><img alt="donate" src="https://img.shields.io/badge/Support%20this%20project-grey.svg?logo=github%20sponsors" /></a></p>
+<hr>
+<center>
+        <script async src="https://media.ethicalads.io/media/client/ethicalads.min.js"></script>
+        <!-- Show an image ad -->
+        <!-- <div data-ea-publisher="erdogantgithubio" data-ea-type="image"></div> -->
+        <div data-ea-publisher="erdogantgithubio" data-ea-type="text"></div>
+</center>
+<hr><figure class="align-default" id="schematic-overview">
 <img alt="_images/schematic_overview.png" src="_images/schematic_overview.png" />
 </figure>
 <div class="admonition tip">
@@ -123,31 +132,32 @@
 <p class="admonition-title">Tip</p>
 <p><a class="reference external" href="https://erdogant.medium.com/hands-on-guide-for-hyperparameter-tuning-with-bayesian-optimization-for-classification-models-2002224bfa3d">Medium Blog 2: A Hands-on Guide To Create Explainable Gradient Boosting Classification models using Bayesian Hyperparameter Optimization.</a></p>
 </div>
+<p>The Hyperoptimized Gradient Boosting library (<code class="docutils literal notranslate"><span class="pre">hgboost</span></code>), is a Python package for hyperparameter optimization for <strong>XGBoost</strong>, <strong>LightBoost</strong>, and <strong>CatBoost</strong>. <em>HGBoost</em> will carefully split the dataset into a train, test, and an independent validation set. Within the train-test set there is the inner loop for optimizing the hyperparameters using Bayesian optimization (based on <em>Hyperopt</em>) and, the outer loop is to test how well the best-performing models can generalize using an external k-fold cross validation. This approach will select the most robust model with the highest performance.</p>
 <p><code class="docutils literal notranslate"><span class="pre">hgboost</span></code> is fun because:</p>
 <blockquote>
 <div><ul class="simple">
 <li><ol class="arabic simple">
-<li><p>It consists three of the most popular decision tree algorithms; XGBoost, LightBoost and Catboost.</p></li>
+<li><p>It contains the most popular decision trees; XGBoost, LightBoost and Catboost.</p></li>
 </ol>
 </li>
 <li><ol class="arabic simple" start="2">
-<li><p>It consists the most popular hyperparameter optimization library for Bayesian Optimization; Hyperopt.</p></li>
+<li><p>It consists Bayesian hyperparameter optimization.</p></li>
 </ol>
 </li>
 <li><ol class="arabic simple" start="3">
-<li><p>An automated manner to split the data set into a train-test and independent validation to reliably determine the model performance.</p></li>
+<li><p>It automates splitting the data set into a train-test and independent validation.</p></li>
 </ol>
 </li>
 <li><ol class="arabic simple" start="4">
-<li><p>The pipeline has a nested scheme with an inner loop for hyperparameter optimization and an outer loop with k-fold crossvalidation to determine the most robust and best-performing model.</p></li>
+<li><p>It contains a nested scheme with an inner loop for hyperparameter optimization and an outer loop with crossvalidation to determine the best model.</p></li>
 </ol>
 </li>
 <li><ol class="arabic simple" start="5">
-<li><p>It can handle both classification and regression tasks.</p></li>
+<li><p>It handles both classification and regression tasks.</p></li>
 </ol>
 </li>
 <li><ol class="arabic simple" start="6">
-<li><p>It is easy to go wild and create a multi-class model or an ensemble of boosted decision tree models.</p></li>
+<li><p>It allows multi-class and ensemble of boosted decision tree models.</p></li>
 </ol>
 </li>
 <li><ol class="arabic simple" start="7">
@@ -155,7 +165,7 @@
 </ol>
 </li>
 <li><ol class="arabic simple" start="8">
-<li><p>It aims to create explainable results for the hyperparameter search-space, and model performance results by creating insightful plots.</p></li>
+<li><p>It creates explainable results for the hyperparameter search-space, and model performance.</p></li>
 </ol>
 </li>
 <li><ol class="arabic simple" start="9">
@@ -168,15 +178,17 @@
 </li>
 </ul>
 </div></blockquote>
+<hr class="docutils" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Your ❤️ is important to keep maintaining this package.</strong> You can <a class="reference external" href="https://erdogant.github.io/hgboost/pages/html/Documentation.html">support</a> in various ways, have a look at the <a class="reference external" href="https://erdogant.github.io/hgboost/pages/html/Documentation.html">sponser page</a>.
+Report bugs, issues and feature extensions at <a class="reference external" href="https://github.com/erdogant/hgboost/">github</a> page.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install hgboost</span>
+</pre></div>
+</div>
+</div>
 </section>
-<section id="you-contribution-is-important">
-<h1>You contribution is important<a class="headerlink" href="#you-contribution-is-important" title="Permalink to this heading"></a></h1>
-<p>If you ❤️ this project, <strong>star</strong> this repo at the <a class="reference external" href="https://github.com/erdogant/hgboost/">github page</a> and have a look at the <a class="reference external" href="https://erdogant.github.io/hgboost/pages/html/Documentation.html">sponser page</a>!</p>
-</section>
-<section id="github">
-<h1>Github<a class="headerlink" href="#github" title="Permalink to this heading"></a></h1>
-<p>Please report bugs, issues and feature extensions at <a class="reference external" href="https://github.com/erdogant/hgboost/">github</a>.</p>
-</section>
+<hr class="docutils" />
 <section id="content">
 <h1>Content<a class="headerlink" href="#content" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
@@ -243,7 +255,10 @@
 </ul>
 <hr>
 <center>
-        <script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
+        <script async src="https://media.ethicalads.io/media/client/ethicalads.min.js"></script>
+        <!-- Show an image ad -->
+        <div data-ea-publisher="erdogantgithubio" data-ea-type="image"></div>
+        <!-- <div data-ea-publisher="erdogantgithubio" data-ea-type="text"></div> -->
 </center>
 <hr></section>
 

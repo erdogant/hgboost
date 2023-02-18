@@ -1,3 +1,5 @@
+.. include:: add_top.add
+
 Splitting the data set 
 **********************
 
@@ -52,3 +54,6 @@ The specific list of parameter used for tuning are lised in section **classifica
 		<script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
 	</center>
 	<hr>
+
+
+.. include:: add_bottom.add
