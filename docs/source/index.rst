@@ -3,18 +3,19 @@ hgboost's documentation!
 
 |python| |pypi| |docs| |stars| |LOC| |downloads_month| |downloads_total| |license| |forks| |open issues| |project status| |medium| |colab| |DOI| |repo-size| |donate|
 
-.. include:: add_top.add
-
-.. _schematic_overview:
-
-.. figure:: ../figs/schematic_overview.png
-
 
 .. tip::
 	`Medium Blog 1: A Guide to Find the Best Boosting Model using Bayesian Hyperparameter Tuning but without Overfitting. <https://towardsdatascience.com/a-guide-to-find-the-best-boosting-model-using-bayesian-hyperparameter-tuning-but-without-c98b6a1ecac8>`_
 
 .. tip::
 	`Medium Blog 2: A Hands-on Guide To Create Explainable Gradient Boosting Classification models using Bayesian Hyperparameter Optimization. <https://erdogant.medium.com/hands-on-guide-for-hyperparameter-tuning-with-bayesian-optimization-for-classification-models-2002224bfa3d>`_
+
+
+.. _schematic_overview:
+
+.. figure:: ../figs/schematic_overview.png
+
+
 
 The Hyperoptimized Gradient Boosting library (``hgboost``), is a Python package for hyperparameter optimization for **XGBoost**, **LightBoost**, and **CatBoost**. *HGBoost* will carefully split the dataset into a train, test, and an independent validation set. Within the train-test set there is the inner loop for optimizing the hyperparameters using Bayesian optimization (based on *Hyperopt*) and, the outer loop is to test how well the best-performing models can generalize using an external k-fold cross validation. This approach will select the most robust model with the highest performance.
 

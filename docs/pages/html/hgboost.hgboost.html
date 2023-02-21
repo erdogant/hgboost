@@ -17,6 +17,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -82,7 +83,38 @@
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-regression-notebook">Colab Regression Notebook</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#citing">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API References</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hgboost.hgboost.hgboost"><code class="docutils literal notranslate"><span class="pre">hgboost</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.catboost"><code class="docutils literal notranslate"><span class="pre">hgboost.catboost()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.catboost_reg"><code class="docutils literal notranslate"><span class="pre">hgboost.catboost_reg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.ctb_clf"><code class="docutils literal notranslate"><span class="pre">hgboost.ctb_clf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.ctb_reg"><code class="docutils literal notranslate"><span class="pre">hgboost.ctb_reg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.ensemble"><code class="docutils literal notranslate"><span class="pre">hgboost.ensemble()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.import_example"><code class="docutils literal notranslate"><span class="pre">hgboost.import_example()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.lgb_clf"><code class="docutils literal notranslate"><span class="pre">hgboost.lgb_clf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.lgb_reg"><code class="docutils literal notranslate"><span class="pre">hgboost.lgb_reg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.lightboost"><code class="docutils literal notranslate"><span class="pre">hgboost.lightboost()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.lightboost_reg"><code class="docutils literal notranslate"><span class="pre">hgboost.lightboost_reg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.load"><code class="docutils literal notranslate"><span class="pre">hgboost.load()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.plot"><code class="docutils literal notranslate"><span class="pre">hgboost.plot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.plot_cv"><code class="docutils literal notranslate"><span class="pre">hgboost.plot_cv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.plot_ensemble"><code class="docutils literal notranslate"><span class="pre">hgboost.plot_ensemble()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.plot_params"><code class="docutils literal notranslate"><span class="pre">hgboost.plot_params()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.plot_validation"><code class="docutils literal notranslate"><span class="pre">hgboost.plot_validation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.predict"><code class="docutils literal notranslate"><span class="pre">hgboost.predict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.preprocessing"><code class="docutils literal notranslate"><span class="pre">hgboost.preprocessing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.save"><code class="docutils literal notranslate"><span class="pre">hgboost.save()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.treeplot"><code class="docutils literal notranslate"><span class="pre">hgboost.treeplot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.xgb_clf"><code class="docutils literal notranslate"><span class="pre">hgboost.xgb_clf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.xgb_clf_multi"><code class="docutils literal notranslate"><span class="pre">hgboost.xgb_clf_multi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.xgb_reg"><code class="docutils literal notranslate"><span class="pre">hgboost.xgb_reg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.xgboost"><code class="docutils literal notranslate"><span class="pre">hgboost.xgboost()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hgboost.hgboost.hgboost.xgboost_reg"><code class="docutils literal notranslate"><span class="pre">hgboost.xgboost_reg()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#hgboost.hgboost.import_example"><code class="docutils literal notranslate"><span class="pre">import_example()</span></code></a></li>
+</ul>
+</li>
 </ul>
 
     <a href= "genindex.html">Index</a>
@@ -111,13 +143,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <hr>
-<center>
-        <script async src="https://media.ethicalads.io/media/client/ethicalads.min.js"></script>
-        <div data-ea-publisher="erdogantgithubio" data-ea-type="text"></div>
-        <!-- <div data-ea-publisher="erdogantgithubio" data-ea-type="text" data-ea-style="fixedfooter"></div> -->
-</center>
-<hr><section id="module-hgboost.hgboost">
+  <section id="module-hgboost.hgboost">
 <span id="api-references"></span><h1>API References<a class="headerlink" href="#module-hgboost.hgboost" title="Permalink to this heading"></a></h1>
 <p>hgboost: Hyperoptimized Gradient Boosting library.</p>
 <p>Contributors: <a class="reference external" href="https://github.com/erdogant/hgboost">https://github.com/erdogant/hgboost</a></p>
@@ -125,6 +151,8 @@
 <dt class="sig sig-object py" id="hgboost.hgboost.hgboost">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hgboost.hgboost.</span></span><span class="sig-name descname"><span class="pre">hgboost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_cv_evals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_unbalance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hgboost.hgboost.hgboost" title="Permalink to this definition"></a></dt>
 <dd><p>hgboost: Hyperoptimized Gradient Boosting.</p>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h2>
 <p>HGBoost stands for Hyperoptimized Gradient Boosting and is a Python package for hyperparameter optimization
 for XGBoost, LightBoost, and CatBoost. It will carefully split the dataset into a train, test, and independent
 validation set. Within the train-test set, there is the inner loop for optimizing the hyperparameters using
@@ -132,33 +160,84 @@ Bayesian optimization (with hyperopt) and, the outer loop to score how well the 
 generalize based on k-fold cross validation. As such, it will make the best attempt to select the most robust
 model with the best performance.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>max_eval</strong> (<em>int</em><em>, </em><em>(</em><em>default : 250</em><em>)</em>) – Search space is created on the number of evaluations.</p></li>
-<li><p><strong>threshold</strong> (<em>float</em><em>, </em><em>(</em><em>default : 0.5</em><em>)</em>) – Classification threshold. In case of two-class model this is 0.5</p></li>
-<li><p><strong>cv</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>default : 5</em><em>)</em>) – Cross-validation. Specifying the test size by test_size.</p></li>
-<li><p><strong>top_cv_evals</strong> (<em>int</em><em>, </em><em>(</em><em>default : 10</em><em>)</em>) – Number of top best performing models that is evaluated.
+<dt class="field-odd">param max_eval</dt>
+<dd class="field-odd"><p>Search space is created on the number of evaluations.</p>
+</dd>
+<dt class="field-even">type max_eval</dt>
+<dd class="field-even"><p>int, (default : 250)</p>
+</dd>
+<dt class="field-odd">param threshold</dt>
+<dd class="field-odd"><p>Classification threshold. In case of two-class model this is 0.5</p>
+</dd>
+<dt class="field-even">type threshold</dt>
+<dd class="field-even"><p>float, (default : 0.5)</p>
+</dd>
+<dt class="field-odd">param cv</dt>
+<dd class="field-odd"><p>Cross-validation. Specifying the test size by test_size.</p>
+</dd>
+<dt class="field-even">type cv</dt>
+<dd class="field-even"><p>int, optional (default : 5)</p>
+</dd>
+<dt class="field-odd">param top_cv_evals</dt>
+<dd class="field-odd"><p>Number of top best performing models that is evaluated.
 If set to None, each iteration (max_eval) is tested.
-If set to 0, cross validation is not performed.</p></li>
-<li><p><strong>test_size</strong> (<em>float</em><em>, </em><em>(</em><em>default : 0.2</em><em>)</em>) – Percentage split for the testset based on the total dataset.</p></li>
-<li><p><strong>val_size</strong> (<em>float</em><em>, </em><em>(</em><em>default : 0.2</em><em>)</em>) – Percentage split for the validationset based on the total dataset. This part is kept untouched, and used only once to determine the model performance.</p></li>
-<li><p><strong>is_unbalance</strong> (<em>Bool</em><em>, </em><em>(</em><em>default: True</em><em>)</em>) – Control the balance of positive and negative weights, useful for unbalanced classes.
+If set to 0, cross validation is not performed.</p>
+</dd>
+<dt class="field-even">type top_cv_evals</dt>
+<dd class="field-even"><p>int, (default : 10)</p>
+</dd>
+<dt class="field-odd">param test_size</dt>
+<dd class="field-odd"><p>Percentage split for the testset based on the total dataset.</p>
+</dd>
+<dt class="field-even">type test_size</dt>
+<dd class="field-even"><p>float, (default : 0.2)</p>
+</dd>
+<dt class="field-odd">param val_size</dt>
+<dd class="field-odd"><p>Percentage split for the validationset based on the total dataset. This part is kept untouched, and used only once to determine the model performance.</p>
+</dd>
+<dt class="field-even">type val_size</dt>
+<dd class="field-even"><p>float, (default : 0.2)</p>
+</dd>
+<dt class="field-odd">param is_unbalance</dt>
+<dd class="field-odd"><p>Control the balance of positive and negative weights, useful for unbalanced classes.
 xgboost clf : sum(negative instances) / sum(positive instances)
 catboost clf : sum(negative instances) / sum(positive instances)
 lightgbm clf : balanced
-False: grid search</p></li>
-<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>(</em><em>default : None</em><em>)</em>) – Fix the random state for validation set and test set. Note that is not used for the crossvalidation.</p></li>
-<li><p><strong>n_jobs</strong> (<em>int</em><em>, </em><em>(</em><em>default : -1</em><em>)</em>) – The number of jobs to run in parallel for fit. None means 1 unless in a joblib.parallel_backend context.
--1 means using all processors.</p></li>
-<li><p><strong>gpu</strong> (<em>bool</em><em>, </em><em>(</em><em>default : False</em><em>)</em>) – Computing using either GPU or CPU. Note that GPU usage is not very well supported because various optimizations are performed during training/testing/crossvalidation.
-True: Use GPU.
-False: Use CPU.</p></li>
-<li><p><strong>verbose</strong> (<em>int</em><em>, </em><em>(</em><em>default : 3</em><em>)</em>) – Print progress to screen.
-0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE</p></li>
-</ul>
+False: grid search</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
+<dt class="field-even">type is_unbalance</dt>
+<dd class="field-even"><p>Bool, (default: True)</p>
+</dd>
+<dt class="field-odd">param random_state</dt>
+<dd class="field-odd"><p>Fix the random state for validation set and test set. Note that is not used for the crossvalidation.</p>
+</dd>
+<dt class="field-even">type random_state</dt>
+<dd class="field-even"><p>int, (default : None)</p>
+</dd>
+<dt class="field-odd">param n_jobs</dt>
+<dd class="field-odd"><p>The number of jobs to run in parallel for fit. None means 1 unless in a joblib.parallel_backend context.
+-1 means using all processors.</p>
+</dd>
+<dt class="field-even">type n_jobs</dt>
+<dd class="field-even"><p>int, (default : -1)</p>
+</dd>
+<dt class="field-odd">param gpu</dt>
+<dd class="field-odd"><p>Computing using either GPU or CPU. Note that GPU usage is not very well supported because various optimizations are performed during training/testing/crossvalidation.
+True: Use GPU.
+False: Use CPU.</p>
+</dd>
+<dt class="field-even">type gpu</dt>
+<dd class="field-even"><p>bool, (default : False)</p>
+</dd>
+<dt class="field-odd">param verbose</dt>
+<dd class="field-odd"><p>Print progress to screen.
+0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE</p>
+</dd>
+<dt class="field-even">type verbose</dt>
+<dd class="field-even"><p>int, (default : 3)</p>
+</dd>
+<dt class="field-odd">rtype</dt>
+<dd class="field-odd"><p>None.</p>
 </dd>
 </dl>
 <p class="rubric">References</p>
@@ -268,47 +347,76 @@ False: Use CPU.</p></li>
 <dt class="sig sig-object py" id="hgboost.hgboost.hgboost.ensemble">
 <span class="sig-name descname"><span class="pre">ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">methods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['xgb_clf',</span> <span class="pre">'ctb_clf',</span> <span class="pre">'lgb_clf']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">greater_is_better</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'soft'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hgboost.hgboost.hgboost.ensemble" title="Permalink to this definition"></a></dt>
 <dd><p>Ensemble Classification with hyperparameter optimization.</p>
+<section id="id1">
+<h3>Description<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
 <p>Fit best model for xgboost, catboost and lightboost, and then combine the individual models to a new one.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Input dataset.</p></li>
-<li><p><strong>y</strong> (<em>array-like</em>) – Response variable.</p></li>
-<li><p><strong>pos_label</strong> (<em>string/int.</em>) – Fit the model on the pos_label that that is in [y].</p></li>
-<li><p><strong>methods</strong> (<em>list of strings</em><em>, </em><em>(</em><em>default :</em><em> [</em><em>'xgb_clf'</em><em>,</em><em>'ctb_clf'</em><em>,</em><em>'lgb_clf'</em><em>]</em><em>)</em><em>.</em>) – <dl class="simple">
-<dt>The models included for the ensemble classifier or regressor. The clf and reg models can not be combined.</dt><dd><ul>
+<dt class="field-odd">param X</dt>
+<dd class="field-odd"><p>Input dataset.</p>
+</dd>
+<dt class="field-even">type X</dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+<dt class="field-odd">param y</dt>
+<dd class="field-odd"><p>Response variable.</p>
+</dd>
+<dt class="field-even">type y</dt>
+<dd class="field-even"><p>array-like</p>
+</dd>
+<dt class="field-odd">param pos_label</dt>
+<dd class="field-odd"><p>Fit the model on the pos_label that that is in [y].</p>
+</dd>
+<dt class="field-even">type pos_label</dt>
+<dd class="field-even"><p>string/int.</p>
+</dd>
+<dt class="field-odd">param methods</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>The models included for the ensemble classifier or regressor. The clf and reg models can not be combined.</dt><dd><ul class="simple">
 <li><p>[‘xgb_clf’,’ctb_clf’,’lgb_clf’]</p></li>
 <li><p>[‘xgb_reg’,’ctb_reg’,’lgb_reg’]</p></li>
 </ul>
 </dd>
 </dl>
-</p></li>
-<li><p><strong>eval_metric</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'auc'</em><em>)</em>) – <dl class="simple">
-<dt>Evaluation metric for the regressor of classification model.</dt><dd><ul>
-<li><p>’auc’: area under ROC curve (two-class classification : default)</p></li>
+</dd>
+<dt class="field-even">type methods</dt>
+<dd class="field-even"><p>list of strings, (default : [‘xgb_clf’,’ctb_clf’,’lgb_clf’]).</p>
+</dd>
+<dt class="field-odd">param eval_metric</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>Evaluation metric for the regressor of classification model.</dt><dd><ul class="simple">
+<li><p>‘auc’: area under ROC curve (two-class classification : default)</p></li>
 </ul>
 </dd>
 </dl>
-</p></li>
-<li><p><strong>greater_is_better</strong> (<em>bool</em><em> (</em><em>default : True</em><em>)</em>) – <dl class="simple">
-<dt>If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.</dt><dd><ul>
+</dd>
+<dt class="field-even">type eval_metric</dt>
+<dd class="field-even"><p>str, (default : ‘auc’)</p>
+</dd>
+<dt class="field-odd">param greater_is_better</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.</dt><dd><ul class="simple">
 <li><p>auc :  True -&gt; two-class</p></li>
 </ul>
 </dd>
 </dl>
-</p></li>
-<li><p><strong>voting</strong> (<em>str</em><em>, </em><em>(</em><em>default : 'soft'</em><em>)</em>) – <dl class="simple">
-<dt>Combining classifier using a voting scheme.</dt><dd><ul>
-<li><p>’hard’: using predicted classes.</p></li>
-<li><p>’soft’: using the Probabilities.</p></li>
+</dd>
+<dt class="field-even">type greater_is_better</dt>
+<dd class="field-even"><p>bool (default : True)</p>
+</dd>
+<dt class="field-odd">param voting</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>Combining classifier using a voting scheme.</dt><dd><ul class="simple">
+<li><p>‘hard’: using predicted classes.</p></li>
+<li><p>‘soft’: using the Probabilities.</p></li>
 </ul>
 </dd>
 </dl>
-</p></li>
-</ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><strong>results</strong> –</p>
+<dt class="field-even">type voting</dt>
+<dd class="field-even"><p>str, (default : ‘soft’)</p>
+</dd>
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p><strong>results</strong> –</p>
 <ul class="simple">
 <li><p>best_params (dict): containing the  optimized model hyperparameters.</p></li>
 <li><p>summary (DataFrame): containing the parameters and performance for all evaluations.</p></li>
@@ -317,35 +425,49 @@ False: Use CPU.</p></li>
 <li><p>val_results (dict): Results of the final model on independent validation dataset.</p></li>
 <li><p>comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.</p></li>
 </ul>
-</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
+<dt class="field-even">rtype</dt>
+<dd class="field-even"><p>dict</p>
 </dd>
 </dl>
+</section>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hgboost.hgboost.hgboost.import_example">
 <span class="sig-name descname"><span class="pre">import_example</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'titanic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hgboost.hgboost.hgboost.import_example" title="Permalink to this definition"></a></dt>
 <dd><p>Import example dataset from github source.</p>
+<section id="id2">
+<h3>Description<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
 <p>Import one of the few datasets from github source or specify your own download url link.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>str</em>) – Name of datasets: ‘sprinkler’, ‘titanic’, ‘student’, ‘fifa’, ‘cancer’, ‘waterpump’, ‘retail’</p></li>
-<li><p><strong>url</strong> (<em>str</em>) – url link to to dataset.</p></li>
-<li><p><strong>verbose</strong> (<em>int</em><em>, </em><em>(</em><em>default : 3</em><em>)</em>) – Print progress to screen.
-0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE</p></li>
-</ul>
+<dt class="field-odd">param data</dt>
+<dd class="field-odd"><p>Name of datasets: ‘sprinkler’, ‘titanic’, ‘student’, ‘fifa’, ‘cancer’, ‘waterpump’, ‘retail’</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Dataset containing mixed features.</p>
+<dt class="field-even">type data</dt>
+<dd class="field-even"><p>str</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>pd.DataFrame()</p>
+<dt class="field-odd">param url</dt>
+<dd class="field-odd"><p>url link to to dataset.</p>
+</dd>
+<dt class="field-even">type url</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">param verbose</dt>
+<dd class="field-odd"><p>Print progress to screen.
+0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE</p>
+</dd>
+<dt class="field-even">type verbose</dt>
+<dd class="field-even"><p>int, (default : 3)</p>
+</dd>
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p>Dataset containing mixed features.</p>
+</dd>
+<dt class="field-even">rtype</dt>
+<dd class="field-even"><p>pd.DataFrame()</p>
 </dd>
 </dl>
+</section>
 </dd></dl>
 
 <dl class="py method">
@@ -446,15 +568,23 @@ False: Use CPU.</p></li>
 <dt class="sig sig-object py" id="hgboost.hgboost.hgboost.load">
 <span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hgboost_model.pkl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hgboost.hgboost.hgboost.load" title="Permalink to this definition"></a></dt>
 <dd><p>Load learned model.</p>
+<section id="id3">
+<h3>Description<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
 <p>The load function will restore the trained model and results.
 In a fresh (new) start, you need to re-initialize the hgboost model first.
 By loading the model, the user defined parameters are also restored.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filepath</strong> (<em>str</em>) – Pathname to stored pickle files.</p></li>
-<li><p><strong>verbose</strong> (<em>int</em><em>, </em><em>optional</em>) – Show message. A higher number gives more information. The default is 3.</p></li>
-</ul>
+<dt class="field-odd">param filepath</dt>
+<dd class="field-odd"><p>Pathname to stored pickle files.</p>
+</dd>
+<dt class="field-even">type filepath</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">param verbose</dt>
+<dd class="field-odd"><p>Show message. A higher number gives more information. The default is 3.</p>
+</dd>
+<dt class="field-even">type verbose</dt>
+<dd class="field-even"><p>int, optional</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -485,14 +615,14 @@ By loading the model, the user defined parameters are also restored.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><ul class="simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><ul class="simple">
 <li><p><em>* dictionary containing model results.</em></p></li>
 <li><p><em>* Object with trained model.</em></p></li>
 </ul>
-</p>
 </dd>
 </dl>
+</section>
 </dd></dl>
 
 <dl class="py method">
@@ -558,23 +688,37 @@ By loading the model, the user defined parameters are also restored.</p>
 <dt class="sig sig-object py" id="hgboost.hgboost.hgboost.plot_params">
 <span class="sig-name descname"><span class="pre">plot_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shade</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Set2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(18,</span> <span class="pre">18)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hgboost.hgboost.hgboost.plot_params" title="Permalink to this definition"></a></dt>
 <dd><p>Distribution of parameters.</p>
+<section id="id4">
+<h3>Description<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
 <p>This plot demonstrate the density distribution of the used parameters.
 Green will depict the best detected parameter and red demonstrates the top n paramters with best loss.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>top_n</strong> (<em>int</em><em>, </em><em>(</em><em>default : 10</em><em>)</em>) – Top n parameters that scored highest are plotted with a black dashed vertical line.</p></li>
-<li><p><strong>shade</strong> (<em>bool</em><em>, </em><em>(</em><em>default : True</em><em>)</em>) – Fill the density plot.</p></li>
-<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>default</em><em> (</em><em>15</em><em>,</em><em>15</em><em>)</em>) – Figure size, (height, width)</p></li>
-</ul>
+<dt class="field-odd">param top_n</dt>
+<dd class="field-odd"><p>Top n parameters that scored highest are plotted with a black dashed vertical line.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>ax</strong> – Figure axis.</p>
+<dt class="field-even">type top_n</dt>
+<dd class="field-even"><p>int, (default : 10)</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>object</p>
+<dt class="field-odd">param shade</dt>
+<dd class="field-odd"><p>Fill the density plot.</p>
+</dd>
+<dt class="field-even">type shade</dt>
+<dd class="field-even"><p>bool, (default : True)</p>
+</dd>
+<dt class="field-odd">param figsize</dt>
+<dd class="field-odd"><p>Figure size, (height, width)</p>
+</dd>
+<dt class="field-even">type figsize</dt>
+<dd class="field-even"><p>tuple, default (15,15)</p>
+</dd>
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p><strong>ax</strong> – Figure axis.</p>
+</dd>
+<dt class="field-even">rtype</dt>
+<dd class="field-even"><p>object</p>
 </dd>
 </dl>
+</section>
 </dd></dl>
 
 <dl class="py method">
@@ -823,29 +967,44 @@ Green will depict the best detected parameter and red demonstrates the top n par
 </dl>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="hgboost.hgboost.import_example">
 <span class="sig-prename descclassname"><span class="pre">hgboost.hgboost.</span></span><span class="sig-name descname"><span class="pre">import_example</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'titanic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hgboost.hgboost.import_example" title="Permalink to this definition"></a></dt>
 <dd><p>Import example dataset from github source.</p>
+<section id="id5">
+<h2>Description<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
 <p>Import one of the few datasets from github source or specify your own download url link.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>str</em><em>, </em><em>(</em><em>default : &quot;titanic&quot;</em><em>)</em>) – Name of datasets: ‘sprinkler’, ‘titanic’, ‘student’, ‘fifa’, ‘cancer’, ‘waterpump’, ‘retail’</p></li>
-<li><p><strong>url</strong> (<em>str</em>) – url link to to dataset.</p></li>
-<li><p><strong>verbose</strong> (<em>int</em><em>, </em><em>(</em><em>default : 3</em><em>)</em>) – Print progress to screen.
-0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE</p></li>
-</ul>
+<dt class="field-odd">param data</dt>
+<dd class="field-odd"><p>Name of datasets: ‘sprinkler’, ‘titanic’, ‘student’, ‘fifa’, ‘cancer’, ‘waterpump’, ‘retail’</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Dataset containing mixed features.</p>
+<dt class="field-even">type data</dt>
+<dd class="field-even"><p>str, (default : “titanic”)</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>pd.DataFrame()</p>
+<dt class="field-odd">param url</dt>
+<dd class="field-odd"><p>url link to to dataset.</p>
+</dd>
+<dt class="field-even">type url</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">param verbose</dt>
+<dd class="field-odd"><p>Print progress to screen.
+0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE</p>
+</dd>
+<dt class="field-even">type verbose</dt>
+<dd class="field-even"><p>int, (default : 3)</p>
+</dd>
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p>Dataset containing mixed features.</p>
+</dd>
+<dt class="field-even">rtype</dt>
+<dd class="field-even"><p>pd.DataFrame()</p>
 </dd>
 </dl>
+</section>
 </dd></dl>
 
 <hr>
