@@ -24,13 +24,30 @@
 # print(dir(hgboost))
 # print(hgboost.__version__)
 
+# %%
+from hgboost import hgboost
+hgb = hgboost()
+df = hgb.import_example(data='ds_salaries')
+
+y = df['salary_in_usd'].values
+df.drop(['salary_in_usd', 'salary_currency', 'salary'], axis=1, inplace=True)
+X = hgb.preprocessing(df, verbose=4)
+
+import numpy as np
+I = ~np.isnan(y)
+X = X.loc[I, :]
+y = y[I]
+
+results  = hgb.xgboost_reg(X, y, eval_metric='mae')      # XGBoost
+
+
 # %% HYPEROPTIMIZED REGRESSION-XGBOOST
 import numpy as np
 from hgboost import hgboost
 
 hgb_xgb = hgboost(max_eval=25, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
-# hgb_cat = hgboost(max_eval=250, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
-# hgb_light = hgboost(max_eval=250, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
+hgb_cat = hgboost(max_eval=250, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
+hgb_light = hgboost(max_eval=250, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
 
 # Import data
 df = hgb_xgb.import_example()
