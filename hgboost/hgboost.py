@@ -983,7 +983,7 @@ class hgboost:
         X = df2onehot(df, y_min=y_min, hot_only=hot_only, perc_min_num=perc_min_num, excl_background=excl_background, verbose=verbose)
         return X['onehot']
 
-    def import_example(self, data='titanic', url=None, sep=',', verbose=3):
+    def import_example(self, data='titanic', url=None, sep=','):
         """Import example dataset from github source.
 
         Description
@@ -996,17 +996,18 @@ class hgboost:
             Name of datasets: 'sprinkler', 'titanic', 'student', 'fifa', 'cancer', 'waterpump', 'retail'
         url : str
             url link to to dataset.
-        verbose : int, (default : 3)
-            Print progress to screen.
-            0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE
 
         Returns
         -------
         pd.DataFrame()
             Dataset containing mixed features.
 
+        References
+        ----------
+            * https://github.com/erdogant/datazets
+
         """
-        return import_example(data=data, url=url, sep=sep, verbose=verbose)
+        return dz.get(data=data, url=url, sep=sep)
 
     def treeplot(self, num_trees=None, plottype='horizontal', figsize=(20, 25), return_ax=False, verbose=3):
         """Tree plot.

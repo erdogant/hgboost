@@ -14,8 +14,6 @@ __doc__ = """
 hgboost - Hyperoptimized Gradient Boosting
 =====================================================================
 
-Description
------------
 HGBoost stands for Hyperoptimized Gradient Boosting and is a Python package for hyperparameter optimization
 for XGBoost, LightBoost, and CatBoost. It will carefully split the dataset into a train, test, and independent
 validation set. Within the train-test set, there is the inner loop for optimizing the hyperparameters using
