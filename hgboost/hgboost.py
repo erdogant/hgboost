@@ -11,6 +11,7 @@ from df2onehot import df2onehot
 import treeplot as tree
 import colourmap
 import pypickle
+import datazets as dz
 
 import os
 import numpy as np

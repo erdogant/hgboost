@@ -13,7 +13,7 @@ else:
 with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
-     install_requires=['pypickle', 'wget','matplotlib','numpy','pandas','tqdm','hyperopt','lightgbm','catboost','xgboost','classeval','treeplot','df2onehot','colourmap','seaborn'],
+     install_requires=['datazets', 'pypickle', 'matplotlib','numpy','pandas','tqdm','hyperopt','lightgbm','catboost','xgboost','classeval','treeplot','df2onehot','colourmap','seaborn'],
      python_requires='>=3',
      name='hgboost',
      version=new_version,

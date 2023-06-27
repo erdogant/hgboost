@@ -1,9 +1,4 @@
-#conda create -n env_hgboost python=3.10
-#conda activate env_hgboost
-#conda install spyder
-
 pypickle
-wget
 matplotlib 
 numpy 
 pandas 
@@ -17,3 +12,4 @@ treeplot
 df2onehot
 colourmap
 seaborn
+datazets

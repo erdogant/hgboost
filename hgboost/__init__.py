@@ -1,3 +1,4 @@
+from datazets import get as import_example
 from hgboost.hgboost import hgboost
 
 from hgboost.hgboost import (
