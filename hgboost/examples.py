@@ -41,6 +41,47 @@ y = y[I]
 results  = hgb.xgboost_reg(X, y, eval_metric='mae')      # XGBoost
 
 
+#     gamma gpu_id learning_rate  ... best_cv loss_validation default_params
+# 0     0.5      0           0.1  ...     0.0             NaN          False
+# 1     1.0      0           0.3  ...     0.0             NaN          False
+# 2       0      0           0.1  ...     0.0             NaN          False
+# 3     1.0      0          0.05  ...     0.0             NaN          False
+# 4    0.25      0           0.3  ...     0.0             NaN          False
+# ..    ...    ...           ...  ...     ...             ...            ...
+# 246   1.0      0          0.15  ...     0.0             NaN          False
+# 247  0.25      0           0.1  ...     0.0             NaN          False
+# 248   1.0      0          0.05  ...     0.0             NaN          False
+# 249   0.5      0           0.2  ...     0.0             NaN          False
+# 250  None    NaN          None  ...     NaN    35539.674538           True
+
+# [251 rows x 20 columns]
+
+# [hgboost] >Start hgboost regression.
+# [hgboost] >Collecting xgb_reg parameters.
+# [hgboost] >method: xgb_reg
+# [hgboost] >eval_metric: mae
+# [hgboost] >greater_is_better: False
+# [hgboost] >*********************************************************************************
+# [hgboost] >Total dataset: (4134, 198) 
+# [hgboost] >Validation set: (827, 198) 
+# [hgboost] >Test-set: (827, 198) 
+# [hgboost] >Train-set: (2480, 198) 
+# [hgboost] >*********************************************************************************
+# [hgboost] >Searching across hyperparameter space for best performing parameters using maximum nr. evaluations: 250
+# 100%|██████████| 250/250 [04:14<00:00,  1.02s/trial, best loss: 35223.92493340009]
+# [hgboost]> Collecting the hyperparameters from the [250] trials.
+# [hgboost] >[mae]: 3.522e+04 Best performing model across 250 iterations using Bayesian Optimization with Hyperopt.
+# [hgboost] >*********************************************************************************
+# [hgboost] >5-fold cross validation for the top 10 scoring models, Total nr. tests: 50
+# [hgboost] >[mae] (average): 3.586e+04 Best 5-fold CV model using optimized hyperparameters.
+# [hgboost] >*********************************************************************************
+# [hgboost] >Evaluate best [xgb_reg] model on validation dataset (827 samples, 20%)
+# [hgboost] >[mae]: 3.527e+04 using optimized hyperparameters on validation set.
+# [hgboost] >[mae]: 3.554e+04 using default (not optimized) parameters on validation set.
+# [hgboost] >*********************************************************************************
+# [hgboost] >Retrain [xgb_reg] on the entire dataset with the optimal hyperparameters.
+# [hgboost] >Fin!
+
 # %% HYPEROPTIMIZED REGRESSION-XGBOOST
 import numpy as np
 from hgboost import hgboost
