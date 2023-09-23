@@ -16,7 +16,6 @@ import datazets as dz
 import os
 import numpy as np
 import pandas as pd
-import wget
 
 from sklearn.metrics import mean_squared_error, cohen_kappa_score, mean_absolute_error, log_loss, roc_auc_score, f1_score
 from sklearn.ensemble import VotingClassifier, VotingRegressor
@@ -1623,66 +1622,66 @@ def _store_validation_scores(results_summary, best_params, model_basic, val_scor
 
 
 # %% Import example dataset from github.
-def import_example(data='titanic', url=None, sep=',', verbose=3):
-    """Import example dataset from github source.
+# def import_example(data='titanic', url=None, sep=',', verbose=3):
+    # """Import example dataset from github source.
 
-    Description
-    -----------
-    Import one of the few datasets from github source or specify your own download url link.
+    # Description
+    # -----------
+    # Import one of the few datasets from github source or specify your own download url link.
 
-    Parameters
-    ----------
-    data : str, (default : "titanic")
-        Name of datasets: 'sprinkler', 'titanic', 'student', 'fifa', 'cancer', 'waterpump', 'retail'
-    url : str
-        url link to to dataset.
-    verbose : int, (default : 3)
-        Print progress to screen.
-        0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE
+    # Parameters
+    # ----------
+    # data : str, (default : "titanic")
+    #     Name of datasets: 'sprinkler', 'titanic', 'student', 'fifa', 'cancer', 'waterpump', 'retail'
+    # url : str
+    #     url link to to dataset.
+    # verbose : int, (default : 3)
+    #     Print progress to screen.
+    #     0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE
 
-    Returns
-    -------
-    pd.DataFrame()
-        Dataset containing mixed features.
+    # Returns
+    # -------
+    # pd.DataFrame()
+    #     Dataset containing mixed features.
 
-    """
-    if url is None:
-        if data=='sprinkler':
-            url='https://erdogant.github.io/datasets/sprinkler.zip'
-        elif data=='titanic':
-            url='https://erdogant.github.io/datasets/titanic_train.zip'
-        elif data=='student':
-            url='https://erdogant.github.io/datasets/student_train.zip'
-        elif data=='cancer':
-            url='https://erdogant.github.io/datasets/cancer_dataset.zip'
-        elif data=='fifa':
-            url='https://erdogant.github.io/datasets/FIFA_2018.zip'
-        elif data=='waterpump':
-            url='https://erdogant.github.io/datasets/waterpump/waterpump_test.zip'
-        elif data=='retail':
-            url='https://erdogant.github.io/datasets/marketing_data_online_retail_small.zip'
-    else:
-        data = wget.filename_from_url(url)
+    # """
+    # if url is None:
+    #     if data=='sprinkler':
+    #         url='https://erdogant.github.io/datasets/sprinkler.zip'
+    #     elif data=='titanic':
+    #         url='https://erdogant.github.io/datasets/titanic_train.zip'
+    #     elif data=='student':
+    #         url='https://erdogant.github.io/datasets/student_train.zip'
+    #     elif data=='cancer':
+    #         url='https://erdogant.github.io/datasets/cancer_dataset.zip'
+    #     elif data=='fifa':
+    #         url='https://erdogant.github.io/datasets/FIFA_2018.zip'
+    #     elif data=='waterpump':
+    #         url='https://erdogant.github.io/datasets/waterpump/waterpump_test.zip'
+    #     elif data=='retail':
+    #         url='https://erdogant.github.io/datasets/marketing_data_online_retail_small.zip'
+    # else:
+    #     data = wget.filename_from_url(url)
 
-    if url is None:
-        if verbose>=3: print('[hgboost] >Nothing to download.')
-        return None
+    # if url is None:
+    #     if verbose>=3: print('[hgboost] >Nothing to download.')
+    #     return None
 
-    curpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
-    PATH_TO_DATA = os.path.join(curpath, wget.filename_from_url(url))
-    if not os.path.isdir(curpath):
-        os.makedirs(curpath, exist_ok=True)
+    # curpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+    # PATH_TO_DATA = os.path.join(curpath, wget.filename_from_url(url))
+    # if not os.path.isdir(curpath):
+    #     os.makedirs(curpath, exist_ok=True)
 
-    # Check file exists.
-    if not os.path.isfile(PATH_TO_DATA):
-        if verbose>=3: print('[hgboost] >Downloading [%s] dataset from github source..' %(data))
-        wget.download(url, curpath)
+    # # Check file exists.
+    # if not os.path.isfile(PATH_TO_DATA):
+    #     if verbose>=3: print('[hgboost] >Downloading [%s] dataset from github source..' %(data))
+    #     wget.download(url, curpath)
 
-    # Import local dataset
-    if verbose>=3: print('[hgboost] >Import dataset [%s]' %(data))
-    df = pd.read_csv(PATH_TO_DATA, sep=sep)
-    # Return
-    return df
+    # # Import local dataset
+    # if verbose>=3: print('[hgboost] >Import dataset [%s]' %(data))
+    # df = pd.read_csv(PATH_TO_DATA, sep=sep)
+    # # Return
+    # return df
 
 
 # %% Set the search spaces
