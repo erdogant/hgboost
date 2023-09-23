@@ -637,7 +637,7 @@ class hgboost:
 
         # Create a basic model by using default parameters.
         space_basic = {}
-        space_basic['fit_params'] = {'verbose': 0}
+        space_basic['fit_params'] = {}
         space_basic['model_params'] = {}
         model_basic = getattr(self, self.method)
         model_basic = fn(space_basic)['model']
@@ -1740,7 +1740,11 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
         }
         space = {}
         space['model_params'] = lgb_reg_params
-        space['fit_params'] = {'eval_metric': 'l2', 'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
+        # space['fit_params'] = {'eval_metric': 'l2', 'early_stopping': early_stopping_rounds, 'verbose': 0}
+        space['fit_params'] = {'eval_metric': 'l2'}
+        from lightgbm import early_stopping
+        early_stopping(stopping_rounds=early_stopping_rounds)
+
 
         return(space)
 
@@ -1824,8 +1828,11 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
         }
         space={}
         space['model_params']=lgb_clf_params
-        space['fit_params']={'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
-        return(space)
+        space['fit_params']={}
+        from lightgbm import early_stopping
+        early_stopping(stopping_rounds=early_stopping_rounds)
+
+        return space
 
     # ############## XGboost classification parameters ###############
     if 'xgb_clf' in fn_name:
