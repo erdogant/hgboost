@@ -12,6 +12,7 @@ old/
 
 hgboost/data/
 .pypirc
+.pkl
 
 # Distribution / packaging
 .pylint.*
