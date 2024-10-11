@@ -100,8 +100,7 @@ class hgboost:
     * Notebook Regression: https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb
 
     """
-
-    def __init__(self, max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, is_unbalance=True, random_state=None, n_jobs=-1, gpu=False, verbose=3):
+    def __init__(self, max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, is_unbalance=True, random_state=None, n_jobs=-1, gpu=False, early_stopping_rounds=25, verbose=3):
         """Initialize hgboost with user-defined parameters."""
         if (threshold is None) or (threshold <= 0): raise ValueError('[hgboost] >Error: [threshold] must be >0 and not [None]')
         if (max_eval is None) or (max_eval <= 0): max_eval=1
@@ -121,6 +120,7 @@ class hgboost:
         self.verbose=verbose
         self.is_unbalance = is_unbalance
         self.gpu = gpu
+        self.early_stopping_rounds=early_stopping_rounds
 
     def _fit(self, X, y, pos_label=None):
         """Fit the best performing model.
@@ -181,7 +181,7 @@ class hgboost:
         # Gather for method, the default metric and greater is better.
         self.eval_metric, self.greater_is_better =_check_eval_metric(self.method, eval_metric, greater_is_better)
         # Import search space for the specific function
-        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, y=y, pos_label=self.pos_label, is_unbalance=self.is_unbalance, gpu=self.gpu, verbose=self.verbose)
+        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, y=y, pos_label=self.pos_label, is_unbalance=self.is_unbalance, gpu=self.gpu, early_stopping_rounds=self.early_stopping_rounds, verbose=self.verbose)
         self.space = params
         # Fit model
         self.results = self._fit(X, y, pos_label=self.pos_label)
@@ -633,6 +633,8 @@ class hgboost:
         # Cross-validation over the top n models. To speed up we can decide to test only the best performing ones. The best performing model is returned.
         if self.cv is not None:
             model, results_summary, best_params = self._cv(results_summary, self.space, best_params)
+            # early_stopping_rounds needs to be set on None
+            model.early_stopping_rounds=None
 
         # Create a basic model by using default parameters.
         space_basic = {}
@@ -1030,11 +1032,11 @@ class hgboost:
         ax : object
 
         """
+        if not hasattr(self, 'method') or (not hasattr(self, 'model')):
+            print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
+            return None
         if ('ensemble' in self.method):
             if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
-            return None
-        if not hasattr(self, 'model'):
-            print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return None
         ax = None
         # Plot the tree
@@ -1056,7 +1058,7 @@ class hgboost:
             Figure axis.
 
         """
-        if ('ensemble' in self.method):
+        if not hasattr(self, 'method') or ('ensemble' in self.method):
             if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
             return None
 
@@ -1123,7 +1125,7 @@ class hgboost:
 
         """
         ax = None
-        if not hasattr(self, 'model'):
+        if not hasattr(self, 'method') or (not hasattr(self, 'model')):
             print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return None
         if self.val_size is None:
@@ -1175,7 +1177,7 @@ class hgboost:
             Figure axis.
 
         """
-        if ('ensemble' in self.method):
+        if not hasattr(self, 'method') or ('ensemble' in self.method):
             if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
             return None, None
 
@@ -1333,12 +1335,12 @@ class hgboost:
 
         """
         ax1, ax2 = None, None
+        if not hasattr(self, 'method') or (not hasattr(self, 'model')):
+            print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
+            return ax1, ax2
         if ('ensemble' in self.method):
             if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
             self.plot_ensemble(ylim, figsize, ax1, ax2)
-            return ax1, ax2
-        if (not hasattr(self, 'model')):
-            print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return ax1, ax2
 
         # Plot comparison between hyperoptimized vs basic model
@@ -1685,12 +1687,11 @@ def _store_validation_scores(results_summary, best_params, model_basic, val_scor
 
 
 # %% Set the search spaces
-def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=False, gpu=False, verbose=3):
+def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=False, gpu=False, early_stopping_rounds=25, verbose=3):
     # choice : categorical variables
     # quniform : discrete uniform (integers spaced evenly)
     # uniform: continuous uniform (floats spaced evenly)
     # loguniform: continuous log uniform (floats spaced evenly on a log scale)
-    early_stopping_rounds = 25
     if eval_metric is None: raise ValueError('[hgboost] >eval_metric must be provided.')
     if verbose>=3: print('[hgboost] >Collecting %s parameters.' %(fn_name))
 
@@ -1716,10 +1717,11 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
             'tree_method': tree_method,
             'gpu_id': 0,
             'predictor': predictor,
+            'early_stopping_rounds': early_stopping_rounds,
         }
         space = {}
         space['model_params'] = xgb_reg_params
-        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
+        space['fit_params'] = {'verbose': 0}
         return(space)
 
     ############### LightGBM regression parameters ###############
@@ -1744,7 +1746,6 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
         from lightgbm import early_stopping
         early_stopping(stopping_rounds=early_stopping_rounds)
 
-
         return(space)
 
     ############### CatBoost regression parameters ###############
@@ -1760,10 +1761,11 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
             'n_estimators': hp.choice('n_estimators', range(20, 205, 5)),
             'task_type': task_type,
             'devices': '0',
+            'early_stopping_rounds': early_stopping_rounds,
         }
         space = {}
         space['model_params'] = ctb_reg_params
-        space['fit_params'] = {'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
+        space['fit_params'] = {'verbose': 0}
         return(space)
 
     ############### CatBoost classification parameters ###############
@@ -1826,8 +1828,8 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
             'gpu_device_id': 0,
         }
         space={}
-        space['model_params']=lgb_clf_params
-        space['fit_params']={}
+        space['model_params'] = lgb_clf_params
+        space['fit_params'] = {}
         from lightgbm import early_stopping
         early_stopping(stopping_rounds=early_stopping_rounds)
 
@@ -1838,13 +1840,13 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
         # Enable/Disable GPU
         if gpu:
             # 'gpu_hist' Equivalent to the XGBoost fast histogram algorithm. Much faster and uses considerably less memory. NOTE: May run very slowly on GPUs older than Pascal architecture.
-            tree_method = 'auto'  # 'gpu_hist' gives throws random errors
+            tree_method = 'auto'  # 'gpu_hist' throws random errors
             predictor = 'gpu_predictor'
         else:
             tree_method = 'hist'
             predictor = 'cpu_predictor'
 
-        xgb_clf_params={
+        xgb_clf_params = {
             'learning_rate': hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.5), base=10, num=1000)),
             'max_depth': hp.choice('max_depth', range(5, 32, 1)),
             'min_child_weight': hp.quniform('min_child_weight', 1, 10, 1),
@@ -1856,6 +1858,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
             'tree_method': tree_method,
             'gpu_id': 0,
             'predictor': predictor,
+            'early_stopping_rounds': early_stopping_rounds,
         }
 
         if fn_name=='xgb_clf':
@@ -1873,12 +1876,12 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
             xgb_clf_params['objective']='multi:softprob'
             # scoring='kappa'
 
-        space={}
+        space = {}
         space['model_params']=xgb_clf_params
-        space['fit_params']={'early_stopping_rounds': early_stopping_rounds, 'verbose': 0}
+        space['fit_params']={'verbose': 0}
 
         if verbose>=3: print('[hgboost] >[%.0d] hyperparameters in gridsearch space. Used loss function: [%s].' %(len([*space['model_params']]), eval_metric))
-        return(space)
+        return space
 
 
 def _check_input(X, y, pos_label, method, verbose=4):

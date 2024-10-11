@@ -1,3 +1,4 @@
+#%%
 # https://scikit-learn.org/stable/modules/cross_validation.html
 # https://towardsdatascience.com/fine-tuning-xgboost-in-python-like-a-boss-b4543ed8b1e
 # https://scikit-learn.org/stable/auto_examples/model_selection/plot_cv_indices.html#sphx-glr-auto-examples-model-selection-plot-cv-indices-py
@@ -134,7 +135,7 @@ from sklearn.metrics import mean_absolute_error
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-# X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=.1, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=.1, random_state=42)
 
 model = LinearRegression().fit(hgb_xgb.X_train, hgb_xgb.y_train)
 model.score(hgb_xgb.X_train, hgb_xgb.y_train)
@@ -296,9 +297,6 @@ hgb.plot_cv()
 
 # use the predictor
 y_pred, y_proba = hgb.predict(X)
-
-
-
 
 
 # %% ENSEMBLE CLASSIFIER
