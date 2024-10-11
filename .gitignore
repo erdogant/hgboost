@@ -11,6 +11,7 @@ old/
 *.so
 
 hgboost/data/
+.pypirc
 
 # Distribution / packaging
 .pylint.*
