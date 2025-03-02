@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hgboost"
+dynamic = ["version"]
+authors = [{ name = "Erdogan Taskesen", email = "erdogant@gmail.com" },]
+description = "hgboost is a python package for hyperparameter optimization for xgboost, catboost and lightboost for both classification and regression tasks."
+readme = "README.md"
+requires-python = ">=3"
+license = { file = "LICENSE" }
+keywords = ["Python", "machine-learning", "catboost", "xgboost", "gridsearch", "lightboost", "crossvalidation", "hyperparameter optimalization"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    ]
+dependencies = [
+    'datazets',
+    'pypickle',
+    'matplotlib',
+    'numpy',
+    'pandas',
+    'tqdm',
+    'hyperopt',
+    'lightgbm>=4.1.0',
+    'catboost',
+    'xgboost',
+    'classeval',
+    'treeplot',
+    'df2onehot',
+    'colourmap',
+    'seaborn',
+    ]
+
+[project.urls]
+Homepage = "https://erdogant.github.io/hgboost"
+Download = "https://github.com/erdogant/hgboost/archive/{version}.tar.gz"
+
+[tool.setuptools]
+packages = ["hgboost"]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = { attr = "hgboost.__version__" }
