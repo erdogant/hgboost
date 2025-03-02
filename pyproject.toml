@@ -25,7 +25,7 @@ dependencies = [
     'tqdm',
     'hyperopt',
     'lightgbm>=4.1.0',
-    'catboost',
+    # 'catboost',
     'xgboost',
     'classeval',
     'treeplot',
