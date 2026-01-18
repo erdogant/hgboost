@@ -1144,12 +1144,21 @@ class hgboost:
             # fig, ax = plt.subplots(figsize=figsize)
             y_pred = self.predict(self.X_val, model=self.model)[0]
             df = pd.DataFrame(np.c_[self.y_val, y_pred], columns=['y', 'y_pred'])
+            eval_score = None
+
+            if self.eval_metric=='rmse':
+                eval_score = np.sqrt(mean_squared_error(self.y_val, y_pred))
+            if self.eval_metric=='mse':
+                eval_score = mean_squared_error(self.y_val, y_pred)
 
             fig, ax = plt.subplots(figsize=figsize)
             sns.regplot(x='y', y='y_pred', data=df, ax=ax, color='k', label='Validation set')
             ax.legend()
             ax.grid(True)
-            ax.set_title(title)
+            if eval_score is not None:
+                ax.set_title(f'{title}\nRMSE: {eval_score:.4f}')
+            else:
+                ax.set_title(f'{title}')
             ax.set_xlabel('True value')
             ax.set_ylabel('Predicted value')
 
