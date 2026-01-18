@@ -60,6 +60,7 @@ X = X.loc[I, :]
 y = y[I]
 
 results  = hgb.xgboost_reg(X, y, eval_metric='mae')      # XGBoost
+results  = hgb.xgboost_reg(X, y, eval_metric='rmse')      # XGBoost
 
 # %% HYPEROPTIMIZED REGRESSION-XGBOOST
 import numpy as np

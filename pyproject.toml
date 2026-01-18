@@ -9,13 +9,34 @@ authors = [{ name = "Erdogan Taskesen", email = "erdogant@gmail.com" },]
 description = "hgboost is a python package for hyperparameter optimization for xgboost, catboost and lightboost for both classification and regression tasks."
 readme = "README.md"
 requires-python = ">=3"
-license = { file = "LICENSE" }
-keywords = ["Python", "machine-learning", "catboost", "xgboost", "gridsearch", "lightboost", "crossvalidation", "hyperparameter optimalization"]
+license = "MIT"
+keywords = [
+    "Python",
+    "machine learning",
+    "hyperparameter optimization",
+    "catboost",
+    "xgboost",
+    "lightgbm",
+    "grid search",
+    "cross-validation",
+    "classification",
+    "regression",
+    "boosting",
+    "automated machine learning",
+    "model selection",
+    "ensemble methods"
+]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    ]
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Operating System :: Unix",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
 dependencies = [
     'datazets',
     'pypickle',

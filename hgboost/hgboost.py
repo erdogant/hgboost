@@ -624,6 +624,7 @@ class hgboost:
         if self.verbose>=3: print('[hgboost] >*********************************************************************************')
         if self.verbose>=3: print('[hgboost] >Searching across hyperparameter space for best performing parameters using maximum nr. evaluations: %.0d' %(self.max_eval))
 
+
         # Hyperoptimization to find best performing model. Set the trials which is the object where all the HPopt results are stored.
         trials=Trials()
         best_params = fmin(fn=fn, space=self.space, algo=self.algo, max_evals=self.max_eval, trials=trials, show_progressbar=disable)
@@ -941,9 +942,9 @@ class hgboost:
             # Regression
             # loss = space['loss_func'](y_test, y_pred)
             if self.eval_metric=='mse':
-                loss = mean_squared_error(y_test, y_pred, squared=True)
+                loss = np.sqrt(mean_squared_error(y_test, y_pred))
             elif self.eval_metric=='rmse':
-                loss = mean_squared_error(y_test, y_pred, squared=False)
+                loss = mean_squared_error(y_test, y_pred)
             elif self.eval_metric=='mae':
                 loss = mean_absolute_error(y_test, y_pred)
             else:
@@ -1715,7 +1716,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
             'subsample': hp.uniform('subsample', 0.5, 1),
             'n_estimators': hp.choice('n_estimators', range(20, 205, 5)),
             'tree_method': tree_method,
-            'gpu_id': 0,
+            # 'gpu_id': 0,
             'predictor': predictor,
             'early_stopping_rounds': early_stopping_rounds,
         }
@@ -1856,7 +1857,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
             'booster': 'gbtree',
             'colsample_bytree': hp.quniform('colsample_bytree', 0.1, 1.0, 0.01),
             'tree_method': tree_method,
-            'gpu_id': 0,
+            # 'gpu_id': 0,
             'predictor': predictor,
             'early_stopping_rounds': early_stopping_rounds,
         }
