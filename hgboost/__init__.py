@@ -7,7 +7,7 @@ from hgboost.hgboost import hgboost
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'
-__version__ = '1.1.6'
+__version__ = '1.1.7'
 
 # module level doc-string
 __doc__ = """
