@@ -1,23 +1,22 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Splitting the data set &mdash; hgboost hgboost documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0179649" />
+
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5bb9dcc1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -30,14 +29,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> hgboost
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            hgboost
           </a>
-              <div class="version">
-                1.1.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -107,8 +107,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Splitting the data set</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Splitting the data set</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/Cross validation and hyperparameter tuning.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -119,10 +119,10 @@
            <div itemprop="articleBody">
              
   <section id="splitting-the-data-set">
-<h1>Splitting the data set<a class="headerlink" href="#splitting-the-data-set" title="Permalink to this heading"></a></h1>
+<h1>Splitting the data set<a class="headerlink" href="#splitting-the-data-set" title="Link to this heading"></a></h1>
 <p>For supervised machine learning tasks it is very important to split the data into separate parts to avoid overfitting when learning the model. Overfitting is when the model fits (or learns) on the data too well and then fails to reliably predict on (new) unseen data. The most common manner is to split data set is into a trainset, and an independent validationset. However, when we also perform hyperparameter tuning, such as in boosting algorithms, it also requires a testset. The model can now see the data, learn from the data, and finally we can describe the stability of the model. Thus for boosting algorithms we devide the data into three parts, namely: trainset, testset and validationset. Each set has a different role, and is explained below.</p>
 <section id="train-test-and-validationset">
-<h2>Train, test and validationset<a class="headerlink" href="#train-test-and-validationset" title="Permalink to this heading"></a></h2>
+<h2>Train, test and validationset<a class="headerlink" href="#train-test-and-validationset" title="Link to this heading"></a></h2>
 <p>The model <em>sees</em> and <em>learns</em> from the data. To ensure stability in the model and results, we devide the data set into three parts with different sizes, namely: train-set, test-set and validation-set.
 Each set has a different role, and is explained below.</p>
 <dl class="simple">
@@ -137,7 +137,7 @@ Each set has a different role, and is explained below.</p>
 The use of a validation set is optional but it is strongly encouraged to use it. When setting <code class="docutils literal notranslate"><span class="pre">val_size=None</span></code> in <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost" title="hgboost.hgboost.hgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code></a>, there are more samples included in the train/testset for parameter hyperoptimization. Note that <code class="docutils literal notranslate"><span class="pre">val_size</span></code> can also be set to very low percentages but keep in mind that it then also may lead in a poorly overtrained model. The use of the testset should always be larger then 0 <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost" title="hgboost.hgboost.hgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code></a>.</p>
 </section>
 <section id="cross-validation-and-hyperparameter-tuning">
-<h2>Cross validation and hyperparameter tuning<a class="headerlink" href="#cross-validation-and-hyperparameter-tuning" title="Permalink to this heading"></a></h2>
+<h2>Cross validation and hyperparameter tuning<a class="headerlink" href="#cross-validation-and-hyperparameter-tuning" title="Link to this heading"></a></h2>
 <p><em>Cross validation</em> and <em>hyperparameter tuning</em> are two tasks that we do together in the data pipeline.
 <em>Cross validation</em> is the process of training learners using one set of data and testing it using a different set. We set a default of <strong>5-fold crossvalidation</strong> to evalute our results. <em>Parameter tuning</em> is the process of selecting the values for a model’s parameters that maximize the accuracy of the model.</p>
 <figure class="align-default" id="grid-search-cross-validation">
@@ -145,7 +145,7 @@ The use of a validation set is optional but it is strongly encouraged to use it.
 </figure>
 </section>
 <section id="hyperparameter-optimization">
-<h2>Hyperparameter optimization<a class="headerlink" href="#hyperparameter-optimization" title="Permalink to this heading"></a></h2>
+<h2>Hyperparameter optimization<a class="headerlink" href="#hyperparameter-optimization" title="Link to this heading"></a></h2>
 <p>In <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> we incorporated hyperparameter optimization using a <code class="docutils literal notranslate"><span class="pre">hyperopt</span></code>. The goal is to evaluate the value of the combination of parameters in the learning process.</p>
 <p>We evaluate thousands of parameter combinations in the learning process. To ensure stability, the k-fold crossvalidation comes into play. To keep the computation costs low, we can decide to only cross-validate the top k detected models using the parameter <code class="docutils literal notranslate"><span class="pre">top_cv_evals=10</span></code> in <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost" title="hgboost.hgboost.hgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost()</span></code></a>. By default, we enable parallel processing. Each fit is scored based on the desired evaluation metric and the parameters of the best fit are used.</p>
 <p>The specific list of parameter used for tuning are lised in section <strong>classification</strong> and <strong>regression</strong>.</p>

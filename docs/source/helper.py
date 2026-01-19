@@ -18,7 +18,7 @@ def add_includes_to_rst_files(top=True, bottom=True):
     skipfiles = ['sponsor.rst']
     for file_path in glob("*.rst"):
         if not np.isin(file_path, skipfiles):
-            with open(file_path, "r+") as file:
+            with open(file_path, "r+", encoding="utf8") as file:
                 contents = file.read()
                 if top and ".. include:: add_top.add" not in contents:
                     file.seek(0)
@@ -70,7 +70,7 @@ def embed_in_rst(currpath, directory, ext, title, file_rst):
         print('[%s] embedding in RST from directory: [%s]' %(ext, directory))
 
         # Open file
-        filehandle = open(file_rst, 'w')
+        filehandle = open(file_rst, 'w', encoding="utf8")
         filehandle.write(".. _code_directive:\n\n" + title + "\n#######################\n\n")
 
         # 3. simple concat op

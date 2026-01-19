@@ -1,23 +1,22 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Regression &mdash; hgboost hgboost documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0179649" />
+
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5bb9dcc1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -30,14 +29,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> hgboost
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            hgboost
           </a>
-              <div class="version">
-                1.1.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -107,8 +107,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Regression</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Regression</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/Regression.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -119,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="regression">
-<h1>Regression<a class="headerlink" href="#regression" title="Permalink to this heading"></a></h1>
+<h1>Regression<a class="headerlink" href="#regression" title="Link to this heading"></a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> method consists 3 <strong>regression</strong> methods: <code class="docutils literal notranslate"><span class="pre">xgboost_reg</span></code>, <code class="docutils literal notranslate"><span class="pre">catboost_reg</span></code>, <code class="docutils literal notranslate"><span class="pre">lightboost_reg</span></code>.
 Each algorithm provides hyperparameters that must very likely be tuned for a specific dataset.
 Although there are many hyperparameters to tune, some are more important the others. The parameters used in <code class="docutils literal notranslate"><span class="pre">hgboost</span></code> are lised below:</p>
@@ -135,7 +135,7 @@ Although there are many hyperparameters to tune, some are more important the oth
 </dd>
 </dl>
 <section id="xgboost">
-<h2>xgboost<a class="headerlink" href="#xgboost" title="Permalink to this heading"></a></h2>
+<h2>xgboost<a class="headerlink" href="#xgboost" title="Link to this heading"></a></h2>
 <p>The specific list of parameters used for xgboost: <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.xgboost_reg" title="hgboost.hgboost.hgboost.xgboost_reg"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost_reg()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Parameters:</span>
 <span class="s1">&#39;learning_rate&#39;</span>     <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">quniform</span><span class="p">(</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.31</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)</span>
@@ -150,7 +150,7 @@ Although there are many hyperparameters to tune, some are more important the oth
 </div>
 </section>
 <section id="catboost">
-<h2>catboost<a class="headerlink" href="#catboost" title="Permalink to this heading"></a></h2>
+<h2>catboost<a class="headerlink" href="#catboost" title="Link to this heading"></a></h2>
 <p>The specific list of parameters used for catboost: <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.catboost_reg" title="hgboost.hgboost.hgboost.catboost_reg"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.catboost_reg()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;learning_rate&#39;</span>     <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">quniform</span><span class="p">(</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.31</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">),</span>
 <span class="s1">&#39;max_depth&#39;</span>         <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;max_depth&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)),</span>
@@ -161,7 +161,7 @@ Although there are many hyperparameters to tune, some are more important the oth
 </div>
 </section>
 <section id="lightboost">
-<h2>lightboost<a class="headerlink" href="#lightboost" title="Permalink to this heading"></a></h2>
+<h2>lightboost<a class="headerlink" href="#lightboost" title="Link to this heading"></a></h2>
 <p>The specific list of parameters used for lightboost: <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.lightboost_reg" title="hgboost.hgboost.hgboost.lightboost_reg"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.lightboost_reg()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Parameters:</span>
 <span class="s1">&#39;learning_rate&#39;</span>     <span class="p">:</span> <span class="n">hp</span><span class="o">.</span><span class="n">quniform</span><span class="p">(</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.31</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">),</span>

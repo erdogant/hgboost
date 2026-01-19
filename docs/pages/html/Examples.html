@@ -1,23 +1,22 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Classification Examples &mdash; hgboost hgboost documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0179649" />
+
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5bb9dcc1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -30,14 +29,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> hgboost
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            hgboost
           </a>
-              <div class="version">
-                1.1.3
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -126,8 +126,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Classification Examples</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Classification Examples</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/Examples.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -138,14 +138,14 @@
            <div itemprop="articleBody">
              
   <section id="classification-examples">
-<h1>Classification Examples<a class="headerlink" href="#classification-examples" title="Permalink to this heading"></a></h1>
+<h1>Classification Examples<a class="headerlink" href="#classification-examples" title="Link to this heading"></a></h1>
 <p>Some of the described examples can also be found in the Colab notebooks:
 See <a class="reference external" href="https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb">classification Colab notebook</a>.</p>
 <section id="xgboost-two-class">
-<h2>xgboost two-class<a class="headerlink" href="#xgboost-two-class" title="Permalink to this heading"></a></h2>
+<h2>xgboost two-class<a class="headerlink" href="#xgboost-two-class" title="Link to this heading"></a></h2>
 <p>Function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.xgboost" title="hgboost.hgboost.hgboost.xgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Initialize</span>
 <span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -185,10 +185,10 @@ See <a class="reference external" href="https://colab.research.google.com/github
 </div>
 </section>
 <section id="catboost">
-<h2>catboost<a class="headerlink" href="#catboost" title="Permalink to this heading"></a></h2>
+<h2>catboost<a class="headerlink" href="#catboost" title="Link to this heading"></a></h2>
 <p>Function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.catboost" title="hgboost.hgboost.hgboost.catboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.catboost()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Initialize</span>
 <span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -228,10 +228,10 @@ See <a class="reference external" href="https://colab.research.google.com/github
 </div>
 </section>
 <section id="lightboost">
-<h2>lightboost<a class="headerlink" href="#lightboost" title="Permalink to this heading"></a></h2>
+<h2>lightboost<a class="headerlink" href="#lightboost" title="Link to this heading"></a></h2>
 <p>Function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.lightboost" title="hgboost.hgboost.hgboost.lightboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.lightboost()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Initialize</span>
 <span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -272,12 +272,12 @@ See <a class="reference external" href="https://colab.research.google.com/github
 </section>
 </section>
 <section id="multi-classification-examples">
-<h1>Multi-classification Examples<a class="headerlink" href="#multi-classification-examples" title="Permalink to this heading"></a></h1>
+<h1>Multi-classification Examples<a class="headerlink" href="#multi-classification-examples" title="Link to this heading"></a></h1>
 <section id="xgboost-multi-class">
-<h2>xgboost multi-class<a class="headerlink" href="#xgboost-multi-class" title="Permalink to this heading"></a></h2>
+<h2>xgboost multi-class<a class="headerlink" href="#xgboost-multi-class" title="Link to this heading"></a></h2>
 <p>Function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.xgboost" title="hgboost.hgboost.hgboost.xgboost"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Initialize</span>
 <span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -319,14 +319,14 @@ See <a class="reference external" href="https://colab.research.google.com/github
 </section>
 </section>
 <section id="regression-examples">
-<h1>Regression Examples<a class="headerlink" href="#regression-examples" title="Permalink to this heading"></a></h1>
+<h1>Regression Examples<a class="headerlink" href="#regression-examples" title="Link to this heading"></a></h1>
 <p>Some of the described examples can also be found in the notebooks:
 See <a class="reference external" href="https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb">regression Colab notebook</a>.</p>
 <section id="xgboost-reg">
-<h2>xgboost_reg<a class="headerlink" href="#xgboost-reg" title="Permalink to this heading"></a></h2>
+<h2>xgboost_reg<a class="headerlink" href="#xgboost-reg" title="Link to this heading"></a></h2>
 <p>Function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.xgboost_reg" title="hgboost.hgboost.hgboost.xgboost_reg"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost_reg()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Initialize</span>
 <span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -368,10 +368,10 @@ See <a class="reference external" href="https://colab.research.google.com/github
 </div>
 </section>
 <section id="lightboost-reg">
-<h2>lightboost_reg<a class="headerlink" href="#lightboost-reg" title="Permalink to this heading"></a></h2>
+<h2>lightboost_reg<a class="headerlink" href="#lightboost-reg" title="Link to this heading"></a></h2>
 <p>Function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.lightboost_reg" title="hgboost.hgboost.hgboost.lightboost_reg"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.lightboost_reg()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Initialize</span>
 <span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -413,10 +413,10 @@ See <a class="reference external" href="https://colab.research.google.com/github
 </div>
 </section>
 <section id="catboost-reg">
-<h2>catboost_reg<a class="headerlink" href="#catboost-reg" title="Permalink to this heading"></a></h2>
+<h2>catboost_reg<a class="headerlink" href="#catboost-reg" title="Link to this heading"></a></h2>
 <p>Function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.catboost_reg" title="hgboost.hgboost.hgboost.catboost_reg"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.catboost_reg()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Initialize</span>
 <span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -459,16 +459,16 @@ See <a class="reference external" href="https://colab.research.google.com/github
 </section>
 </section>
 <section id="ensemble-examples">
-<h1>Ensemble Examples<a class="headerlink" href="#ensemble-examples" title="Permalink to this heading"></a></h1>
+<h1>Ensemble Examples<a class="headerlink" href="#ensemble-examples" title="Link to this heading"></a></h1>
 <p>An ensemble is that each of the fitted models, such as xgboost, lightboost and catboost is even further combined into one function.
 The results are usually superior compared to single models. However, the model complexity increases and training time too.
 An ensemble can be created for both classification and the regression models.
 The function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.ensemble" title="hgboost.hgboost.hgboost.ensemble"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.ensemble()</span></code></a></p>
 <section id="ensemble-classification">
-<h2>Ensemble Classification<a class="headerlink" href="#ensemble-classification" title="Permalink to this heading"></a></h2>
+<h2>Ensemble Classification<a class="headerlink" href="#ensemble-classification" title="Link to this heading"></a></h2>
 <p>It can be seen from the results that the ensemble classifier performs superior compared to all indiviudal models.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Initialize</span>
 <span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -499,10 +499,10 @@ The function documentation can be found here <a class="reference internal" href=
 </div>
 </section>
 <section id="ensemble-regression">
-<h2>Ensemble Regression<a class="headerlink" href="#ensemble-regression" title="Permalink to this heading"></a></h2>
+<h2>Ensemble Regression<a class="headerlink" href="#ensemble-regression" title="Link to this heading"></a></h2>
 <p>It can be seen from the results that the ensemble classifier performs superior compared to all indiviudal models.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">from</span> <span class="nn">hgboost</span> <span class="kn">import</span> <span class="n">hgboost</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Initialize</span>
 <span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -536,10 +536,10 @@ The function documentation can be found here <a class="reference internal" href=
 </section>
 </section>
 <section id="plots">
-<h1>Plots<a class="headerlink" href="#plots" title="Permalink to this heading"></a></h1>
+<h1>Plots<a class="headerlink" href="#plots" title="Link to this heading"></a></h1>
 <p>For each model, the following 5 plots can be created:</p>
 <section id="plot-params">
-<h2>plot_params<a class="headerlink" href="#plot-params" title="Permalink to this heading"></a></h2>
+<h2>plot_params<a class="headerlink" href="#plot-params" title="Link to this heading"></a></h2>
 <p>Figure 1 depicts the density of the specific parameter values. As an example, the <strong>gamma</strong> parameter shows that most iterations converges towards value <strong>0</strong>.
 This may indicate that this parameter with this value has an important role in the in computing the optimal loss.
 Figure 2 depicts the iterations performed for hyper-optimization per parameter. In case of <strong>colsample_bytree</strong> we see a convergence towards the range [0.5-0.7].</p>
@@ -551,10 +551,7 @@ In addition, we also plot the top n performing models. The top performing models
 </pre></div>
 </div>
 <table class="docutils align-center" id="id1">
-<caption><span class="caption-text">Parameter plot</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 100%" />
-</colgroup>
+<caption><span class="caption-text">Parameter plot</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figS1" src="_images/plot_params_clf_1.png" /></p></td>
 </tr>
@@ -564,7 +561,7 @@ In addition, we also plot the top n performing models. The top performing models
 </table>
 </section>
 <section id="plot-summary">
-<h2>plot summary<a class="headerlink" href="#plot-summary" title="Permalink to this heading"></a></h2>
+<h2>plot summary<a class="headerlink" href="#plot-summary" title="Link to this heading"></a></h2>
 <p>This figure exists out of two subfigures. The top figure depicts all evaluated models with the loss score.
 The <strong>best</strong> performing models with and without the <strong>k-fold crossvalidation</strong> are depicted together with the top n performing models.
 The bottom figure depicts the train and test-error.
@@ -574,10 +571,7 @@ Function documentation can be found here <a class="reference internal" href="hgb
 </pre></div>
 </div>
 <table class="docutils align-center" id="id2">
-<caption><span class="caption-text">Summary plot of the results.</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 100%" />
-</colgroup>
+<caption><span class="caption-text">Summary plot of the results.</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figS3" src="_images/plot_clf.png" /></p></td>
 </tr>
@@ -585,17 +579,14 @@ Function documentation can be found here <a class="reference internal" href="hgb
 </table>
 </section>
 <section id="treeplot">
-<h2>treeplot<a class="headerlink" href="#treeplot" title="Permalink to this heading"></a></h2>
+<h2>treeplot<a class="headerlink" href="#treeplot" title="Link to this heading"></a></h2>
 <p>Function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.treeplot" title="hgboost.hgboost.hgboost.treeplot"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.treeplot()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the best performing tree</span>
 <span class="n">hgb</span><span class="o">.</span><span class="n">treeplot</span><span class="p">()</span>
 </pre></div>
 </div>
 <table class="docutils align-center" id="id3">
-<caption><span class="caption-text">Best performing tree.</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 100%" />
-</colgroup>
+<caption><span class="caption-text">Best performing tree.</span><a class="headerlink" href="#id3" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figS4" src="_images/treeplot_clf_1.png" /></p></td>
 </tr>
@@ -605,28 +596,21 @@ Function documentation can be found here <a class="reference internal" href="hgb
 </table>
 </section>
 <section id="plot-validation">
-<h2>plot_validation<a class="headerlink" href="#plot-validation" title="Permalink to this heading"></a></h2>
+<h2>plot_validation<a class="headerlink" href="#plot-validation" title="Link to this heading"></a></h2>
 <p>Function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.plot_validation" title="hgboost.hgboost.hgboost.plot_validation"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.plot_validation()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot results on the validation set</span>
 <span class="n">hgb</span><span class="o">.</span><span class="n">plot_validation</span><span class="p">()</span>
 </pre></div>
 </div>
 <table class="docutils align-center" id="id4">
-<caption><span class="caption-text">Results on the validation set.</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 100%" />
-</colgroup>
+<caption><span class="caption-text">Results on the validation set.</span><a class="headerlink" href="#id4" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figS6" src="_images/plot_validation_clf_1.png" /></p></td>
 </tr>
 </tbody>
 </table>
 <table class="docutils align-center" id="id5">
-<caption><span class="caption-text">Results on the validation set.</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
+<caption><span class="caption-text">Results on the validation set.</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figS7" src="_images/plot_validation_clf_2.png" /></p></td>
 <td><p><img alt="figS8" src="_images/plot_validation_clf_3.png" /></p></td>
@@ -635,17 +619,14 @@ Function documentation can be found here <a class="reference internal" href="hgb
 </table>
 </section>
 <section id="plot-cv">
-<h2>plot_cv<a class="headerlink" href="#plot-cv" title="Permalink to this heading"></a></h2>
+<h2>plot_cv<a class="headerlink" href="#plot-cv" title="Link to this heading"></a></h2>
 <p>Function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.plot_cv" title="hgboost.hgboost.hgboost.plot_cv"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.plot_cv()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot results on the cross-validation</span>
 <span class="n">hgb</span><span class="o">.</span><span class="n">plot_cv</span><span class="p">()</span>
 </pre></div>
 </div>
 <table class="docutils align-center" id="id6">
-<caption><span class="caption-text">results on the cross-validation.</span><a class="headerlink" href="#id6" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 100%" />
-</colgroup>
+<caption><span class="caption-text">results on the cross-validation.</span><a class="headerlink" href="#id6" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figS9" src="_images/plot_cv_clf.png" /></p></td>
 </tr>
