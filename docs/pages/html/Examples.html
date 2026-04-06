@@ -148,14 +148,14 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Initialize</span>
-<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
 
 <span class="c1"># Load example data set</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">import_example</span><span class="p">()</span>
 <span class="c1"># Prepare data for classification</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Survived&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Survived&#39;</span><span class="p">]</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
 <span class="c1"># Fit best model with desired evaluation metric:</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">xgboost</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">eval_metric</span><span class="o">=</span><span class="s1">&#39;f1&#39;</span><span class="p">)</span>
@@ -164,7 +164,7 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <span class="c1"># [hgboost] &gt;Number of variables in search space is [10], loss function: [f1].</span>
 <span class="c1"># [hgboost] &gt;method: xgb_clf</span>
 <span class="c1"># [hgboost] &gt;eval_metric: f1</span>
-<span class="c1"># [hgboost] &gt;greater_is_better: True</span>
+<span class="c1"># [hgboost] &gt;larger_is_better: True</span>
 <span class="c1"># [hgboost] &gt;Total dataset: (891, 204)</span>
 <span class="c1"># [hgboost] &gt;Hyperparameter optimization..</span>
 
@@ -191,14 +191,14 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Initialize</span>
-<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
 
 <span class="c1"># Load example data set</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">import_example</span><span class="p">()</span>
 <span class="c1"># Prepare data for classification</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Survived&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Survived&#39;</span><span class="p">]</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
 <span class="c1"># Fit best model with desired evaluation metric:</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">catboost</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">eval_metric</span><span class="o">=</span><span class="s1">&#39;auc&#39;</span><span class="p">)</span>
@@ -207,7 +207,7 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <span class="c1"># [hgboost] &gt;Number of variables in search space is [10], loss function: [auc].</span>
 <span class="c1"># [hgboost] &gt;method: ctb_clf</span>
 <span class="c1"># [hgboost] &gt;eval_metric: auc</span>
-<span class="c1"># [hgboost] &gt;greater_is_better: True</span>
+<span class="c1"># [hgboost] &gt;larger_is_better: True</span>
 <span class="c1"># [hgboost] &gt;Total dataset: (891, 204)</span>
 <span class="c1"># [hgboost] &gt;Hyperparameter optimization..</span>
 
@@ -234,14 +234,14 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Initialize</span>
-<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
 
 <span class="c1"># Load example data set</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">import_example</span><span class="p">()</span>
 <span class="c1"># Prepare data for classification</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Survived&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Survived&#39;</span><span class="p">]</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
 <span class="c1"># Fit best model with desired evaluation metric:</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">lightboost</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">eval_metric</span><span class="o">=</span><span class="s1">&#39;auc&#39;</span><span class="p">)</span>
@@ -250,7 +250,7 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <span class="c1"># [hgboost] &gt;Number of variables in search space is [10], loss function: [auc].</span>
 <span class="c1"># [hgboost] &gt;method: lgb_clf</span>
 <span class="c1"># [hgboost] &gt;eval_metric: auc</span>
-<span class="c1"># [hgboost] &gt;greater_is_better: True</span>
+<span class="c1"># [hgboost] &gt;larger_is_better: True</span>
 <span class="c1"># [hgboost] &gt;Total dataset: (891, 204)</span>
 <span class="c1"># [hgboost] &gt;Hyperparameter optimization..</span>
 
@@ -280,15 +280,15 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Initialize</span>
-<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
 
 <span class="c1"># Load example data set</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">import_example</span><span class="p">()</span>
 <span class="c1"># Prepare data for classification</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Parch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Parch&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">y</span><span class="p">[</span><span class="n">y</span><span class="o">&gt;=</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="mi">3</span>
 <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Parch&#39;</span><span class="p">]</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
 <span class="c1"># Fit best model with desired evaluation metric:</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">xgboost</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;xgb_clf_multi&#39;</span><span class="p">,</span> <span class="n">eval_metric</span><span class="o">=</span><span class="s1">&#39;kappa&#39;</span><span class="p">)</span>
@@ -297,7 +297,7 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <span class="c1"># [hgboost] &gt;Number of variables in search space is [10], loss function: [kappa]</span>
 <span class="c1"># [hgboost] &gt;method: xgb_clf_multi</span>
 <span class="c1"># [hgboost] &gt;eval_metric: kappa</span>
-<span class="c1"># [hgboost] &gt;greater_is_better: True</span>
+<span class="c1"># [hgboost] &gt;larger_is_better: True</span>
 <span class="c1"># [hgboost] &gt;Total dataset: (891, 204)</span>
 <span class="c1"># [hgboost] &gt;Hyperparameter optimization..</span>
 
@@ -327,6 +327,7 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <p>Function documentation can be found here <a class="reference internal" href="hgboost.hgboost.html#hgboost.hgboost.hgboost.xgboost_reg" title="hgboost.hgboost.hgboost.xgboost_reg"><code class="xref py py-func docutils literal notranslate"><span class="pre">hgboost.hgboost.hgboost.xgboost_reg()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># Initialize</span>
 <span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -336,7 +337,7 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span>
 <span class="n">I</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">I</span><span class="p">,:]</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">I</span><span class="p">]</span>
 
@@ -347,7 +348,7 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <span class="c1"># [hgboost] &gt;Number of variables in search space is [10], loss function: [rmse].</span>
 <span class="c1"># [hgboost] &gt;method: xgb_reg</span>
 <span class="c1"># [hgboost] &gt;eval_metric: rmse</span>
-<span class="c1"># [hgboost] &gt;greater_is_better: True</span>
+<span class="c1"># [hgboost] &gt;larger_is_better: True</span>
 <span class="c1"># [hgboost] &gt;Total dataset: (891, 204)</span>
 <span class="c1"># [hgboost] &gt;Hyperparameter optimization..</span>
 
@@ -381,7 +382,7 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span>
 <span class="n">I</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">I</span><span class="p">,:]</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">I</span><span class="p">]</span>
 
@@ -392,7 +393,7 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <span class="c1"># [hgboost] &gt;Number of variables in search space is [10], loss function: [rmse].</span>
 <span class="c1"># [hgboost] &gt;method: lgb_reg</span>
 <span class="c1"># [hgboost] &gt;eval_metric: rmse</span>
-<span class="c1"># [hgboost] &gt;greater_is_better: True</span>
+<span class="c1"># [hgboost] &gt;larger_is_better: True</span>
 <span class="c1"># [hgboost] &gt;Total dataset: (891, 204)</span>
 <span class="c1"># [hgboost] &gt;Hyperparameter optimization..</span>
 
@@ -426,7 +427,7 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span>
 <span class="n">I</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">I</span><span class="p">,:]</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">I</span><span class="p">]</span>
 
@@ -437,7 +438,7 @@ See <a class="reference external" href="https://colab.research.google.com/github
 <span class="c1"># [hgboost] &gt;Number of variables in search space is [10], loss function: [rmse].</span>
 <span class="c1"># [hgboost] &gt;method: ctb_reg</span>
 <span class="c1"># [hgboost] &gt;eval_metric: rmse</span>
-<span class="c1"># [hgboost] &gt;greater_is_better: True</span>
+<span class="c1"># [hgboost] &gt;larger_is_better: True</span>
 <span class="c1"># [hgboost] &gt;Total dataset: (891, 204)</span>
 <span class="c1"># [hgboost] &gt;Hyperparameter optimization..</span>
 
@@ -471,13 +472,13 @@ The function documentation can be found here <a class="reference internal" href=
 <span class="kn">from</span><span class="w"> </span><span class="nn">hgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">hgboost</span>
 
 <span class="c1"># Initialize</span>
-<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">hgb</span> <span class="o">=</span> <span class="n">hgboost</span><span class="p">(</span><span class="n">max_eval</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top_cv_evals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
 
 <span class="c1"># Import data</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">import_example</span><span class="p">()</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Survived&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Survived&#39;</span><span class="p">]</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
 <span class="c1"># Fit ensemble model using the three boosting methods. By default these are readily set.</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">ensemble</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -512,7 +513,7 @@ The function documentation can be found here <a class="reference internal" href=
 <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 <span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span>
 <span class="n">I</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">hgb</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">I</span><span class="p">,:]</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">I</span><span class="p">]</span>
 

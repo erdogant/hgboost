@@ -5,10 +5,8 @@ hgboost's documentation!
 
 
 .. tip::
-	`Medium Blog 1: A Guide to Find the Best Boosting Model using Bayesian Hyperparameter Tuning but without Overfitting. <https://towardsdatascience.com/a-guide-to-find-the-best-boosting-model-using-bayesian-hyperparameter-tuning-but-without-c98b6a1ecac8>`_
+	`Medium: A Guide to Find the Best Boosting Model using Bayesian Hyperparameter Tuning but without Overfitting. <https://erdogant.medium.com>`_
 
-.. tip::
-	`Medium Blog 2: A Hands-on Guide To Create Explainable Gradient Boosting Classification models using Bayesian Hyperparameter Optimization. <https://erdogant.medium.com/hands-on-guide-for-hyperparameter-tuning-with-bayesian-optimization-for-classification-models-2002224bfa3d>`_
 
 
 .. _schematic_overview:

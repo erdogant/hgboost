@@ -164,7 +164,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
     # Load example data set    
     df = hgb.import_example()
     # Prepare data for classification
-    y = df['Parch'].values
+    y = df['Parch'].values.copy()
     y[y>=3]=3
     del df['Parch']
     X = hgb.preprocessing(df)
@@ -213,6 +213,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost_
 
     # Import library
     from hgboost import hgboost
+    import numpy as np
     
     # Initialize
     hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None)
@@ -222,7 +223,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost_
     y = df['Age'].values
     del df['Age']
     I = ~np.isnan(y)
-    X = hgb.preprocessing(df, verbose=0)
+    X = hgb.preprocessing(df)
     X = X.loc[I,:]
     y = y[I]
 
@@ -270,7 +271,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.lightboo
     y = df['Age'].values
     del df['Age']
     I = ~np.isnan(y)
-    X = hgb.preprocessing(df, verbose=0)
+    X = hgb.preprocessing(df)
     X = X.loc[I,:]
     y = y[I]
 
@@ -318,7 +319,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.catboost
     y = df['Age'].values
     del df['Age']
     I = ~np.isnan(y)
-    X = hgb.preprocessing(df, verbose=0)
+    X = hgb.preprocessing(df)
     X = X.loc[I,:]
     y = y[I]
 

@@ -1,3 +1,422 @@
+# %%
+
+
+
+
+# %% CLASSIFICATION TWO-CLASS #####
+
+# Import
+from hgboost import hgboost
+
+# Initialize
+hgb = hgboost(max_eval=50)
+
+# Initialize library.
+# hgb = hgboost(
+#     max_eval=250,      # Search space is based  on the number of evaluations.
+#     threshold=0.5,     # Classification threshold. In case of two-class model this is 0.5.
+#     cv=5,              # k-folds cross-validation.
+#     test_size=0.2,     # Percentage split for the testset.
+#     val_size=0.2,      # Percentage split for the validationset.
+#     top_cv_evals=10,   # Number of top best performing models that is evaluated.
+#     is_unbalanced=True, # Control the balance of positive and negative weights, useful for unbalanced classes.
+#     random_state=None, # Fix the random state to create reproducible results.
+#     n_jobs=-1,         # The number of CPU jobs to run in parallel. -1 means using all processors.
+#     gpu=False,         # Compute using GPU in case of True.
+#     verbose='info',    # Print progress to screen.
+# )
+
+
+# Example data
+df = hgb.import_example(data='titanic')
+# Cleaning
+y = df['Survived'].values
+df = df.drop(['Survived', 'PassengerId', 'Name'], axis=1)
+
+# Preprocessing to one-hot
+X = hgb.preprocessing(df)
+
+# Train a model with XGBoost
+results = hgb.xgboost(X, y, pos_label=1, eval_metric='auc')
+
+# Train a model with CatBoost
+# results = hgb.catboost(X, y, pos_label=1, eval_metric='auc')
+# Train a model with LightBoost
+# results = hgb.lightboost(X, y, pos_label=1, eval_metric='auc')
+# Results are stored in the object itself.
+
+# Plot the hyperparameter space
+hgb.plot_params()
+
+# Plot the summary of all evaluated models
+hgb.plot()
+
+# Plot results on the k-fold cross validation
+hgb.plot_cv()
+
+# Plot results on the validation set
+hgb.plot_validation()
+
+# Plot best performing tree
+hgb.treeplot()
+
+# %%
+
+# Import library
+from hgboost import hgboost
+
+# Initialize
+hgb = hgboost(max_eval=50, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose='info')
+
+# Load example data set
+df = hgb.import_example()
+# Prepare data for classification
+y = df['Survived'].values
+del df['Survived']
+X = hgb.preprocessing(df)
+
+# Fit best model with desired evaluation metric:
+results = hgb.xgboost(X, y, pos_label=1, eval_metric='f1')
+# [hgboost] >Start hgboost classification..
+# [hgboost] >Collecting xgb_clf parameters.
+# [hgboost] >Number of variables in search space is [10], loss function: [f1].
+# [hgboost] >method: xgb_clf
+# [hgboost] >eval_metric: f1
+# [hgboost] >larger_is_better: True
+# [hgboost] >Total dataset: (891, 204)
+# [hgboost] >Hyperparameter optimization..
+
+# Plot the parameter space
+hgb.plot_params()
+# Plot the summary results
+hgb.plot()
+# Plot the best performing tree
+hgb.treeplot()
+# Plot results on the validation set
+hgb.plot_validation()
+# Plot results on the cross-validation
+hgb.plot_cv()
+
+# Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
+y_pred, y_proba = hgb.predict(X)
+
+# %%
+# Import library
+from hgboost import hgboost
+
+# Initialize
+hgb = hgboost(max_eval=50, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose='info')
+
+# Load example data set
+df = hgb.import_example()
+# Prepare data for classification
+y = df['Survived'].values
+del df['Survived']
+X = hgb.preprocessing(df)
+
+# Fit best model with desired evaluation metric:
+results = hgb.catboost(X, y, pos_label=1, eval_metric='auc')
+# [hgboost] >Start hgboost classification..
+# [hgboost] >Collecting ctb_clf parameters.
+# [hgboost] >Number of variables in search space is [10], loss function: [auc].
+# [hgboost] >method: ctb_clf
+# [hgboost] >eval_metric: auc
+# [hgboost] >larger_is_better: True
+# [hgboost] >Total dataset: (891, 204)
+# [hgboost] >Hyperparameter optimization..
+
+# Plot the parameter space
+hgb.plot_params()
+# Plot the summary results
+hgb.plot()
+# Plot the best performing tree
+hgb.treeplot()
+# Plot results on the validation set
+hgb.plot_validation()
+# Plot results on the cross-validation
+hgb.plot_cv()
+
+# Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
+y_pred, y_proba = hgb.predict(X)
+
+
+# %%
+
+# Import library
+from hgboost import hgboost
+
+# Initialize
+hgb = hgboost(max_eval=50, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose='info')
+
+# Load example data set
+df = hgb.import_example()
+# Prepare data for classification
+y = df['Survived'].values
+del df['Survived']
+X = hgb.preprocessing(df)
+
+# Fit best model with desired evaluation metric:
+results = hgb.lightboost(X, y, pos_label=1, eval_metric='auc')
+# [hgboost] >Start hgboost classification..
+# [hgboost] >Collecting lgb_clf parameters.
+# [hgboost] >Number of variables in search space is [10], loss function: [auc].
+# [hgboost] >method: lgb_clf
+# [hgboost] >eval_metric: auc
+# [hgboost] >larger_is_better: True
+# [hgboost] >Total dataset: (891, 204)
+# [hgboost] >Hyperparameter optimization..
+
+# Plot the parameter space
+hgb.plot_params()
+# Plot the summary results
+hgb.plot()
+# Plot the best performing tree
+hgb.treeplot()
+# Plot results on the validation set
+hgb.plot_validation()
+# Plot results on the cross-validation
+hgb.plot_cv()
+
+# Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
+y_pred, y_proba = hgb.predict(X)
+
+# %%
+# Import library
+from hgboost import hgboost
+
+# Initialize
+hgb = hgboost(max_eval=50, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose='info')
+
+# Load example data set
+df = hgb.import_example()
+# Prepare data for classification
+y = df['Parch'].values.copy()
+y[y>=3]=3
+del df['Parch']
+X = hgb.preprocessing(df)
+
+# Fit best model with desired evaluation metric:
+results = hgb.xgboost(X, y, method='xgb_clf_multi', eval_metric='kappa')
+# [hgboost] >Start hgboost classification..
+# [hgboost] >Collecting xgb_clf parameters
+# [hgboost] >Number of variables in search space is [10], loss function: [kappa]
+# [hgboost] >method: xgb_clf_multi
+# [hgboost] >eval_metric: kappa
+# [hgboost] >larger_is_better: True
+# [hgboost] >Total dataset: (891, 204)
+# [hgboost] >Hyperparameter optimization..
+
+# Plot the parameter space
+hgb.plot_params()
+# Plot the summary results
+hgb.plot()
+# Plot the best performing tree
+hgb.treeplot()
+# Plot results on the validation set
+hgb.plot_validation()
+# Plot results on the cross-validation
+hgb.plot_cv()
+
+# Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
+y_pred, y_proba = hgb.predict(X)
+
+
+# %%
+# Import library
+from hgboost import hgboost
+import numpy as np
+
+# Initialize
+hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None)
+
+# Load example data set
+df = hgb.import_example()
+y = df['Age'].values
+del df['Age']
+I = ~np.isnan(y)
+X = hgb.preprocessing(df)
+X = X.loc[I,:]
+y = y[I]
+
+# Fit best model with desired evaluation metric:
+results = hgb.xgboost_reg(X, y, eval_metric='rmse')
+# [hgboost] >Start hgboost regression..
+# [hgboost] >Collecting xgb_reg parameters.
+# [hgboost] >Number of variables in search space is [10], loss function: [rmse].
+# [hgboost] >method: xgb_reg
+# [hgboost] >eval_metric: rmse
+# [hgboost] >larger_is_better: True
+# [hgboost] >Total dataset: (891, 204)
+# [hgboost] >Hyperparameter optimization..
+
+# Plot the parameter space
+hgb.plot_params()
+# Plot the summary results
+hgb.plot()
+# Plot the best performing tree
+hgb.treeplot()
+# Plot results on the validation set
+hgb.plot_validation()
+# Plot results on the cross-validation
+hgb.plot_cv()
+
+# Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
+y_pred, y_proba = hgb.predict(X)
+
+
+# %%
+
+# Import library
+from hgboost import hgboost
+
+# Initialize
+hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None)
+
+# Load example data set
+df = hgb.import_example()
+y = df['Age'].values
+del df['Age']
+I = ~np.isnan(y)
+X = hgb.preprocessing(df)
+X = X.loc[I,:]
+y = y[I]
+
+# Fit best model with desired evaluation metric:
+results = hgb.lightboost_reg(X, y, eval_metric='rmse')
+# [hgboost] >Start hgboost regression..
+# [hgboost] >Collecting lgb_reg parameters.
+# [hgboost] >Number of variables in search space is [10], loss function: [rmse].
+# [hgboost] >method: lgb_reg
+# [hgboost] >eval_metric: rmse
+# [hgboost] >larger_is_better: True
+# [hgboost] >Total dataset: (891, 204)
+# [hgboost] >Hyperparameter optimization..
+
+# Plot the parameter space
+hgb.plot_params()
+# Plot the summary results
+hgb.plot()
+# Plot the best performing tree
+hgb.treeplot()
+# Plot results on the validation set
+hgb.plot_validation()
+# Plot results on the cross-validation
+hgb.plot_cv()
+
+# Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
+y_pred, y_proba = hgb.predict(X)
+
+
+# %%
+
+# Import library
+from hgboost import hgboost
+
+# Initialize
+hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None)
+
+# Load example data set
+df = hgb.import_example()
+y = df['Age'].values
+del df['Age']
+I = ~np.isnan(y)
+X = hgb.preprocessing(df)
+X = X.loc[I,:]
+y = y[I]
+
+# Fit best model with desired evaluation metric:
+results = hgb.catboost_reg(X, y, eval_metric='rmse')
+# [hgboost] >Start hgboost regression..
+# [hgboost] >Collecting ctb_reg parameters.
+# [hgboost] >Number of variables in search space is [10], loss function: [rmse].
+# [hgboost] >method: ctb_reg
+# [hgboost] >eval_metric: rmse
+# [hgboost] >larger_is_better: True
+# [hgboost] >Total dataset: (891, 204)
+# [hgboost] >Hyperparameter optimization..
+
+# Plot the parameter space
+hgb.plot_params()
+# Plot the summary results
+hgb.plot()
+# Plot the best performing tree
+hgb.treeplot()
+# Plot results on the validation set
+hgb.plot_validation()
+# Plot results on the cross-validation
+hgb.plot_cv()
+
+# Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
+y_pred, y_proba = hgb.predict(X)
+
+
+# %%
+# Import library
+from hgboost import hgboost
+
+# Initialize
+hgb = hgboost(max_eval=50, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose='info')
+
+# Import data
+df = hgb.import_example()
+y = df['Survived'].values
+del df['Survived']
+X = hgb.preprocessing(df)
+
+# Fit ensemble model using the three boosting methods. By default these are readily set.
+results = hgb.ensemble(X, y, pos_label=1)
+# [hgboost] >Create ensemble regression model..
+# [hgboost] >...
+# [hgboost] >Fit ensemble model with [soft] voting..
+# [hgboost] >Evalute [ensemble] model on independent validation dataset (179 samples, 20%)
+# [hgboost] >[Ensemble] [auc]: -0.9788 on independent validation dataset
+# [hgboost] >[xgb_clf]  [auc]: -0.8434 on independent validation dataset
+# [hgboost] >[ctb_clf]  [auc]: -0.8875 on independent validation dataset
+# [hgboost] >[lgb_clf]  [auc]: -0.8816 on independent validation dataset
+
+# use the predictor
+y_pred, y_proba = hgb.predict(X)
+
+# Plot
+hgb.plot_validation()
+
+
+# %%
+# Import library
+from hgboost import hgboost
+
+# Initialize
+hgb = hgboost(max_eval=50, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None)
+
+# Load example data set
+df = hgb.import_example()
+y = df['Age'].values
+del df['Age']
+I = ~np.isnan(y)
+X = hgb.preprocessing(df)
+X = X.loc[I,:]
+y = y[I]
+
+# Fit ensemble model using the three boosting methods:
+results = hgb.ensemble(X, y, methods=['xgb_reg','ctb_reg','lgb_reg'])
+# [hgboost] >Create ensemble regression model..
+# [hgboost] >...
+# [hgboost] >Evalute [ensemble] model on independent validation dataset (143 samples, 20%).
+# [hgboost] >[Ensemble] [rmse]: 64.62 on independent validation dataset
+# [hgboost] >[xgb_reg]  [rmse]: 172.2 on independent validation dataset
+# [hgboost] >[ctb_reg]  [rmse]: 183 on independent validation dataset
+# [hgboost] >[lgb_reg]  [rmse]: 205.9 on independent validation dataset
+
+# Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
+y_pred, y_proba = hgb.predict(X)
+
+# Plot
+hgb.plot_validation()
+
+# =============================================================================
+# 
+# =============================================================================
+
 # %% CLASSIFICATION TWO-CLASS #####
 from hgboost import hgboost
 from sklearn import datasets
@@ -6,6 +425,7 @@ import pandas as pd
 iris = datasets.load_iris()
 X = pd.DataFrame(iris.data, columns=iris['feature_names'])
 y = iris.target
+
 
 hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose='silent')
 results = hgb.xgboost(X, y, pos_label=0)
@@ -18,6 +438,10 @@ hgb.plot_validation()
 hgb.plot_cv()
 
 
+
+# =============================================================================
+# OLD EXAMPLES BELOW!!
+# =============================================================================
 # %% HYPEROPTIMIZED REGRESSION-XGBOOST
 import numpy as np
 from hgboost import hgboost
@@ -245,10 +669,11 @@ del df['Name']
 
 y = df['Survived'].values
 del df['Survived']
-X = hgb_xgb.preprocessing(df, verbose=0)
+X = hgb_xgb.preprocessing(df)
 
 # Fit
-results = hgb_xgb.xgboost(df, y<0, pos_label=1)
+results = hgb_xgb.xgboost(df, y, pos_label=1)
+results = hgb_xgb.xgboost(X, y, pos_label=1)
 results = hgb_cat.catboost(X, y, pos_label=1)
 results = hgb_light.lightboost(X, y, pos_label=1)
 
@@ -300,7 +725,7 @@ hg = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_
 df = hg.import_example()
 y = df['Survived'].values
 del df['Survived']
-X = hg.preprocessing(df, verbose='info')
+X = hg.preprocessing(df)
 
 # # Fit
 results = hg.xgboost(X, y, pos_label=1)
@@ -323,7 +748,7 @@ df = hgb.import_example()
 y = df['Parch'].values.copy()
 y[y>=3]=3
 del df['Parch']
-X = hgb.preprocessing(df, verbose=0)
+X = hgb.preprocessing(df)
 
 # FIT MULTI-CLASS CLASSIFIER
 results = hgb.xgboost(X, y, method='xgb_clf_multi')
@@ -346,7 +771,7 @@ hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top
 df = hgb.import_example()
 y = df['Survived'].values
 del df['Survived']
-X = hgb.preprocessing(df, verbose=0)
+X = hgb.preprocessing(df)
 
 results = hgb.ensemble(X, y, pos_label=1, methods=['xgb_clf', 'ctb_clf', 'lgb_clf'])
 
@@ -365,7 +790,7 @@ df = hgb.import_example()
 y = df['Age'].values
 del df['Age']
 I = ~np.isnan(y)
-X = hgb.preprocessing(df, verbose=0)
+X = hgb.preprocessing(df)
 X = X.loc[I, :]
 y = y[I]
 
