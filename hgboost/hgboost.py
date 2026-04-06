@@ -1,7 +1,4 @@
-"""hgboost: Hyperoptimized Gradient Boosting library.
-
-Contributors: https://github.com/erdogant/hgboost
-"""
+"""hgboost: Hyperoptimized Gradient Boosting library."""
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -34,8 +31,6 @@ try:
     catboost_available = True
 except ImportError:
     catboost_available = False
-
-
 try:
     import lightgbm as lgb
     lightgbm_available = True
@@ -44,14 +39,6 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
-# Verbose → logging-level mapping
-#   verbose 0  → logging.CRITICAL  (silent)
-#   verbose 1  → logging.ERROR
-#   verbose 2  → logging.WARNING
-#   verbose 3  → logging.INFO
-#   verbose 4  → logging.DEBUG
-# ---------------------------------------------------------------------------
 _VERBOSE_TO_LEVEL = {
     'silent': logging.CRITICAL,
     'critical': logging.CRITICAL,
@@ -213,7 +200,7 @@ class hgboost:
         # Gather for method, the default metric and greater is better.
         self.eval_metric, self.larger_is_better =_check_eval_metric(self.method, eval_metric, larger_is_better)
         # Import search space for the specific function
-        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, y=y, pos_label=self.pos_label, is_unbalanced=self.is_unbalanced, gpu=self.gpu, early_stopping_rounds=self.early_stopping_rounds, verbose=self.verbose)
+        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, y=y, pos_label=self.pos_label, is_unbalanced=self.is_unbalanced, gpu=self.gpu, early_stopping_rounds=self.early_stopping_rounds)
         self.space = params
         # Fit model
         self.results = self._fit(X, y, pos_label=self.pos_label)
@@ -224,7 +211,7 @@ class hgboost:
         # Gather for method, the default metric and greater is better.
         self.eval_metric, self.larger_is_better = _check_eval_metric(self.method, eval_metric, larger_is_better)
         # Import search space for the specific function
-        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, gpu=self.gpu, verbose=self.verbose)
+        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, gpu=self.gpu)
         self.space = params
         # Fit model
         self.results = self._fit(X, y)
@@ -1274,195 +1261,428 @@ class hgboost:
 
         return ax
 
-    def plot_params(self, top_n=10, shade=True, cmap='Set2', figsize=(18, 18), return_ax=False):
-        """Distribution of parameters.
+    # def plot_params(self, top_n=10, shade=True, cmap='Set2', figsize=(18, 18), return_ax=False):
+    #     """Distribution of parameters.
 
-        Description
-        -----------
-        This plot demonstrate the density distribution of the used parameters.
-        Green will depict the best detected parameter and red demonstrates the top n paramters with best loss.
+    #     Description
+    #     -----------
+    #     This plot demonstrate the density distribution of the used parameters.
+    #     Green will depict the best detected parameter and red demonstrates the top n paramters with best loss.
 
-        Parameters
-        ----------
-        top_n : int, (default : 10)
-            Top n parameters that scored highest are plotted with a black dashed vertical line.
-        shade : bool, (default : True)
-            Fill the density plot.
-        figsize: tuple, default (15,15)
-            Figure size, (height, width)
+    #     Parameters
+    #     ----------
+    #     top_n : int, (default : 10)
+    #         Top n parameters that scored highest are plotted with a black dashed vertical line.
+    #     shade : bool, (default : True)
+    #         Fill the density plot.
+    #     figsize: tuple, default (15,15)
+    #         Figure size, (height, width)
 
-        Returns
-        -------
-        ax : object
-            Figure axis.
+    #     Returns
+    #     -------
+    #     ax : object
+    #         Figure axis.
 
-        """
-        if not hasattr(self, 'method') or ('ensemble' in self.method):
-            logger.warning( 'Warning: No plot for ensemble is possible yet. <return>')
-            return None, None
+    #     """
+    #     if not hasattr(self, 'method') or ('ensemble' in self.method):
+    #         logger.warning( 'Warning: No plot for ensemble is possible yet. <return>')
+    #         return None, None
 
-        top_n = np.minimum(top_n, self.results['summary'].shape[0])
-        # getcolors = colourmap.generate(top_n, cmap='Reds_r')
-        ascending = False if self.larger_is_better else True
-        summary_results = self.results['summary'].copy()
-        summary_results = summary_results.loc[~summary_results['default_params'], :]
+    #     top_n = np.minimum(top_n, self.results['summary'].shape[0])
+    #     # getcolors = colourmap.generate(top_n, cmap='Reds_r')
+    #     ascending = False if self.larger_is_better else True
+    #     summary_results = self.results['summary'].copy()
+    #     # Get only the default params
+    #     summary_results = summary_results.loc[~summary_results['default_params'], :]
 
-        # Only numerical columns
-        # summary_results = summary_results._get_numeric_data()
-        # summary_results = summary_results.select_dtypes(include= np.number)
-        # params1 = summary_results.columns
+    #     # Get columns with < 2 unique values and drop
+    #     Iloc = list(map(lambda x: summary_results[x].nunique() < 2, summary_results.columns))
+    #     cols = summary_results.columns[Iloc]
+    #     summary_results.drop(columns=cols, inplace=True)
 
-        # Sort data based on loss
-        colname = 'loss'
-        colbest = 'best' # best without cv
-        if self.cv is not None:
-            colname_cv = 'loss_mean'
-            colbest_cv = 'best_cv'
-            colnames = [colname_cv, colname]
-        else:
-            colnames = colname
+    #     # Sort data based on loss
+    #     colname = 'loss'
+    #     colbest = 'best' # best without cv
+    #     if self.cv is not None:
+    #         colname_cv = 'loss_mean'
+    #         colbest_cv = 'best_cv'
+    #         colnames = [colname_cv, colname]
+    #     else:
+    #         colnames = colname
 
-        # Sort on best loss
-        df_summary = summary_results.sort_values(by=colnames, ascending=ascending)
-        df_summary.reset_index(inplace=True, drop=True)
+    #     # Sort on best loss
+    #     df_summary = summary_results.sort_values(by=colnames, ascending=ascending)
+    #     df_summary.reset_index(inplace=True, drop=True)
 
-        # Get parameters for best scoring model
-        idx_best = np.where(df_summary[colbest])[0]
-        if self.cv is not None:
-            idx_best_cv = np.where(df_summary[colbest_cv])[0]
-        # Collect parameters
-        params = np.array([*self.results['params'].keys()])
-        color_params = colourmap.generate(len(params), cmap=cmap)
-        # Setup figure size
-        nrCols = 3
-        nrRows = int(np.ceil(len(params) / 3))
+    #     # Get parameters for best scoring model
+    #     idx_best = np.where(df_summary[colbest])[0]
+    #     if self.cv is not None:
+    #         idx_best_cv = np.where(df_summary[colbest_cv])[0]
+        
+    #     # Collect parameters
+    #     params = np.array([*self.results['params'].keys()])
+    #     params = params[np.isin(params, df_summary.columns)]
+    #     color_params = colourmap.generate(len(params), cmap=cmap)
 
-        # Density plot for each parameter
+    #     # Setup figure size
+    #     nrCols = 3
+    #     nrRows = int(np.ceil(len(params) / 3))
+
+    #     # Density plot for each parameter
+    #     fig, ax = plt.subplots(nrRows, nrCols, figsize=figsize)
+    #     # Ensure ax is always 2D
+    #     if nrRows == 1:
+    #         ax = np.array([ax])
+    #     i_row = -1
+
+    
+    #     for i, param in enumerate(params):
+    #         try:
+    #             i_row = i // nrCols
+    #             i_col = i % nrCols
+    #             ax_curr = ax[i_row][i_col]
+        
+    #             logger.debug(f'Plot row: {i_row}, col: {i_col}')
+        
+    #             # --- Clean numeric data ---
+    #             plot_df = summary_results[[param]].copy()
+    #             plot_df[param] = pd.to_numeric(plot_df[param], errors='coerce')
+    #             plot_df = plot_df.dropna()
+        
+    #             if plot_df[param].nunique() < 2 or len(plot_df) < 2:
+    #                 continue
+        
+    #             col_data = plot_df[param]
+        
+    #             # --- KDE + rug ---
+    #             color = color_params[i % len(color_params)]
+        
+    #             sns.kdeplot(
+    #                 col_data,
+    #                 fill=shade,
+    #                 linewidth=1,
+    #                 color=color,
+    #                 ax=ax_curr
+    #             )
+    #             sns.rugplot(col_data, color='black', ax=ax_curr)
+        
+    #             # --- Get y-range safely ---
+    #             lines = ax_curr.get_lines()
+    #             if lines:
+    #                 y_data = lines[0].get_ydata()
+    #                 ymin, ymax = np.min(y_data), np.max(y_data)
+    #             else:
+    #                 ymin, ymax = 0, 1
+        
+    #             # --- Use SAME cleaned data for vertical lines ---
+    #             getvals = col_data.values
+        
+    #             # Top-N
+    #             if len(getvals) > 1:
+    #                 ax_curr.vlines(
+    #                     getvals[1:top_n],
+    #                     ymin, ymax,
+    #                     linewidth=1,
+    #                     colors='k',
+    #                     linestyles='dashed',
+    #                     label=f'Top {top_n} models'
+    #                 )
+        
+    #             # Best (no CV)
+    #             if len(idx_best) > 0:
+    #                 ax_curr.vlines(
+    #                     getvals[idx_best],
+    #                     ymin, ymax,
+    #                     linewidth=2,
+    #                     colors='g',
+    #                     linestyles='dashed',
+    #                     label='Best (no cv)'
+    #                 )
+        
+    #             # Best (CV)
+    #             if self.cv is not None and len(idx_best_cv) > 0:
+    #                 ax_curr.vlines(
+    #                     getvals[idx_best_cv],
+    #                     ymin, ymax,
+    #                     linewidth=2,
+    #                     colors='r',
+    #                     linestyles='dotted',
+    #                     label=f'Best {self.cv}-fold cv'
+    #                 )
+        
+    #             # --- Title ---
+    #             try:
+    #                 if self.cv is not None and len(idx_best_cv) > 0:
+    #                     val = getvals[idx_best_cv[0]]
+    #                     ax_curr.set_title(f'{param}: {val:.3g} ({self.cv}-fold cv)')
+    #                 elif len(idx_best) > 0:
+    #                     val = getvals[idx_best[0]]
+    #                     ax_curr.set_title(f'{param}: {val:.3g}')
+    #                 else:
+    #                     ax_curr.set_title(param)
+    #             except Exception:
+    #                 ax_curr.set_title(param)
+        
+    #             ax_curr.set_ylabel('Density')
+    #             ax_curr.grid(True)
+    #             ax_curr.legend(loc='upper right')
+        
+    #         except Exception as e:
+    #             logger.warning(f'Warning: Could not plot param [{param}]: {e}')
+                
+    #     # Hide unused subplots in density figure
+    #     for empty in range(i, nrRows * nrCols):
+    #         ax[empty // nrCols][empty % nrCols].set_visible(False)
+    #     fig.tight_layout()
+
+
+    #     # Scatter plot
+    #     df_sum = self.results['summary'].copy()
+    #     # Get columns with < 2 unique values and drop
+    #     Iloc = list(map(lambda x: pd.to_numeric(df_sum[x], errors='coerce').nunique() < 2, df_sum.columns))
+    #     cols = df_sum.columns[Iloc]
+    #     df_sum.drop(columns=cols, inplace=True)
+
+    #     df_sum = df_sum.loc[~df_sum['default_params'], :]
+    #     df_sum = df_sum.sort_values(by='tid', ascending=True)
+    #     df_sum.reset_index(inplace=True, drop=True)
+    #     idx_best_without_cv = np.where(df_sum[colbest])[0]
+
+    #     if self.cv is not None:
+    #         idx_best_cv = np.where(df_sum[colbest_cv])[0]
+    #     df_sum = df_sum.fillna(0)
+
+    #     fig2, ax2 = plt.subplots(nrRows, nrCols, figsize=figsize)
+    #     # Ensure ax2 is always 2D
+    #     if nrRows == 1:
+    #         ax2 = np.array([ax2])
+    #     i_row = -1
+    #     i=0
+
+    #     for param in params:
+    #         try:
+    #             i_col = np.mod(i, nrCols)
+    #             if i_col == 0:
+    #                 i_row += 1
+        
+    #             plot_df = df_sum[['tid', param]].copy()
+    #             plot_df[param] = pd.to_numeric(plot_df[param], errors='coerce')
+    #             plot_df = plot_df.dropna()
+        
+    #             if plot_df[param].nunique() < 2 or len(plot_df) < 2:
+    #                 i += 1
+    #                 continue
+        
+    #             sns.regplot(
+    #                 x='tid',
+    #                 y=param,
+    #                 data=plot_df,
+    #                 ax=ax2[i_row][i_col],
+    #                 color=color_params[i % len(color_params)]
+    #             )
+        
+    #             # Top models
+    #             ax2[i_row][i_col].scatter(
+    #                 plot_df['tid'].values[1:top_n],
+    #                 plot_df[param].values[1:top_n],
+    #                 s=50, color='k', marker='.', label=f'Top {top_n} models'
+    #             )
+        
+    #             # Best
+    #             ax2[i_row][i_col].scatter(
+    #                 plot_df['tid'].values[idx_best_without_cv],
+    #                 plot_df[param].values[idx_best_without_cv],
+    #                 s=100, color='g', marker='*', label='Best (no cv)'
+    #             )
+        
+    #             if self.cv is not None:
+    #                 ax2[i_row][i_col].scatter(
+    #                     plot_df['tid'].values[idx_best_cv],
+    #                     plot_df[param].values[idx_best_cv],
+    #                     s=100, color='r', marker='x',
+    #                     label=f'Best {self.cv}-fold cv'
+    #                 )
+        
+    #             ax2[i_row][i_col].set_title(param)
+    #             ax2[i_row][i_col].set_xlabel('iteration')
+    #             ax2[i_row][i_col].set_ylabel(param)
+    #             ax2[i_row][i_col].grid(True)
+    #             ax2[i_row][i_col].legend(loc='upper right')
+        
+    #             i += 1
+        
+    #         except Exception as e:
+    #             logger.warning(f'Warning: Could not plot scatter param [{param}]: {e}')
+    #             i += 1
+                
+    #     # Hide unused subplots in scatter figure
+    #     for empty in range(i, nrRows * nrCols):
+    #         ax2[empty // nrCols][empty % nrCols].set_visible(False)
+    #     fig2.tight_layout()
+
+    #     if return_ax:
+    #         return ax, ax2
+
+    # =============================================================================
+    # 
+    # =============================================================================
+
+    def _prepare_summary(self):
+        df = self.results['summary'].copy()
+        return df.loc[~df['default_params'], :]
+    
+    def _get_valid_params(self, df):
+        params = np.array(list(self.results['params'].keys()))
+        params = params[np.isin(params, df.columns)]
+        valid = []
+        for p in params:
+            col = pd.to_numeric(df[p], errors='coerce')
+            if col.nunique() >= 2:
+                valid.append(p)
+        return np.array(valid)
+    
+    def _setup_axes(self, n_params, nrCols=3, figsize=(18, 18)):
+        nrRows = int(np.ceil(n_params / nrCols))
         fig, ax = plt.subplots(nrRows, nrCols, figsize=figsize)
-        # Ensure ax is always 2D
         if nrRows == 1:
             ax = np.array([ax])
-        i_row = -1
+        return fig, ax, nrRows, nrCols
+    
+    def _clean_series(self, df, col):
+        s = pd.to_numeric(df[col], errors='coerce')
+        return s.dropna()
 
-        i=0
-        for param in params:
+
+    def _plot_param_density(self, df, params, idx_best, idx_best_cv, top_n, shade, color_params, figsize):
+        fig, ax, nrRows, nrCols = self._setup_axes(len(params), figsize=figsize)
+    
+        for i, param in enumerate(params):
             try:
-                # Get row number
-                i_col = np.mod(i, nrCols)
-                # Make new column
-                if i_col == 0: i_row = i_row + 1
-                logger.debug('Plot row: %.0d, col: %.0d' % (i_row, i_col))
-
-                col_data = pd.to_numeric(summary_results[param], errors='coerce').dropna()
-                if col_data.nunique() < 2:
-                    i = i + 1
+                r, c = divmod(i, nrCols)
+                ax_curr = ax[r][c]
+    
+                col_data = self._clean_series(df, param)
+                if col_data.nunique() < 2 or len(col_data) < 2:
                     continue
-
-                # KDE plot (replaces deprecated sns.distplot)
-                sns.kdeplot(col_data, fill=shade, linewidth=1,
-                            color=color_params[i, :],
-                            ax=ax[i_row][i_col])
-                # Rug plot
-                sns.rugplot(col_data, color='black', ax=ax[i_row][i_col])
-
-                # Get y range from the plotted kde line
-                lines = ax[i_row][i_col].get_lines()
+    
+                color = color_params[i % len(color_params)]
+                sns.kdeplot(col_data, fill=shade, linewidth=1, color=color, ax=ax_curr)
+                sns.rugplot(col_data, color='black', ax=ax_curr)
+    
+                # y-range
+                lines = ax_curr.get_lines()
+                ymin, ymax = (0, 1)
                 if lines:
-                    y_data = lines[0].get_ydata()
-                    ymin, ymax = np.min(y_data), np.max(y_data)
-                else:
-                    ymin, ymax = 0, 1
-
-                getvals = df_summary[param].values
-                # Plot the top n (not the first because that one is plotted in green)
-                ax[i_row][i_col].vlines(getvals[1:top_n], ymin, ymax, linewidth=1, colors='k', linestyles='dashed', label='Top ' + str(top_n) + ' models')
-                # Plot the best (without cv)
-                ax[i_row][i_col].vlines(getvals[idx_best], ymin, ymax, linewidth=2, colors='g', linestyles='dashed', label='Best (without cv)')
-                # Plot the best (with cv)
-                if self.cv is not None:
-                    ax[i_row][i_col].vlines(getvals[idx_best_cv], ymin, ymax, linewidth=2, colors='r', linestyles='dotted', label='Best ' + str(self.cv) + '-fold cv')
-
-                if self.cv is not None:
-                    ax[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, getvals[idx_best_cv[0]], self.cv)))
-                else:
-                    ax[i_row][i_col].set_title(('%s: %.3g' %(param, getvals[idx_best[0]])))
-                ax[i_row][i_col].set_ylabel('Density')
-                ax[i_row][i_col].grid(True)
-                ax[i_row][i_col].legend(loc='upper right')
-                i = i + 1
+                    y = lines[0].get_ydata()
+                    ymin, ymax = np.min(y), np.max(y)
+    
+                vals = col_data.values
+    
+                if len(vals) > 1:
+                    ax_curr.vlines(vals[1:top_n], ymin, ymax, colors='k', linestyles='dashed', linewidth=1, label=f'Top {top_n}')
+                if len(idx_best) > 0:
+                    ax_curr.vlines(vals[idx_best], ymin, ymax, colors='g', linestyles='dashed', linewidth=2, label='Best')
+                if self.cv is not None and len(idx_best_cv) > 0:
+                    ax_curr.vlines(vals[idx_best_cv], ymin, ymax, colors='r', linestyles='dotted', linewidth=2, label='Best CV')
+    
+                ax_curr.set_title(param)
+                ax_curr.set_ylabel('Density')
+                ax_curr.grid(True)
+    
+                # clean legend
+                handles, labels = ax_curr.get_legend_handles_labels()
+                by_label = dict(zip(labels, handles))
+                if by_label:
+                    ax_curr.legend(by_label.values(), by_label.keys())
+    
             except Exception as e:
-                logger.warning( 'Warning: Could not plot param [%s]: %s' % (param, str(e)))
-                i = i + 1
-
-        # Hide unused subplots in density figure
-        for empty in range(i, nrRows * nrCols):
-            ax[empty // nrCols][empty % nrCols].set_visible(False)
+                logger.warning(f'Density plot failed [{param}]: {e}')
+    
+        # hide unused
+        for j in range(len(params), nrRows * nrCols):
+            ax[j // nrCols][j % nrCols].set_visible(False)
+    
         fig.tight_layout()
+        return fig, ax
 
-        # Scatter plot
-        df_sum = self.results['summary'].copy()
-        df_sum = df_sum.loc[~df_sum['default_params'], :]
-        df_sum = df_sum.sort_values(by='tid', ascending=True)
-        df_sum.reset_index(inplace=True, drop=True)
-        idx_best_without_cv = np.where(df_sum[colbest])[0]
 
-        if self.cv is not None:
-            idx_best_cv = np.where(df_sum[colbest_cv])[0]
-        df_sum = df_sum.fillna(0)
-
-        fig2, ax2 = plt.subplots(nrRows, nrCols, figsize=figsize)
-        # Ensure ax2 is always 2D
-        if nrRows == 1:
-            ax2 = np.array([ax2])
-        i_row = -1
-        i=0
-        for param in params:
+    def _plot_param_scatter(self, df, params, idx_best, idx_best_cv, top_n, color_params, figsize):
+        # Setup figure
+        fig, ax, nrRows, nrCols = self._setup_axes(len(params), figsize=figsize)
+        # Run over params
+        for i, param in enumerate(params):
             try:
-                # Get row number
-                i_col = np.mod(i, nrCols)
-                # Make new column
-                if i_col == 0: i_row = i_row + 1
-
-                col_data = pd.to_numeric(df_sum[param], errors='coerce')
-                if col_data.nunique() < 2:
-                    i = i + 1
+                r, c = divmod(i, nrCols)
+                ax_curr = ax[r][c]
+    
+                plot_df = df[['tid', param]].copy()
+                plot_df[param] = pd.to_numeric(plot_df[param], errors='coerce')
+                plot_df = plot_df.dropna()
+    
+                if plot_df[param].nunique() < 2 or len(plot_df) < 2:
                     continue
-
-                # Make the plot
-                sns.regplot(x='tid', y=param, data=df_sum, ax=ax2[i_row][i_col], color=color_params[i, :])
-
-                # Scatter top n values, start with 1 because the 0 is, based on the ranking, with CV.
-                ax2[i_row][i_col].scatter(df_summary['tid'].values[1:top_n], df_summary[param].values[1:top_n], s=50, color='k', marker='.', label='Top ' + str(top_n) + ' models')
-
-                # Scatter best value
-                ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best_without_cv], df_sum[param].values[idx_best_without_cv], s=100, color='g', marker='*', label='Best (without cv)')
-
-                # Scatter best cv
-                if self.cv is not None:
-                    ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best_cv], df_sum[param].values[idx_best_cv], s=100, color='r', marker='x', label='Best ' + str(self.cv) + '-fold cv')
-
-                # Set labels
-                if self.cv is not None:
-                    ax2[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, df_sum[param].values[idx_best_cv[0]], self.cv)))
-                else:
-                    ax2[i_row][i_col].set_title(('%s: %.3g' %(param, df_sum[param].values[idx_best_without_cv[0]])))
-                ax2[i_row][i_col].set_xlabel('iteration')
-                ax2[i_row][i_col].set_ylabel(param)
-                ax2[i_row][i_col].grid(True)
-                ax2[i_row][i_col].legend(loc='upper right')
-                i = i + 1
+    
+                color = color_params[i % len(color_params)]
+                sns.regplot(x='tid', y=param, data=plot_df, ax=ax_curr, color=color)
+                ax_curr.scatter(plot_df['tid'].values[1:top_n], plot_df[param].values[1:top_n], s=50, color='k', marker='.', label=f'Top {top_n}')
+    
+                if len(idx_best) > 0:
+                    ax_curr.scatter(plot_df['tid'].values[idx_best], plot_df[param].values[idx_best], s=100, color='g', marker='*', label='Best')
+    
+                if self.cv is not None and len(idx_best_cv) > 0:
+                    ax_curr.scatter(plot_df['tid'].values[idx_best_cv], plot_df[param].values[idx_best_cv], s=100, color='r', marker='x', label='Best CV')
+    
+                ax_curr.set_title(param)
+                ax_curr.set_xlabel('iteration')
+                ax_curr.set_ylabel(param)
+                ax_curr.grid(True)
+    
+                handles, labels = ax_curr.get_legend_handles_labels()
+                by_label = dict(zip(labels, handles))
+                if by_label:
+                    ax_curr.legend(by_label.values(), by_label.keys())
+    
             except Exception as e:
-                logger.warning('Warning: Could not plot scatter param [%s]: %s' % (param, str(e)))
-                i = i + 1
+                logger.warning(f'Scatter plot failed [{param}]: {e}')
+    
+        for j in range(len(params), nrRows * nrCols):
+            ax[j // nrCols][j % nrCols].set_visible(False)
+    
+        fig.tight_layout()
+        return fig, ax
 
-        # Hide unused subplots in scatter figure
-        for empty in range(i, nrRows * nrCols):
-            ax2[empty // nrCols][empty % nrCols].set_visible(False)
-        fig2.tight_layout()
+    def plot_params(self, top_n=10, shade=True, cmap='Set2', figsize=(18, 18), return_ax=False):
+        if not hasattr(self, 'method') or ('ensemble' in self.method):
+            logger.warning('No plot for ensemble.')
+            return None, None
+    
+        df = self._prepare_summary()
+        top_n = min(top_n, df.shape[0])
+        ascending = not self.larger_is_better
+    
+        # sorting
+        if self.cv is not None:
+            df = df.sort_values(by=['loss_mean', 'loss'], ascending=ascending)
+            idx_best_cv = np.where(df['best_cv'])[0]
+        else:
+            df = df.sort_values(by='loss', ascending=ascending)
+            idx_best_cv = []
+    
+        df = df.reset_index(drop=True)
+        idx_best = np.where(df['best'])[0]
+        params = self._get_valid_params(df)
+        color_params = colourmap.generate(len(params), cmap=cmap)
 
+        # --- plots ---
+        fig1, ax1 = self._plot_param_density(df, params, idx_best, idx_best_cv, top_n, shade, color_params, figsize)
+        fig2, ax2 = self._plot_param_scatter(df, params, idx_best, idx_best_cv, top_n, color_params, figsize)
+    
         if return_ax:
-            return ax, ax2
-
+            return ax1, ax2
+        
+    # =============================================================================
+    # 
+    # =============================================================================
     def plot(self, ylim=None, figsize=(20, 15), plot2=True, return_ax=False):
         """Plot the summary results.
 
@@ -1769,71 +1989,8 @@ def _store_validation_scores(results_summary, best_params, model_basic, val_scor
     return results_summary
 
 
-# %% Import example dataset from github.
-# def import_example(data='titanic', url=None, sep=',', verbose=3):
-    # """Import example dataset from github source.
-
-    # Description
-    # -----------
-    # Import one of the few datasets from github source or specify your own download url link.
-
-    # Parameters
-    # ----------
-    # data : str, (default : "titanic")
-    #     Name of datasets: 'sprinkler', 'titanic', 'student', 'fifa', 'cancer', 'waterpump', 'retail'
-    # url : str
-    #     url link to to dataset.
-    # verbose : int, (default : 3)
-    #     Print progress to screen.
-    #     0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE
-
-    # Returns
-    # -------
-    # pd.DataFrame()
-    #     Dataset containing mixed features.
-
-    # """
-    # if url is None:
-    #     if data=='sprinkler':
-    #         url='https://erdogant.github.io/datasets/sprinkler.zip'
-    #     elif data=='titanic':
-    #         url='https://erdogant.github.io/datasets/titanic_train.zip'
-    #     elif data=='student':
-    #         url='https://erdogant.github.io/datasets/student_train.zip'
-    #     elif data=='cancer':
-    #         url='https://erdogant.github.io/datasets/cancer_dataset.zip'
-    #     elif data=='fifa':
-    #         url='https://erdogant.github.io/datasets/FIFA_2018.zip'
-    #     elif data=='waterpump':
-    #         url='https://erdogant.github.io/datasets/waterpump/waterpump_test.zip'
-    #     elif data=='retail':
-    #         url='https://erdogant.github.io/datasets/marketing_data_online_retail_small.zip'
-    # else:
-    #     data = wget.filename_from_url(url)
-
-    # if url is None:
-    #     print('[hgboost] >Nothing to download.')
-    #     return None
-
-    # curpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
-    # PATH_TO_DATA = os.path.join(curpath, wget.filename_from_url(url))
-    # if not os.path.isdir(curpath):
-    #     os.makedirs(curpath, exist_ok=True)
-
-    # # Check file exists.
-    # if not os.path.isfile(PATH_TO_DATA):
-    #     print('[hgboost] >Downloading [%s] dataset from github source..' %(data))
-    #     wget.download(url, curpath)
-
-    # # Import local dataset
-    # print('[hgboost] >Import dataset [%s]' %(data))
-    # df = pd.read_csv(PATH_TO_DATA, sep=sep)
-    # # Return
-    # return df
-
-
 # %% Set the search spaces
-def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalanced=False, gpu=False, early_stopping_rounds=25, verbose=3):
+def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalanced=False, gpu=False, early_stopping_rounds=25):
     # choice : categorical variables
     # quniform : discrete uniform (integers spaced evenly)
     # uniform: continuous uniform (floats spaced evenly)
@@ -2029,7 +2186,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalanced
         return space
 
 
-def _check_input(X, y, pos_label, method, verbose=4):
+def _check_input(X, y, pos_label, method):
     # X should be of type dataframe
     if (type(X) is not pd.DataFrame):
         raise ValueError('[hgboost] >Error: dataset X should be of type pd.DataFrame')
@@ -2095,7 +2252,7 @@ def _check_input(X, y, pos_label, method, verbose=4):
     return X, y, pos_label
 
 
-def _check_eval_metric(method, eval_metric, larger_is_better, verbose=3):
+def _check_eval_metric(method, eval_metric, larger_is_better):
     # Check the eval_metric
     if (eval_metric is None) and ('_reg' in method):
         eval_metric='rmse'
