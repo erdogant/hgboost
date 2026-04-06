@@ -526,16 +526,17 @@ class hgboost:
         self.methods = []
         if np.isin('xgb_clf', methods):
             self.methods.append('xgb_clf')
-        if catboost_available:
+        if np.isin('ctb_clf', methods) and catboost_available:
             self.methods.append('ctb_clf')
-        if lightgbm_available:
+        if np.isin('lgb_clf', methods) and lightgbm_available:
             self.methods.append('lgb_clf')
         if np.isin('xgb_reg', methods):
             self.methods.append('xgb_reg')
-        if catboost_available:
+        if np.isin('ctb_reg', methods) and catboost_available:
             self.methods.append('ctb_reg')
-        if lightgbm_available:
+        if np.isin('lgb_reg', methods) and lightgbm_available:
             self.methods.append('lgb_reg')
+        methods = self.methods
         
         if np.all(list(map(lambda x: 'clf' in x, methods))):
             logger.info('Create ensemble classification model..')
@@ -594,7 +595,7 @@ class hgboost:
             self.y_val = y_val
             for method in methods:
                 # Evaluation
-                val_score_M, val_results_M = self._eval(X_val, y_val, self.results[method]['model'].model, verbose=2)
+                val_score_M, val_results_M = self._eval(X_val, y_val, self.results[method]['model'].model)
                 # Store
                 self.results[method]['loss'] = val_score_M['loss']
                 self.results[method]['val_results'] = val_results_M
