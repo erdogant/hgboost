@@ -682,7 +682,7 @@ class hgboost:
         logger.info('Test-set: %s ' % str(self.X_test.shape))
         logger.info('Train-set: %s ' % str(self.X_train.shape))
         logger.info('*' * 89)
-        logger.info('Searching across hyperparameter space for best performing parameters using maximum nr. evaluations: %.0d' % self.max_eval)
+        logger.info('Searching across hyperparameter space for best performing parameters using maximum evaluations: %.0d' % self.max_eval)
 
 
         # Hyperoptimization to find best performing model. Set the trials which is the object where all the HPopt results are stored.
@@ -745,7 +745,7 @@ class hgboost:
         top_cv_evals = np.minimum(results_summary.shape[0], self.top_cv_evals)
         idx_top_models = results_summary['loss'].sort_values(ascending=ascending).index[0:top_cv_evals]
         logger.info('*' * 89)
-        logger.info('%.0d-fold cross validation for the top %.0d scoring models, Total nr. tests: %.0f' % (self.cv, len(idx_top_models), self.cv * len(idx_top_models)))
+        logger.info('%.0d-fold cross validation for the top %.0d scoring models, Total tests: %.0f' % (self.cv, len(idx_top_models), self.cv * len(idx_top_models)))
         disable = (False if (self.verbose=='silent') else True)
 
         # For each model, compute the performance.
