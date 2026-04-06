@@ -15,7 +15,7 @@ _logger.propagate = True  # allow submodules to inherit this handler
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'
-__version__ = '1.2.0'
+__version__ = '2.0.0'
 
 # module level doc-string
 __doc__ = """
