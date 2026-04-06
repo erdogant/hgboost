@@ -131,7 +131,7 @@ class hgboost:
     * Notebook Regression: https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb
 
     """
-    def __init__(self, max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, is_unbalance=True, random_state=None, n_jobs=-1, gpu=False, early_stopping_rounds=25, verbose='info'):
+    def __init__(self, max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, is_unbalanced=True, random_state=None, n_jobs=-1, gpu=False, early_stopping_rounds=25, verbose='info'):
         """Initialize hgboost with user-defined parameters."""
         if (threshold is None) or (threshold <= 0): raise ValueError('[hgboost] >Error: [threshold] must be >0 and not [None]')
         if (max_eval is None) or (max_eval <= 0): max_eval=1
@@ -858,7 +858,7 @@ class hgboost:
 
     def xgb_clf(self, space):
         """Train xgboost classification model."""
-        clf = xgb.XGBClassifier(**space['model_params'], n_jobs=self.n_jobs, verbosity=0)
+        clf = xgb.XGBClassifier(**space['model_params'], n_jobs=self.n_jobs, enable_categorical=True, verbosity=0)
         out, _ = self._train_model(clf, space)
         return out
 
