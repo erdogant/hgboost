@@ -187,7 +187,7 @@ class hgboost:
 
         """
         # Check input data
-        X, y, self.pos_label=_check_input(X, y, pos_label, self.method, verbose=self.verbose)
+        X, y, self.pos_label=_check_input(X, y, pos_label, self.method)
 
         # Recaculate test size. This should be the percentage of the total dataset after removing the validation set.
         if (self.val_size is not None) and (self.val_size > 0):
@@ -560,7 +560,7 @@ class hgboost:
             raise ValueError('[hgboost] >Error: The input [methods] must be of type "_clf" or "_reg" but can not be combined.')
 
         # Check input data
-        X, y, self.pos_label = _check_input(X, y, pos_label, self.method, verbose=self.verbose)
+        X, y, self.pos_label = _check_input(X, y, pos_label, self.method)
         # Gather for method, the default metric and greater is better.
         self.eval_metric, self.larger_is_better = _check_eval_metric(self.method, eval_metric, larger_is_better)
         # Store the clean initialization in hgb
@@ -1587,7 +1587,7 @@ class hgboost:
             # self.results['summary'] = pd.concat([hgbX.results['summary'], hgbC.results['summary'], hgbL.results['summary']])
             # ax1, ax2 = plot_summary(model, ylim=ylim, figsize=figsize, return_ax=True, method=method, ax1=ax1, ax2=ax2)
 
-    def save(self, filepath='hgboost_model.pkl', overwrite=False, verbose=3):
+    def save(self, filepath='hgboost_model.pkl', overwrite=False):
         """Save learned model in pickle file.
 
         Parameters
@@ -1649,7 +1649,7 @@ class hgboost:
         storedata['verbose'] = self.verbose
         storedata['is_unbalanced'] = self.is_unbalanced
         # Save
-        status = pypickle.save(filepath, storedata, overwrite=overwrite, verbose=verbose)
+        status = pypickle.save(filepath, storedata, overwrite=overwrite, verbose=self.verbose)
         if status:
             logger.info('Save model results.')
             logger.info('Save user-defined parameters.')
@@ -1660,7 +1660,7 @@ class hgboost:
         # return
         return status
 
-    def load(self, filepath='hgboost_model.pkl', verbose=3):
+    def load(self, filepath='hgboost_model.pkl'):
         """Load learned model.
 
         Description
@@ -1714,7 +1714,7 @@ class hgboost:
         if filepath[-4:]!='.pkl':
             filepath = filepath + '.pkl'
         # Load
-        storedata = pypickle.load(filepath, verbose=verbose)
+        storedata = pypickle.load(filepath, verbose=self.verbose)
         # Store in self
         if storedata is not None:
             self.results = storedata['results']
