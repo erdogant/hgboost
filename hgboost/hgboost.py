@@ -66,6 +66,8 @@ def _set_logger_level(verbose: int) -> None:
     """Adjust the module logger threshold to match *verbose*."""
     level = _VERBOSE_TO_LEVEL.get(verbose.lower(), logging.DEBUG)
     logger.setLevel(level)
+    # Set logger hyperopt to warning
+    logging.getLogger("hyperopt").setLevel(level)
 
 
 # %%
