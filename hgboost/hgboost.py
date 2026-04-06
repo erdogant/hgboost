@@ -99,7 +99,7 @@ class hgboost:
         Percentage split for the testset based on the total dataset.
     val_size : float, (default : 0.2)
         Percentage split for the validationset based on the total dataset. This part is kept untouched, and used only once to determine the model performance.
-    is_unbalance : Bool, (default: True)
+    is_unbalanced : Bool, (default: True)
         Control the balance of positive and negative weights, useful for unbalanced classes.
         xgboost clf : sum(negative instances) / sum(positive instances)
         catboost clf : sum(negative instances) / sum(positive instances)
@@ -149,7 +149,7 @@ class hgboost:
         self.random_state=random_state
         self.n_jobs=n_jobs
         self.verbose=verbose
-        self.is_unbalance = is_unbalance
+        self.is_unbalanced = is_unbalanced
         self.gpu = gpu
         self.early_stopping_rounds=early_stopping_rounds
         _set_logger_level(verbose)
@@ -196,7 +196,7 @@ class hgboost:
         # Print to screen
         logger.info('method: %s' % self.method)
         logger.info('eval_metric: %s' % self.eval_metric)
-        logger.info('greater_is_better: %s' % self.greater_is_better)
+        logger.info('larger_is_better: %s' % self.larger_is_better)
 
         # Set validation set
         self._set_validation_set(X, y)
@@ -209,20 +209,20 @@ class hgboost:
         # Return
         return self.results
 
-    def _classification(self, X, y, eval_metric, greater_is_better, params):
+    def _classification(self, X, y, eval_metric, larger_is_better, params):
         # Gather for method, the default metric and greater is better.
-        self.eval_metric, self.greater_is_better =_check_eval_metric(self.method, eval_metric, greater_is_better)
+        self.eval_metric, self.larger_is_better =_check_eval_metric(self.method, eval_metric, larger_is_better)
         # Import search space for the specific function
-        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, y=y, pos_label=self.pos_label, is_unbalance=self.is_unbalance, gpu=self.gpu, early_stopping_rounds=self.early_stopping_rounds, verbose=self.verbose)
+        if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, y=y, pos_label=self.pos_label, is_unbalanced=self.is_unbalanced, gpu=self.gpu, early_stopping_rounds=self.early_stopping_rounds, verbose=self.verbose)
         self.space = params
         # Fit model
         self.results = self._fit(X, y, pos_label=self.pos_label)
         # Fin
         logger.info('Fin!')
 
-    def _regression(self, X, y, eval_metric, greater_is_better, params):
+    def _regression(self, X, y, eval_metric, larger_is_better, params):
         # Gather for method, the default metric and greater is better.
-        self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
+        self.eval_metric, self.larger_is_better = _check_eval_metric(self.method, eval_metric, larger_is_better)
         # Import search space for the specific function
         if params == 'default': params = _get_params(self.method, eval_metric=self.eval_metric, gpu=self.gpu, verbose=self.verbose)
         self.space = params
@@ -231,7 +231,7 @@ class hgboost:
         # Fin
         logger.info('Fin!')
 
-    def xgboost_reg(self, X, y, eval_metric='rmse', greater_is_better=False, params='default'):
+    def xgboost_reg(self, X, y, eval_metric='rmse', larger_is_better=False, params='default'):
         """Xgboost Regression with hyperparameter optimization.
 
         Parameters
@@ -245,7 +245,7 @@ class hgboost:
                 * 'rmse': root mean squared error.
                 * 'mse': mean squared error.
                 * 'mae': mean absolute error.
-        greater_is_better : bool (default : False).
+        larger_is_better : bool (default : False).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
         params : dict, (default : 'default').
             Hyper parameters.
@@ -265,11 +265,11 @@ class hgboost:
         # Method
         self.method='xgb_reg'
         # Run method
-        self._regression(X, y, eval_metric, greater_is_better, params)
+        self._regression(X, y, eval_metric, larger_is_better, params)
         # Return
         return self.results
 
-    def lightboost_reg(self, X, y, eval_metric='rmse', greater_is_better=False, params='default'):
+    def lightboost_reg(self, X, y, eval_metric='rmse', larger_is_better=False, params='default'):
         """Light Regression with hyperparameter optimization.
 
         Parameters
@@ -283,7 +283,7 @@ class hgboost:
                 * 'rmse': root mean squared error.
                 * 'mse': mean squared error.
                 * 'mae': mean absolute error.
-        greater_is_better : bool (default : False).
+        larger_is_better : bool (default : False).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
         params : dict, (default : 'default').
             Hyper parameters.
@@ -307,11 +307,11 @@ class hgboost:
         # Method
         self.method='lgb_reg'
         # Run method
-        self._regression(X, y, eval_metric, greater_is_better, params)
+        self._regression(X, y, eval_metric, larger_is_better, params)
         # Return
         return self.results
 
-    def catboost_reg(self, X, y, eval_metric='rmse', greater_is_better=False, params='default'):
+    def catboost_reg(self, X, y, eval_metric='rmse', larger_is_better=False, params='default'):
         """Catboost Regression with hyperparameter optimization.
 
         Parameters
@@ -325,7 +325,7 @@ class hgboost:
                 * 'rmse': root mean squared error.
                 * 'mse': mean squared error.
                 * 'mae': mean absolute error.
-        greater_is_better : bool (default : False).
+        larger_is_better : bool (default : False).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
         params : dict, (default : 'default').
             Hyper parameters.
@@ -352,11 +352,11 @@ class hgboost:
         # Method
         self.method='ctb_reg'
         # Run method
-        self._regression(X, y, eval_metric, greater_is_better, params)
+        self._regression(X, y, eval_metric, larger_is_better, params)
         # Return
         return self.results
 
-    def xgboost(self, X, y, pos_label=None, method='xgb_clf', eval_metric=None, greater_is_better=None, params='default'):
+    def xgboost(self, X, y, pos_label=None, method='xgb_clf', eval_metric=None, larger_is_better=None, params='default'):
         """Xgboost Classification with hyperparameter optimization.
 
         Parameters
@@ -377,7 +377,7 @@ class hgboost:
                 * 'f1': F1-score
                 * 'logloss'
                 * 'auc_cv': Compute average auc per iteration in each cross. This approach is computational expensive.
-        greater_is_better : bool.
+        larger_is_better : bool.
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
                 * auc :  True -> two-class
                 * kappa : True -> multi-class
@@ -397,11 +397,11 @@ class hgboost:
         self.method = method
         self.pos_label = pos_label
         # Run method
-        self._classification(X, y, eval_metric, greater_is_better, params)
+        self._classification(X, y, eval_metric, larger_is_better, params)
         # Return
         return self.results
 
-    def catboost(self, X, y, pos_label=None, eval_metric='auc', greater_is_better=True, params='default'):
+    def catboost(self, X, y, pos_label=None, eval_metric='auc', larger_is_better=True, params='default'):
         """Catboost Classification with hyperparameter optimization.
 
         Parameters
@@ -419,7 +419,7 @@ class hgboost:
                 * 'f1': F1-score
                 * 'logloss'
                 * 'auc_cv': Compute average auc per iteration in each cross. This approach is computational expensive.
-        greater_is_better : bool (default : True).
+        larger_is_better : bool (default : True).
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
 
         Returns
@@ -443,11 +443,11 @@ class hgboost:
         self.method = 'ctb_clf'
         self.pos_label = pos_label
         # Run method
-        self._classification(X, y, eval_metric, greater_is_better, params)
+        self._classification(X, y, eval_metric, larger_is_better, params)
         # Return
         return self.results
 
-    def lightboost(self, X, y, pos_label=None, eval_metric='auc', greater_is_better=True, params='default'):
+    def lightboost(self, X, y, pos_label=None, eval_metric='auc', larger_is_better=True, params='default'):
         """Lightboost Classification with hyperparameter optimization.
 
         Parameters
@@ -465,7 +465,7 @@ class hgboost:
                 * 'f1': F1-score
                 * 'logloss'
                 * 'auc_cv': Compute average auc per iteration in each cross. This approach is computational expensive.
-        greater_is_better : bool (default : True)
+        larger_is_better : bool (default : True)
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
 
         Returns
@@ -487,11 +487,11 @@ class hgboost:
         self.method = 'lgb_clf'
         self.pos_label = pos_label
         # Run method
-        self._classification(X, y, eval_metric, greater_is_better, params)
+        self._classification(X, y, eval_metric, larger_is_better, params)
         # Return
         return self.results
 
-    def ensemble(self, X, y, pos_label=None, methods=['xgb_clf', 'ctb_clf', 'lgb_clf'], eval_metric=None, greater_is_better=None, voting='soft'):
+    def ensemble(self, X, y, pos_label=None, methods=['xgb_clf', 'ctb_clf', 'lgb_clf'], eval_metric=None, larger_is_better=None, voting='soft'):
         """Ensemble Classification with hyperparameter optimization.
 
         Description
@@ -513,7 +513,7 @@ class hgboost:
         eval_metric : str, (default : 'auc')
             Evaluation metric for the regressor of classification model.
                 * 'auc': area under ROC curve (two-class classification : default)
-        greater_is_better : bool (default : True)
+        larger_is_better : bool (default : True)
             If a loss, the output of the python function is negated by the scorer object, conforming to the cross validation convention that scorers return higher values for better models.
                 * auc :  True -> two-class
         voting : str, (default : 'soft')
@@ -562,7 +562,7 @@ class hgboost:
         # Check input data
         X, y, self.pos_label = _check_input(X, y, pos_label, self.method, verbose=self.verbose)
         # Gather for method, the default metric and greater is better.
-        self.eval_metric, self.greater_is_better = _check_eval_metric(self.method, eval_metric, greater_is_better)
+        self.eval_metric, self.larger_is_better = _check_eval_metric(self.method, eval_metric, larger_is_better)
         # Store the clean initialization in hgb
         hgb = copy.copy(self)
 
@@ -578,7 +578,7 @@ class hgboost:
             # Make copy of clean init
             hgbM = copy.copy(hgb)
             hgbM.method = method
-            hgbM._classification(X_train, y_train, eval_metric, greater_is_better, 'default')
+            hgbM._classification(X_train, y_train, eval_metric, larger_is_better, 'default')
             # Store
             models.append((method, copy.copy(hgbM.model)))
             self.results[method] = {}
@@ -721,7 +721,7 @@ class hgboost:
             logger.info('[%s]: %.4g using optimized hyperparameters on validation set.' % (self.eval_metric, val_score['loss']))
             logger.info('[%s]: %.4g using default (not optimized) parameters on validation set.' % (self.eval_metric, val_score_basic['loss']))
             # Store Validation results
-            results_summary = _store_validation_scores(results_summary, best_params, model_basic, val_score_basic, val_score, self.greater_is_better)
+            results_summary = _store_validation_scores(results_summary, best_params, model_basic, val_score_basic, val_score, self.larger_is_better)
 
         # Remove the model column
         del results_summary['model']
@@ -737,7 +737,7 @@ class hgboost:
         return model, results
 
     def _cv(self, results_summary, space, best_params):
-        ascending = False if self.greater_is_better else True
+        ascending = False if self.larger_is_better else True
         results_summary['loss_mean'] = np.nan
         results_summary['loss_std'] = np.nan
 
@@ -761,8 +761,7 @@ class hgboost:
                 elif '_reg' in self.method:
                     self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=None, shuffle=True)
 
-                # Clone a fresh unfitted copy so stateful attributes (early_stopping
-                # bookkeeping, fitted weights) do not bleed between folds.
+                # Clone a fresh unfitted copy so stateful attributes (early_stopping bookkeeping, fitted weights) do not bleed between folds.
                 try:
                     from sklearn.base import clone as _sklearn_clone
                     fold_model = _sklearn_clone(template_model)
@@ -789,7 +788,7 @@ class hgboost:
                 results_summary.loc[idx, 'loss_std'] = pd.DataFrame(scores)['loss'].std()
 
         # Negate scoring if required. The hpopt is optimized for loss functions (lower is better). Therefore we need to set eg the auc to negative and here we need to return.
-        if self.greater_is_better:
+        if self.larger_is_better:
             results_summary['loss_mean'] = results_summary['loss_mean'] * -1
             valid_mask = results_summary['loss_mean'].notna()
             if not valid_mask.any():
@@ -999,7 +998,7 @@ class hgboost:
         -----------
         Note that the loss function is by default maximized towards small/negative values by the hptop method.
         When you want to optimize auc or f1, you simply need to negate the score.
-        The negation is fixed with the parameter: greater_is_better=False
+        The negation is fixed with the parameter: larger_is_better=False
         """
         results = None
         # Make prediction
@@ -1024,7 +1023,7 @@ class hgboost:
                 else:
                     raise ValueError('[hgboost] >Error: [%s] is not a valid [eval_metric] for [%s].' %(self.eval_metric, self.method))
                 # Negative loss score if required
-                if self.greater_is_better: loss = loss * -1
+                if self.larger_is_better: loss = loss * -1
                 # Store
                 out = {'loss': loss, 'status': STATUS_OK, 'eval_time': time.time(), 'model': model}
             else:
@@ -1046,7 +1045,7 @@ class hgboost:
                     raise ValueError('[hgboost] >Error: [%s] is not a valid [eval_metric] for [%s].' %(self.eval_metric, self.method))
 
                 # Negative loss score if required
-                if self.greater_is_better: loss = loss * -1
+                if self.larger_is_better: loss = loss * -1
                 # Store
                 out = {'loss': loss, 'eval_time': time.time(), 'status': STATUS_OK, 'model': model}
                 # out = {'loss': loss, 'eval_time': time.time(), 'auc': results['auc'], 'kappa': results['kappa'], 'f1': results['f1'], 'status': STATUS_OK, 'model': model}
@@ -1063,7 +1062,7 @@ class hgboost:
                 raise ValueError('[hgboost] >Error: [%s] is not a valid [eval_metric] for [%s].' %(self.eval_metric, self.method))
 
             # Negative loss score if required
-            if self.greater_is_better: loss = loss * -1
+            if self.larger_is_better: loss = loss * -1
             # Store results
             out = {'loss': loss, 'eval_time': time.time(), 'status': STATUS_OK, 'model': model}
         else:
@@ -1300,7 +1299,7 @@ class hgboost:
 
         top_n = np.minimum(top_n, self.results['summary'].shape[0])
         # getcolors = colourmap.generate(top_n, cmap='Reds_r')
-        ascending = False if self.greater_is_better else True
+        ascending = False if self.larger_is_better else True
         summary_results = self.results['summary'].copy()
         summary_results = summary_results.loc[~summary_results['default_params'], :]
 
@@ -1631,7 +1630,7 @@ class hgboost:
         storedata['results'] = self.results
         storedata['method'] = self.method
         storedata['eval_metric'] = self.eval_metric
-        storedata['greater_is_better'] = self.greater_is_better
+        storedata['larger_is_better'] = self.larger_is_better
         storedata['space'] = self.space
         storedata['model'] = self.model
         storedata['algo'] = self.algo
@@ -1644,7 +1643,7 @@ class hgboost:
         storedata['random_state'] = self.random_state
         storedata['n_jobs'] = self.n_jobs
         storedata['verbose'] = self.verbose
-        storedata['is_unbalance'] = self.is_unbalance
+        storedata['is_unbalanced'] = self.is_unbalanced
         # Save
         status = pypickle.save(filepath, storedata, overwrite=overwrite, verbose=verbose)
         if status:
@@ -1717,7 +1716,7 @@ class hgboost:
             self.results = storedata['results']
             self.method = storedata['method']
             self.eval_metric = storedata['eval_metric']
-            self.greater_is_better = storedata['greater_is_better']
+            self.larger_is_better = storedata['larger_is_better']
             self.model = storedata['model']
             self.space = storedata['space']
             self.algo = storedata['algo']
@@ -1727,7 +1726,7 @@ class hgboost:
             self.test_size = storedata['test_size']
             self.val_size = storedata['val_size']
             self.cv = storedata['cv']
-            self.is_unbalance = storedata['is_unbalance']
+            self.is_unbalanced = storedata['is_unbalanced']
             self.random_state = storedata['random_state']
             self.n_jobs = storedata['n_jobs']
             self.verbose = storedata['verbose']
@@ -1742,7 +1741,7 @@ class hgboost:
 
 
 # %%
-def _store_validation_scores(results_summary, best_params, model_basic, val_score_basic, val_score, greater_is_better):
+def _store_validation_scores(results_summary, best_params, model_basic, val_score_basic, val_score, larger_is_better):
     # Store default parameters
     params = [*best_params.keys()]
     idx = results_summary.index.max() + 1
@@ -1752,7 +1751,7 @@ def _store_validation_scores(results_summary, best_params, model_basic, val_scor
         results_summary.loc[idx, param] = model_basic.get_params().get(param, None)
 
     results_summary['loss_validation'] = np.nan
-    results_summary.loc[idx, 'loss_validation'] = val_score_basic['loss'] * (-1 if greater_is_better else 1)
+    results_summary.loc[idx, 'loss_validation'] = val_score_basic['loss'] * (-1 if larger_is_better else 1)
     results_summary['default_params'] = False
     results_summary.loc[idx, 'default_params'] = True
 
@@ -1761,7 +1760,7 @@ def _store_validation_scores(results_summary, best_params, model_basic, val_scor
         idx_best = results_summary.index[results_summary['best_cv']==1]
     else:
         idx_best = results_summary.index[results_summary['best']==1]
-    results_summary.loc[idx_best, 'loss_validation'] = val_score['loss'] * (-1 if greater_is_better else 1)
+    results_summary.loc[idx_best, 'loss_validation'] = val_score['loss'] * (-1 if larger_is_better else 1)
 
     return results_summary
 
@@ -1830,7 +1829,7 @@ def _store_validation_scores(results_summary, best_params, model_basic, val_scor
 
 
 # %% Set the search spaces
-def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=False, gpu=False, early_stopping_rounds=25, verbose=3):
+def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalanced=False, gpu=False, early_stopping_rounds=25, verbose=3):
     # choice : categorical variables
     # quniform : discrete uniform (integers spaced evenly)
     # uniform: continuous uniform (floats spaced evenly)
@@ -1917,7 +1916,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
         task_type = 'CPU' if gpu else 'CPU'
 
         # Class sizes
-        if is_unbalance:
+        if is_unbalanced:
             # https://catboost.ai/docs/concepts/python-reference_parameters-list.html#python-reference_parameters-list
             logger.info('Correct for unbalanced classes using [auto_class_weights].')
             scale_pos_weight = np.sum(y!=pos_label) / np.sum(y==pos_label)
@@ -1946,11 +1945,11 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
         device = 'gpu' if gpu else 'cpu'
 
         # Class sizes
-        if is_unbalance:
-            logger.info('Correct for unbalanced classes using [is_unbalance]..')
-            is_unbalance = [True]
+        if is_unbalanced:
+            logger.info('Correct for unbalanced classes using [is_unbalanced]..')
+            is_unbalanced = [True]
         else:
-            is_unbalance = [True, False]
+            is_unbalanced = [True, False]
 
         lgb_clf_params={
             'learning_rate': hp.choice('learning_rate', np.logspace(np.log10(0.005), np.log10(0.5), base=10, num=1000)),
@@ -1965,7 +1964,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
             'colsample_bytree': hp.quniform('colsample_bytree', 0.6, 1, 0.01),
             'subsample': hp.quniform('subsample', 0.5, 1, 100),
             'bagging_fraction': hp.choice('bagging_fraction', np.arange(0.2, 1, 0.2)),
-            'is_unbalance': hp.choice('is_unbalance', is_unbalance),
+            'is_unbalanced': hp.choice('is_unbalanced', is_unbalanced),
             'device': device,
             'gpu_platform_id': 0,
             'gpu_device_id': 0,
@@ -2007,7 +2006,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
             # xgb_clf_params['eval_metric']=hp.choice('eval_metric', ['error', eval_metric])
             xgb_clf_params['objective']='binary:logistic'
             # Class sizes
-            if is_unbalance:
+            if is_unbalanced:
                 logger.info('Correct for unbalanced classes using [scale_pos_weight]..')
                 scale_pos_weight = np.sum(y!=pos_label) / np.sum(y==pos_label)
             else:
@@ -2092,7 +2091,7 @@ def _check_input(X, y, pos_label, method, verbose=4):
     return X, y, pos_label
 
 
-def _check_eval_metric(method, eval_metric, greater_is_better, verbose=3):
+def _check_eval_metric(method, eval_metric, larger_is_better, verbose=3):
     # Check the eval_metric
     if (eval_metric is None) and ('_reg' in method):
         eval_metric='rmse'
@@ -2101,22 +2100,22 @@ def _check_eval_metric(method, eval_metric, greater_is_better, verbose=3):
     elif (eval_metric is None) and ('_clf' in method):
         eval_metric='auc'
 
-    # Check the greater_is_better for evaluation metric
-    if greater_is_better is None:
+    # Check the larger_is_better for evaluation metric
+    if larger_is_better is None:
         if (eval_metric == 'f1'):
-            greater_is_better=True
+            larger_is_better=True
         elif 'auc' in eval_metric:
-            greater_is_better=True
+            larger_is_better=True
         elif (eval_metric == 'kappa'):
-            greater_is_better=True
+            larger_is_better=True
         elif (eval_metric == 'rmse'):
-            greater_is_better=False
+            larger_is_better=False
         elif (eval_metric == 'mse'):
-            greater_is_better=False
+            larger_is_better=False
         elif (eval_metric == 'mae'):
-            greater_is_better=False
+            larger_is_better=False
         else:
-            logger.warning('[%s] is not an implemented option. [greater_is_better] is set to %s', eval_metric, str(greater_is_better))
+            logger.warning('[%s] is not an implemented option. [larger_is_better] is set to %s', eval_metric, str(larger_is_better))
 
     # Return
-    return eval_metric, greater_is_better
+    return eval_metric, larger_is_better
