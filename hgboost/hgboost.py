@@ -5,6 +5,7 @@ Contributors: https://github.com/erdogant/hgboost
 
 import warnings
 warnings.filterwarnings("ignore")
+import logging
 
 import classeval as cle
 from df2onehot import df2onehot
@@ -13,29 +14,32 @@ import colourmap
 import pypickle
 import datazets as dz
 
-import os
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
+import time
+import copy
 
 from sklearn.metrics import mean_squared_error, cohen_kappa_score, mean_absolute_error, log_loss, roc_auc_score, f1_score
 from sklearn.ensemble import VotingClassifier, VotingRegressor
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
+from sklearn.model_selection import train_test_split, cross_val_score
+from hyperopt import fmin, tpe, STATUS_OK, Trials, hp
 import xgboost as xgb
-import catboost as ctb
+
+try:
+    import catboost as ctb
+except:
+    pass
 
 try:
     import lightgbm as lgb
 except:
     pass
 
-from hyperopt import fmin, tpe, STATUS_OK, Trials, hp
-
-from tqdm import tqdm
-import time
-import copy
+logger = logging.getLogger(__name__)
 
 
 # %%
@@ -691,6 +695,8 @@ class hgboost:
         # For each model, compute the performance.
         for idx in tqdm(idx_top_models, disable=disable):
             scores = []
+            # Retrieve the template model using label-based indexing (.loc).
+            template_model = results_summary['model'].loc[idx]
             # Do the k-fold cross-validation
             for k in np.arange(0, self.cv):
                 # Split train-test set
@@ -699,38 +705,76 @@ class hgboost:
                 elif '_reg' in self.method:
                     self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=None, shuffle=True)
 
-                # Evaluate the top10 best performing models
-                score, _ = self._train_model(results_summary['model'].iloc[idx], space)
-                score.pop('model')
-                scores.append(score)
+                # Clone a fresh unfitted copy so stateful attributes (early_stopping
+                # bookkeeping, fitted weights) do not bleed between folds.
+                try:
+                    from sklearn.base import clone as _sklearn_clone
+                    fold_model = _sklearn_clone(template_model)
+                except Exception:
+                    fold_model = copy.deepcopy(template_model)
 
-            # Compute the mean and std of the p-best-performing models across the k-fold crossvalidation.
-            results_summary['loss_mean'].iloc[idx] = pd.DataFrame(scores)['loss'].mean()
-            results_summary['loss_std'].iloc[idx] = pd.DataFrame(scores)['loss'].std()
+                # Disable early_stopping_rounds on the clone: the eval_set passed
+                # to fit() already handles stopping; leaving it set on the object
+                # causes XGBoost >=1.6 to raise when n_estimators and
+                # early_stopping_rounds interact unexpectedly across re-fits.
+                if hasattr(fold_model, 'early_stopping_rounds'):
+                    fold_model.early_stopping_rounds = None
+
+                try:
+                    score, _ = self._train_model(fold_model, space)
+                    score.pop('model')
+                    scores.append(score)
+                except Exception as e:
+                    import traceback
+                    print('[hgboost] >CV fold %d model idx %d FAILED: %s' % (k, idx, str(e)))
+                    traceback.print_exc()
+
+            if len(scores) > 0:
+                # Compute the mean and std across successful folds.
+                results_summary.loc[idx, 'loss_mean'] = pd.DataFrame(scores)['loss'].mean()
+                results_summary.loc[idx, 'loss_std'] = pd.DataFrame(scores)['loss'].std()
 
         # Negate scoring if required. The hpopt is optimized for loss functions (lower is better). Therefore we need to set eg the auc to negative and here we need to return.
         if self.greater_is_better:
             results_summary['loss_mean'] = results_summary['loss_mean'] * -1
-            idx_best = results_summary['loss_mean'].argmax()
+            valid_mask = results_summary['loss_mean'].notna()
+            if not valid_mask.any():
+                raise RuntimeError('[hgboost] >All cross-validation folds failed. Check model params and library compatibility.')
+            idx_best = results_summary.loc[valid_mask, 'loss_mean'].idxmax()
         else:
-            idx_best = results_summary['loss_mean'].argmin()
+            valid_mask = results_summary['loss_mean'].notna()
+            if not valid_mask.any():
+                raise RuntimeError('[hgboost] >All cross-validation folds failed. Check model params and library compatibility.')
+            idx_best = results_summary.loc[valid_mask, 'loss_mean'].idxmin()
 
         # Get best k-fold CV performing model based on the mean scores.
-        if self.verbose>=3: print('[hgboost] >[%s] (average): %.4g Best %.0d-fold CV model using optimized hyperparameters.' %(self.eval_metric, results_summary['loss_mean'].iloc[idx_best], self.cv))
-        model = results_summary['model'].iloc[idx_best]
+        if self.verbose>=3: print('[hgboost] >[%s] (average): %.4g Best %.0d-fold CV model using optimized hyperparameters.' %(self.eval_metric, results_summary['loss_mean'].loc[idx_best], self.cv))
+        model = results_summary['model'].loc[idx_best]
         results_summary['best_cv'] = False
-        results_summary['best_cv'].iloc[idx_best] = True
+        results_summary.loc[idx_best, 'best_cv'] = True
         # Collect best parameters for this model
-        best_params = dict(results_summary.iloc[idx_best, np.isin(results_summary.columns, [*best_params.keys()])])
+        best_params = dict(results_summary.loc[idx_best, np.isin(results_summary.columns, [*best_params.keys()])])
         # Return
         return model, results_summary, best_params
 
     def _train_model(self, model, space):
         verbose = 2 if self.verbose<=3 else 3
-        # Evaluation is determine for both training and testing set. These results can plotted after finishing.
+        # Evaluation is determined for both training and testing set.
         eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)]
-        # Make fit with stopping-rule to avoid overfitting. Directly perform evaluation with the eval_set.
-        model.fit(self.X_train, self.y_train, eval_set=eval_set, **space['fit_params'])
+        # Build fit kwargs from space, stripping internal sentinel keys.
+        fit_kwargs = {k: v for k, v in space['fit_params'].items() if not k.startswith('_')}
+        # LightGBM early-stopping callbacks are stateful and must be recreated
+        # fresh for every fit() call (a reused callback object raises errors on
+        # subsequent folds).  We stored the round count under a sentinel key.
+        if '_lgb_early_stopping_rounds' in space['fit_params']:
+            from lightgbm import early_stopping as _lgb_es, log_evaluation as _lgb_log
+            n = space['fit_params']['_lgb_early_stopping_rounds']
+            fit_kwargs['callbacks'] = [_lgb_es(stopping_rounds=n, verbose=False), _lgb_log(period=-1)]
+        elif 'callbacks' in fit_kwargs:
+            # Fallback: ensure callbacks is always a plain list, never a tuple.
+            fit_kwargs['callbacks'] = list(fit_kwargs['callbacks'])
+        # Make fit with stopping-rule to avoid overfitting.
+        model.fit(self.X_train, self.y_train, eval_set=eval_set, **fit_kwargs)
         # Evaluate results
         out, eval_results = self._eval(self.X_test, self.y_test, model, verbose=verbose)
         # Return
@@ -806,14 +850,23 @@ class hgboost:
                     gather_params_legacy = True
 
         # The trials.vals stores the index for some parameters instead of the real values.
+        # Only fall back column-by-column, never replace the whole df_params.
         if gather_params_legacy:
-            df_params = pd.DataFrame(trials.vals)
+            legacy_df = pd.DataFrame(trials.vals)
+            for col in legacy_df.columns:
+                if col in df_params.columns and df_params[col].isna().all():
+                    df_params[col] = legacy_df[col].values
         df_scoring = pd.DataFrame(trials.results)
         df = pd.concat([df_params, df_scoring], axis=1)
         df['tid'] = trials.tids
 
         # Retrieve only the models with OK status
         Iloc = df['status']=='ok'
+        if not Iloc.any():
+            raise RuntimeError(
+                '[hgboost] >All %.0d trials failed (status != "ok"). '
+                'Check that your model params and fit_params are compatible with the installed library versions.' % len(df)
+            )
         df = df.loc[Iloc, :]
 
         # Retrieve idx for best model.
@@ -831,7 +884,7 @@ class hgboost:
         model = df['model'].iloc[idx_best_loss]
         score = df['loss'].iloc[idx_best_loss]
         df['best'] = False
-        df['best'].iloc[idx_best_loss] = True
+        df.iloc[idx_best_loss, df.columns.get_loc('best')] = True
 
         # Get best_params
         try:
@@ -1229,6 +1282,9 @@ class hgboost:
 
         # Density plot for each parameter
         fig, ax = plt.subplots(nrRows, nrCols, figsize=figsize)
+        # Ensure ax is always 2D
+        if nrRows == 1:
+            ax = np.array([ax])
         i_row = -1
 
         i=0
@@ -1239,45 +1295,53 @@ class hgboost:
                 # Make new column
                 if i_col == 0: i_row = i_row + 1
                 if self.verbose>=5: print('>Plot row: %.0d, col: %.0d' %(i_row, i_col))
-                # Retrieve the data from the seperate plots
-                y_data = sns.distplot(summary_results[param], hist=False, kde=True, ax=ax[i_row][i_col]).get_lines()[0].get_data()[1]
-                # y_data = linefit.get_lines()[0].get_data()[1]
 
-                # Make density
-                sns.distplot(summary_results[param],
-                             hist=False,
-                             kde=True,
-                             rug=True,
-                             color='darkblue',
-                             kde_kws={'shade': shade, 'linewidth': 1, 'color': color_params[i, :]},
-                             rug_kws={'color': 'black'},
-                             ax=ax[i_row][i_col])
+                col_data = pd.to_numeric(summary_results[param], errors='coerce').dropna()
+                if col_data.nunique() < 2:
+                    i = i + 1
+                    continue
+
+                # KDE plot (replaces deprecated sns.distplot)
+                sns.kdeplot(col_data, fill=shade, linewidth=1,
+                            color=color_params[i, :],
+                            ax=ax[i_row][i_col])
+                # Rug plot
+                sns.rugplot(col_data, color='black', ax=ax[i_row][i_col])
+
+                # Get y range from the plotted kde line
+                lines = ax[i_row][i_col].get_lines()
+                if lines:
+                    y_data = lines[0].get_ydata()
+                    ymin, ymax = np.min(y_data), np.max(y_data)
+                else:
+                    ymin, ymax = 0, 1
 
                 getvals = df_summary[param].values
-                if len(y_data)>0:
-                    # Plot the top n (not the first because that one is plotted in green)
-                    ax[i_row][i_col].vlines(getvals[1:top_n], np.min(y_data), np.max(y_data), linewidth=1, colors='k', linestyles='dashed', label='Top ' + str(top_n) + ' models')
-
-                    # Plot the best (without cv)
-                    ax[i_row][i_col].vlines(getvals[idx_best], np.min(y_data), np.max(y_data), linewidth=2, colors='g', linestyles='dashed', label='Best (without cv)')
-
-                    # Plot the best (with cv)
-                    if self.cv is not None:
-                        ax[i_row][i_col].vlines(getvals[idx_best_cv], np.min(y_data), np.max(y_data), linewidth=2, colors='r', linestyles='dotted', label='Best ' + str(self.cv) + '-fold cv')
+                # Plot the top n (not the first because that one is plotted in green)
+                ax[i_row][i_col].vlines(getvals[1:top_n], ymin, ymax, linewidth=1, colors='k', linestyles='dashed', label='Top ' + str(top_n) + ' models')
+                # Plot the best (without cv)
+                ax[i_row][i_col].vlines(getvals[idx_best], ymin, ymax, linewidth=2, colors='g', linestyles='dashed', label='Best (without cv)')
+                # Plot the best (with cv)
+                if self.cv is not None:
+                    ax[i_row][i_col].vlines(getvals[idx_best_cv], ymin, ymax, linewidth=2, colors='r', linestyles='dotted', label='Best ' + str(self.cv) + '-fold cv')
 
                 if self.cv is not None:
-                    ax[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, getvals[idx_best_cv], self.cv)))
+                    ax[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, getvals[idx_best_cv[0]], self.cv)))
                 else:
-                    ax[i_row][i_col].set_title(('%s: %.3g' %(param, getvals[idx_best])))
+                    ax[i_row][i_col].set_title(('%s: %.3g' %(param, getvals[idx_best[0]])))
                 ax[i_row][i_col].set_ylabel('Density')
                 ax[i_row][i_col].grid(True)
                 ax[i_row][i_col].legend(loc='upper right')
-                # print(param)
-                # print(i_col)
-                # print(i_row)
                 i = i + 1
-            except:
-                pass
+            except Exception as e:
+                if self.verbose >= 2:
+                    print('[hgboost] >Warning: Could not plot param [%s]: %s' % (param, str(e)))
+                i = i + 1
+
+        # Hide unused subplots in density figure
+        for empty in range(i, nrRows * nrCols):
+            ax[empty // nrCols][empty % nrCols].set_visible(False)
+        fig.tight_layout()
 
         # Scatter plot
         df_sum = self.results['summary'].copy()
@@ -1291,6 +1355,9 @@ class hgboost:
         df_sum = df_sum.fillna(0)
 
         fig2, ax2 = plt.subplots(nrRows, nrCols, figsize=figsize)
+        # Ensure ax2 is always 2D
+        if nrRows == 1:
+            ax2 = np.array([ax2])
         i_row = -1
         i=0
         for param in params:
@@ -1299,6 +1366,12 @@ class hgboost:
                 i_col = np.mod(i, nrCols)
                 # Make new column
                 if i_col == 0: i_row = i_row + 1
+
+                col_data = pd.to_numeric(df_sum[param], errors='coerce')
+                if col_data.nunique() < 2:
+                    i = i + 1
+                    continue
+
                 # Make the plot
                 sns.regplot(x='tid', y=param, data=df_sum, ax=ax2[i_row][i_col], color=color_params[i, :])
 
@@ -1313,17 +1386,24 @@ class hgboost:
                     ax2[i_row][i_col].scatter(df_sum['tid'].values[idx_best_cv], df_sum[param].values[idx_best_cv], s=100, color='r', marker='x', label='Best ' + str(self.cv) + '-fold cv')
 
                 # Set labels
-                ax2[i_row][i_col].set(xlabel='iteration', ylabel='{}'.format(param), title='{} over Search'.format(param))
                 if self.cv is not None:
-                    ax2[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, df_sum[param].values[idx_best_cv], self.cv)))
+                    ax2[i_row][i_col].set_title(('%s: %.3g (%.0d-fold cv)' %(param, df_sum[param].values[idx_best_cv[0]], self.cv)))
                 else:
-                    ax2[i_row][i_col].set_title(('%s: %.3g' %(param, df_sum[param].values[idx_best_without_cv])))
-
+                    ax2[i_row][i_col].set_title(('%s: %.3g' %(param, df_sum[param].values[idx_best_without_cv[0]])))
+                ax2[i_row][i_col].set_xlabel('iteration')
+                ax2[i_row][i_col].set_ylabel(param)
                 ax2[i_row][i_col].grid(True)
                 ax2[i_row][i_col].legend(loc='upper right')
                 i = i + 1
-            except:
-                pass
+            except Exception as e:
+                if self.verbose >= 2:
+                    print('[hgboost] >Warning: Could not plot scatter param [%s]: %s' % (param, str(e)))
+                i = i + 1
+
+        # Hide unused subplots in scatter figure
+        for empty in range(i, nrRows * nrCols):
+            ax2[empty // nrCols][empty % nrCols].set_visible(False)
+        fig2.tight_layout()
 
         if return_ax:
             return ax, ax2
@@ -1373,10 +1453,11 @@ class hgboost:
 
         # Plot results with testsize
         idx = np.where(tmpdf['best'].values)[0]
-        ax1.hlines(tmpdf['loss'].iloc[idx], 0, tmpdf['loss'].shape[0], colors='g', linestyles='dashed', label='Best model (without cv)')
-        ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss_mean'].iloc[idx], colors='g', linestyles='dashed')
+        best_loss = float(tmpdf['loss'].iloc[idx[0]])
+        ax1.hlines(best_loss, 0, tmpdf['loss'].shape[0], colors='g', linestyles='dashed', label='Best model (without cv)')
+        loss_mean_at_idx = tmpdf['loss_mean'].iloc[idx[0]] if not pd.isna(tmpdf['loss_mean'].iloc[idx[0]]) else best_loss
+        ax1.vlines(idx[0], tmpdf['loss'].min(), loss_mean_at_idx, colors='g', linestyles='dashed')
 
-        best_loss = tmpdf['loss'].iloc[idx]
         title = ('%s (%s: %.3g)' %(self.method, self.eval_metric, best_loss))
 
         # Plot results with cv
@@ -1386,16 +1467,16 @@ class hgboost:
             topk = np.where(~tmpdf['loss_mean'].isna())[0]
 
             # Mark the best CV in Red
-            idx = np.where(tmpdf['best_cv'].values)[0]
-            ax1.hlines(tmpdf['loss_mean'].iloc[idx], 0, tmpdf['loss_mean'].shape[0], colors='r', linestyles='dotted', label='Best model (' + str(self.cv) + '-fold cv)')
-            ax1.vlines(idx, tmpdf['loss'].min(), tmpdf['loss_mean'].iloc[idx], colors='r', linestyles='dashed')
-            
+            idx_cv = np.where(tmpdf['best_cv'].values)[0]
+            best_loss_cv = float(tmpdf['loss_mean'].iloc[idx_cv[0]])
+            ax1.hlines(best_loss_cv, 0, tmpdf['loss_mean'].shape[0], colors='r', linestyles='dotted', label='Best model (' + str(self.cv) + '-fold cv)')
+            ax1.vlines(idx_cv[0], tmpdf['loss'].min(), best_loss_cv, colors='r', linestyles='dashed')
+
             # Highlight the top k best scoring models.
             ax1.scatter(tmpdf['tid'].values[topk], tmpdf['loss'].values[topk], s=30, marker='s', label='Top ' + str(self.top_cv_evals) + ' scoring models', color='#960000')
-            
+
             # Set title
-            best_loss = tmpdf['loss_mean'].iloc[idx]
-            title = ('%s (%.0d-fold cv mean %s: %.3g)' %(self.method, self.cv, self.eval_metric, best_loss))
+            title = ('%s (%.0d-fold cv mean %s: %.3g)' %(self.method, self.cv, self.eval_metric, best_loss_cv))
             ax1.set_xlabel('Model iterations')
 
         # Set labels
@@ -1616,19 +1697,19 @@ def _store_validation_scores(results_summary, best_params, model_basic, val_scor
     results_summary.loc[idx] = np.nan
     # Store the params of the basic model
     for param in params:
-        results_summary[param].iloc[idx] = model_basic.get_params().get(param, None)
+        results_summary.loc[idx, param] = model_basic.get_params().get(param, None)
 
     results_summary['loss_validation'] = np.nan
-    results_summary['loss_validation'].iloc[idx] = val_score_basic['loss'] * (-1 if greater_is_better else 1)
+    results_summary.loc[idx, 'loss_validation'] = val_score_basic['loss'] * (-1 if greater_is_better else 1)
     results_summary['default_params'] = False
-    results_summary['default_params'].iloc[idx] = True
+    results_summary.loc[idx, 'default_params'] = True
 
     # Store the best loss validation score for the hyperoptimized model
     if np.any(results_summary.columns.str.contains('best_cv')):
-        idx = np.where(results_summary['best_cv']==1)[0]
+        idx_best = results_summary.index[results_summary['best_cv']==1]
     else:
-        idx = np.where(results_summary['best']==1)[0]
-    results_summary['loss_validation'].iloc[idx] = val_score['loss'] * (-1 if greater_is_better else 1)
+        idx_best = results_summary.index[results_summary['best']==1]
+    results_summary.loc[idx_best, 'loss_validation'] = val_score['loss'] * (-1 if greater_is_better else 1)
 
     return results_summary
 
@@ -1751,10 +1832,10 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
         }
         space = {}
         space['model_params'] = lgb_reg_params
-        # space['fit_params'] = {'eval_metric': 'l2', 'early_stopping': early_stopping_rounds, 'verbose': 0}
-        space['fit_params'] = {'eval_metric': 'l2'}
-        from lightgbm import early_stopping
-        early_stopping(stopping_rounds=early_stopping_rounds)
+        space['fit_params'] = {
+            'eval_metric': 'l2',
+            '_lgb_early_stopping_rounds': early_stopping_rounds,  # rebuilt fresh each fit
+        }
 
         return(space)
 
@@ -1839,10 +1920,9 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
         }
         space={}
         space['model_params'] = lgb_clf_params
-        space['fit_params'] = {}
-        from lightgbm import early_stopping
-        early_stopping(stopping_rounds=early_stopping_rounds)
-
+        space['fit_params'] = {
+            '_lgb_early_stopping_rounds': early_stopping_rounds,  # rebuilt fresh each fit
+        }
         return space
 
     # ############## XGboost classification parameters ###############

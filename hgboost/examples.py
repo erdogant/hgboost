@@ -1,3 +1,22 @@
+# %% CLASSIFICATION TWO-CLASS #####
+from hgboost import hgboost
+from sklearn import datasets
+import pandas as pd
+
+iris = datasets.load_iris()
+X = pd.DataFrame(iris.data, columns=iris['feature_names'])
+y = iris.target
+
+hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
+results = hgb.xgboost(X, y, pos_label=0)
+
+# Plot
+hgb.plot_params()
+hgb.plot()
+hgb.treeplot()
+hgb.plot_validation()
+hgb.plot_cv()
+
 #%%
 # https://scikit-learn.org/stable/modules/cross_validation.html
 # https://towardsdatascience.com/fine-tuning-xgboost-in-python-like-a-boss-b4543ed8b1e
@@ -11,7 +30,7 @@
 import numpy as np
 from hgboost import hgboost
 
-hgb = hgboost(max_eval=25, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42, verbose=3)
+hgb = hgboost(max_eval=25, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
 
 # Import data
 df = hgb.import_example()
@@ -19,13 +38,20 @@ y = df['Age'].values
 df.drop(['Age', 'PassengerId', 'Name'], axis=1, inplace=True)
 
 # Preprocessing
-X = hgb.preprocessing(df, verbose=0)
+X = hgb.preprocessing(df)
 I = ~np.isnan(y)
 X = X.loc[I, :]
 y = y[I]
 
 # Fit
 hgb.lightboost_reg(X, y, eval_metric='mae');
+
+# Make some plots
+hgb.plot(ylim=[8.5, 13], plot2=False)
+hgb.plot_params()
+hgb.plot_validation()
+hgb.plot_cv()
+hgb.treeplot(plottype='vertical')
 
 # %%
 # Objective is to demonstrate:
@@ -60,7 +86,14 @@ X = X.loc[I, :]
 y = y[I]
 
 results  = hgb.xgboost_reg(X, y, eval_metric='mae')      # XGBoost
-results  = hgb.xgboost_reg(X, y, eval_metric='rmse')      # XGBoost
+# results  = hgb.xgboost_reg(X, y, eval_metric='rmse')      # XGBoost
+
+hgb.plot(ylim=[8.5, 13], plot2=False)
+hgb.plot_params()
+hgb.plot_validation()
+hgb.plot_cv()
+hgb.treeplot(plottype='vertical')
+
 
 # %% HYPEROPTIMIZED REGRESSION-XGBOOST
 import numpy as np
@@ -83,16 +116,16 @@ y = y[I]
 
 # Fit
 results = hgb_xgb.xgboost_reg(X, y, eval_metric='mae')
-# results2 = hgb_cat.catboost_reg(X, y, eval_metric='mae')
-# results3 = hgb_light.lightboost_reg(X, y, eval_metric='mae')
+results2 = hgb_cat.catboost_reg(X, y, eval_metric='mae')
+results3 = hgb_light.lightboost_reg(X, y, eval_metric='mae')
 
 # hgb_xgb.save('c:\\temp\\hgb_xgb.pkl')
 # hgb_cat.save('c:\\temp\\hgb_cat.pkl')
 # hgb_light.save('c:\\temp\\hgb_light.pkl')
 
 # Make some plots
-hgb_xgb.plot_params()
 hgb_xgb.plot(ylim=[8.5, 13], plot2=False)
+hgb_xgb.plot_params()
 hgb_xgb.plot_validation()
 hgb_xgb.plot_cv()
 hgb_xgb.treeplot(plottype='vertical')
@@ -258,11 +291,12 @@ plt.figure();plt.plot(results['summary']['loss'])
 # [251 rows x 23 columns]
 
 # %%
+from hgboost import hgboost
 hg = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=0, gpu=True, verbose=3)
 df = hg.import_example()
 y = df['Survived'].values
 del df['Survived']
-X = hg.preprocessing(df, verbose=0)
+X = hg.preprocessing(df, verbose=3)
 
 # # Fit
 results = hg.xgboost(X, y, pos_label=1)
@@ -277,11 +311,12 @@ hg.load('test')
 
 
 # %% HYPEROPTIMIZED MULTI-CLASS XGBOOST
+from hgboost import hgboost
 hgb = hgboost(max_eval=10, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=42)
 
 # Import data
 df = hgb.import_example()
-y = df['Parch'].values
+y = df['Parch'].values.copy()
 y[y>=3]=3
 del df['Parch']
 X = hgb.preprocessing(df, verbose=0)

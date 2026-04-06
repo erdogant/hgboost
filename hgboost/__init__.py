@@ -1,13 +1,23 @@
+import logging
 from datazets import get as import_example
 from hgboost.hgboost import hgboost
 
-# from hgboost.hgboost import (
-#     import_example,
-#     )
+
+# Setup package-level logger
+_logger = logging.getLogger('hgboost')
+_log_handler = logging.StreamHandler()
+_formatter = logging.Formatter(fmt='[{asctime}] [{name:<12.12}] [{levelname:<8}] {message}', style='{', datefmt='%d-%m-%Y %H:%M:%S')
+_log_handler.setFormatter(_formatter)
+_log_handler.setLevel(logging.DEBUG)
+if not _logger.hasHandlers():  # avoid duplicate handlers if re-imported
+    _logger.addHandler(_log_handler)
+_logger.setLevel(logging.DEBUG)
+_logger.propagate = True  # allow submodules to inherit this handler
+
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'
-__version__ = '1.1.7'
+__version__ = '1.2.0'
 
 # module level doc-string
 __doc__ = """
@@ -93,8 +103,7 @@ Example
 
 References
 ----------
-* Blog: https://towardsdatascience.com/a-guide-to-find-the-best-boosting-model-using-bayesian-hyperparameter-tuning-but-without-c98b6a1ecac8
-* Blog: Classifiction: https://erdogant.medium.com/hands-on-guide-for-hyperparameter-tuning-with-bayesian-optimization-for-classification-models-2002224bfa3d
+* Medium: https://erdogant.medium.com
 * Github: https://github.com/erdogant/hgboost
 * Documentation pages: https://erdogant.github.io/hgboost/
 * Notebook Classification: https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb
