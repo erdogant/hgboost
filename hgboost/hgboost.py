@@ -977,6 +977,7 @@ class hgboost:
         if '_clf' in self.method:
             y_proba = model.predict_proba(X)
         else:
+            logger.info(f'No y_proba for {self.method}')
             y_proba = None
 
         # Return
