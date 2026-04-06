@@ -2,7 +2,6 @@ import logging
 from datazets import get as import_example
 from hgboost.hgboost import hgboost
 
-
 # Setup package-level logger
 _logger = logging.getLogger('hgboost')
 _log_handler = logging.StreamHandler()
@@ -13,7 +12,6 @@ if not _logger.hasHandlers():  # avoid duplicate handlers if re-imported
     _logger.addHandler(_log_handler)
 _logger.setLevel(logging.DEBUG)
 _logger.propagate = True  # allow submodules to inherit this handler
-
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'
@@ -48,20 +46,20 @@ Example
 >>> ######## CLASSIFICATION ########
 >>>
 >>> # Initialize
->>> hgb = hgboost(max_eval=500, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, verbose=3)
+>>> hgb = hgboost(max_eval=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, verbose='info')
 >>>
 >>> # Import data
 >>> df = hgb.import_example()
 >>> y = df['Survived'].values
 >>> del df['Survived']
->>> X = hgb.preprocessing(df, verbose=0)
+>>> X = hgb.preprocessing(df)
 >>>
 >>> # Fit a classification model
 >>> results = hgb.xgboost(X, y, pos_label=1)
 >>> results = hgb.catboost(X, y, pos_label=1)
 >>> results = hgb.lightboost(X, y, pos_label=1)
 >>>
->>> # Make some plots
+>>> # Make explainable plots
 >>> hgb.plot_params()
 >>> hgb.plot()
 >>> hgb.treeplot()
@@ -74,14 +72,14 @@ Example
 >>> ######## REGRESSION ########
 >>>
 >>> # Initialize
->>> hgb = hgboost(max_eval=500, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, verbose=3)
+>>> hgb = hgboost(max_eval=100, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, verbose='info')
 >>>
 >>> # Import data
 >>> df = hgb.import_example()
 >>> y = df['Age'].values
 >>> del df['Age']
 >>> I = ~np.isnan(y)
->>> X = hgb.preprocessing(df, verbose=0)
+>>> X = hgb.preprocessing(df)
 >>> X = X.loc[I,:]
 >>> y = y[I]
 >>>
