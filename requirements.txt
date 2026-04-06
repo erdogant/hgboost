@@ -9,7 +9,7 @@ catboost
 xgboost
 classeval
 treeplot
-df2onehot
+df2onehot>=1.2.3
 colourmap
 seaborn
 datazets
