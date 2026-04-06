@@ -34,7 +34,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
     # [hgboost] >Number of variables in search space is [10], loss function: [f1].
     # [hgboost] >method: xgb_clf
     # [hgboost] >eval_metric: f1
-    # [hgboost] >greater_is_better: True
+    # [hgboost] >larger_is_better: True
     # [hgboost] >Total dataset: (891, 204)
     # [hgboost] >Hyperparameter optimization..
     
@@ -80,7 +80,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.catboost
     # [hgboost] >Number of variables in search space is [10], loss function: [auc].
     # [hgboost] >method: ctb_clf
     # [hgboost] >eval_metric: auc
-    # [hgboost] >greater_is_better: True
+    # [hgboost] >larger_is_better: True
     # [hgboost] >Total dataset: (891, 204) 
     # [hgboost] >Hyperparameter optimization..
 
@@ -126,7 +126,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.lightboo
     # [hgboost] >Number of variables in search space is [10], loss function: [auc].
     # [hgboost] >method: lgb_clf
     # [hgboost] >eval_metric: auc
-    # [hgboost] >greater_is_better: True
+    # [hgboost] >larger_is_better: True
     # [hgboost] >Total dataset: (891, 204) 
     # [hgboost] >Hyperparameter optimization..
 
@@ -176,7 +176,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
     # [hgboost] >Number of variables in search space is [10], loss function: [kappa]
     # [hgboost] >method: xgb_clf_multi
     # [hgboost] >eval_metric: kappa
-    # [hgboost] >greater_is_better: True
+    # [hgboost] >larger_is_better: True
     # [hgboost] >Total dataset: (891, 204)
     # [hgboost] >Hyperparameter optimization..
 
@@ -233,7 +233,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost_
     # [hgboost] >Number of variables in search space is [10], loss function: [rmse].
     # [hgboost] >method: xgb_reg
     # [hgboost] >eval_metric: rmse
-    # [hgboost] >greater_is_better: True
+    # [hgboost] >larger_is_better: True
     # [hgboost] >Total dataset: (891, 204) 
     # [hgboost] >Hyperparameter optimization..
 
@@ -281,7 +281,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.lightboo
     # [hgboost] >Number of variables in search space is [10], loss function: [rmse].
     # [hgboost] >method: lgb_reg
     # [hgboost] >eval_metric: rmse
-    # [hgboost] >greater_is_better: True
+    # [hgboost] >larger_is_better: True
     # [hgboost] >Total dataset: (891, 204) 
     # [hgboost] >Hyperparameter optimization..
 
@@ -329,7 +329,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.catboost
     # [hgboost] >Number of variables in search space is [10], loss function: [rmse].
     # [hgboost] >method: ctb_reg
     # [hgboost] >eval_metric: rmse
-    # [hgboost] >greater_is_better: True
+    # [hgboost] >larger_is_better: True
     # [hgboost] >Total dataset: (891, 204) 
     # [hgboost] >Hyperparameter optimization..
 

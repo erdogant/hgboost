@@ -52,7 +52,7 @@ Cohen's kappa coefficient is a statistic that is used to measure inter-rated rel
 
 .. code:: python
 
-    scoring = make_scorer(cohen_kappa_score, greater_is_better=True)
+    scoring = make_scorer(cohen_kappa_score, larger_is_better=True)
 
 
 Probability graph
