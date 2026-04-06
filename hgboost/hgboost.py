@@ -41,6 +41,29 @@ except:
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# Verbose → logging-level mapping
+#   verbose 0  → logging.CRITICAL  (silent)
+#   verbose 1  → logging.ERROR
+#   verbose 2  → logging.WARNING
+#   verbose 3  → logging.INFO
+#   verbose 4  → logging.DEBUG
+# ---------------------------------------------------------------------------
+_VERBOSE_TO_LEVEL = {
+    'silent': logging.CRITICAL,
+    'critical': logging.CRITICAL,
+    'error': logging.ERROR,
+    'warning': logging.WARNING,
+    'info': logging.INFO,
+    'debug': logging.DEBUG,
+}
+
+
+def _set_logger_level(verbose: int) -> None:
+    """Adjust the module logger threshold to match *verbose*."""
+    level = _VERBOSE_TO_LEVEL.get(verbose.lower(), logging.DEBUG)
+    logger.setLevel(level)
+
 
 # %%
 class hgboost:
@@ -96,8 +119,7 @@ class hgboost:
 
     References
     ----------
-    * Blog: https://towardsdatascience.com/a-guide-to-find-the-best-boosting-model-using-bayesian-hyperparameter-tuning-but-without-c98b6a1ecac8
-    * Blog - classifiction: https://erdogant.medium.com/hands-on-guide-for-hyperparameter-tuning-with-bayesian-optimization-for-classification-models-2002224bfa3d
+    * Medium : https://erdogant.medium.com
     * Github : https://github.com/erdogant/hgboost
     * Documentation pages: https://erdogant.github.io/hgboost/
     * Notebook Classification: https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_classification_examples.ipynb
@@ -125,6 +147,30 @@ class hgboost:
         self.is_unbalance = is_unbalance
         self.gpu = gpu
         self.early_stopping_rounds=early_stopping_rounds
+        _set_logger_level(verbose)
+
+    # ------------------------------------------------------------------
+    # Internal logging helper
+    # ------------------------------------------------------------------
+    # def _log(self, min_verbose: int, msg: str, level: int = None) -> None:
+    #     """Emit *msg* when ``self.verbose >= min_verbose``.
+
+    #     Parameters
+    #     ----------
+    #     min_verbose : int
+    #         Minimum verbose value required to emit the message (mirrors the
+    #         old ``if self.verbose >= N: print(...)`` guards).
+    #     msg : str
+    #         Message text (without the ``[hgboost] >`` prefix, which is added
+    #         automatically).
+    #     level : int, optional
+    #         Explicit ``logging`` level (e.g. ``logging.WARNING``).  When
+    #         *None* the level is derived from *min_verbose* via
+    #         ``_VERBOSE_TO_LEVEL``.
+    #     """
+    #     if level is None:
+    #         level = _VERBOSE_TO_LEVEL.get(min_verbose, logging.DEBUG)
+    #     logger.log(level, msg)
 
     def _fit(self, X, y, pos_label=None):
         """Fit the best performing model.
@@ -165,18 +211,17 @@ class hgboost:
             self.test_size = np.round((self.test_size * X.shape[0]) / (X.shape[0] - (self.val_size * X.shape[0])), 2)
 
         # Print to screen
-        if self.verbose>=3:
-            print('[hgboost] >method: %s' %(self.method))
-            print('[hgboost] >eval_metric: %s' %(self.eval_metric))
-            print('[hgboost] >greater_is_better: %s' %(self.greater_is_better))
+        logger.info('method: %s' % self.method)
+        logger.info('eval_metric: %s' % self.eval_metric)
+        logger.info('greater_is_better: %s' % self.greater_is_better)
 
         # Set validation set
         self._set_validation_set(X, y)
         # Find best parameters
         self.model, self.results = self._HPOpt()
         # Fit on all data using best parameters
-        if self.verbose>=3: print('[hgboost] >*********************************************************************************')
-        if self.verbose>=3: print('[hgboost] >Retrain [%s] on the entire dataset with the optimal hyperparameters.' %(self.method))
+        logger.info('*' * 89)
+        logger.info('Retrain [%s] on the entire dataset with the optimal hyperparameters.' % self.method)
         self.model.fit(X, y)
         # Return
         return self.results
@@ -190,7 +235,7 @@ class hgboost:
         # Fit model
         self.results = self._fit(X, y, pos_label=self.pos_label)
         # Fin
-        if self.verbose>=3: print('[hgboost] >Fin!')
+        logger.info('Fin!')
 
     def _regression(self, X, y, eval_metric, greater_is_better, params):
         # Gather for method, the default metric and greater is better.
@@ -201,7 +246,7 @@ class hgboost:
         # Fit model
         self.results = self._fit(X, y)
         # Fin
-        if self.verbose>=3: print('[hgboost] >Fin!')
+        logger.info('Fin!')
 
     def xgboost_reg(self, X, y, eval_metric='rmse', greater_is_better=False, params='default'):
         """Xgboost Regression with hyperparameter optimization.
@@ -233,7 +278,7 @@ class hgboost:
             * comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.
 
         """
-        if self.verbose>=3: print('[hgboost] >Start hgboost regression.')
+        logger.info('Start hgboost regression.')
         # Method
         self.method='xgb_reg'
         # Run method
@@ -271,7 +316,7 @@ class hgboost:
             * comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.
 
         """
-        if self.verbose>=3: print('[hgboost] >Start hgboost regression.')
+        logger.info('Start hgboost regression.')
         # Method
         self.method='lgb_reg'
         # Run method
@@ -309,9 +354,9 @@ class hgboost:
             * comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.
 
         """
-        if self.verbose>=3: print('[hgboost] >Start hgboost regression.')
+        logger.info('Start hgboost regression.')
         if self.gpu:
-            print('[hgboost] >GPU for catboost is not supported. It throws an error because multiple evaluation sets are readily optimized.')
+            logger.warning('GPU for catboost is not supported. It throws an error because multiple evaluation sets are readily optimized.')
             self.gpu=False
         # Method
         self.method='ctb_reg'
@@ -357,7 +402,7 @@ class hgboost:
             * comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.
 
         """
-        if self.verbose>=3: print('[hgboost] >Start hgboost classification.')
+        logger.info('Start hgboost classification.')
         self.method = method
         self.pos_label = pos_label
         # Run method
@@ -397,9 +442,9 @@ class hgboost:
             * comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.
 
         """
-        if self.verbose>=3: print('[hgboost] >Start hgboost classification.')
+        logger.info('Start hgboost classification.')
         if self.gpu:
-            print('[hgboost] >GPU for catboost is not supported. It throws an error because I am readily optimizing across multiple evaluation sets.')
+            logger.warning('GPU for catboost is not supported. It throws an error because I am readily optimizing across multiple evaluation sets.')
 
         self.method = 'ctb_clf'
         self.pos_label = pos_label
@@ -440,7 +485,7 @@ class hgboost:
             * comparison_results (dict): Comparison between HyperOptimized parameters vs. default parameters.
 
         """
-        if self.verbose>=3: print('[hgboost] >Start hgboost classification.')
+        logger.info('Start hgboost classification.')
         self.method = 'lgb_clf'
         self.pos_label = pos_label
         # Run method
@@ -495,10 +540,10 @@ class hgboost:
         self.methods = methods
 
         if np.all(list(map(lambda x: 'clf' in x, methods))):
-            if self.verbose>=3: print('[hgboost] >Create ensemble classification model..')
+            logger.info('Create ensemble classification model..')
             self.method = 'ensemble_clf'
         elif np.all(list(map(lambda x: 'reg' in x, methods))):
-            if self.verbose>=3: print('[hgboost] >Create ensemble regression model..')
+            logger.info('Create ensemble regression model..')
             self.method = 'ensemble_reg'
         else:
             raise ValueError('[hgboost] >Error: The input [methods] must be of type "_clf" or "_reg" but can not be combined.')
@@ -529,7 +574,7 @@ class hgboost:
             self.results[method]['model'] = copy.copy(hgbM)
 
         # Create the ensemble model
-        if self.verbose>=3: print('[hgboost] >Fit ensemble model with [%s] voting..' %(self.voting))
+        logger.info('Fit ensemble model with [%s] voting..' % self.voting)
         if self.method == 'ensemble_clf':
             model = VotingClassifier(models, voting=voting, n_jobs=self.n_jobs)
             model.fit(X, y==pos_label)
@@ -540,10 +585,10 @@ class hgboost:
         self.model = model
 
         # Validation error for the ensemble model
-        if self.verbose>=3: print('[hgboost] >Evalute [ensemble] model on independent validation dataset (%.0f samples, %.2g%%)' %(len(y_val), self.val_size * 100))
+        logger.info('Evalute [ensemble] model on independent validation dataset (%.0f samples, %.2g%%)' % (len(y_val), self.val_size * 100))
         # Evaluate results on the same validation set
-        val_score, val_results = self._eval(X_val, y_val, model, verbose=2)
-        if self.verbose>=3: print('[hgboost] >[Ensemble] [%s]: %.4g on independent validation dataset' %(self.eval_metric, val_score['loss']))
+        val_score, val_results = self._eval(X_val, y_val, model)
+        logger.info('[Ensemble] [%s]: %.4g on independent validation dataset' % (self.eval_metric, val_score['loss']))
 
         # Validate each of the independent methods to show differences in loss-scoring
         if self.val_size is not None:
@@ -555,7 +600,7 @@ class hgboost:
                 # Store
                 self.results[method]['loss'] = val_score_M['loss']
                 self.results[method]['val_results'] = val_results_M
-                if self.verbose>=3: print('[hgboost] >[%s]  [%s]: %.4g on independent validation dataset' %(method, self.eval_metric, val_score_M['loss']))
+                logger.info('[%s]  [%s]: %.4g on independent validation dataset' % (method, self.eval_metric, val_score_M['loss']))
 
         # Store
         self.results['val_results'] = val_results
@@ -574,15 +619,15 @@ class hgboost:
         * The new data is stored in self.X and self.y
         * The validation X and y are stored in self.X_val and self.y_val
         """
-        if self.verbose>=3: print('[hgboost] >*********************************************************************************')
-        if self.verbose>=3: print('[hgboost] >Total dataset: %s ' %(str(X.shape)))
+        logger.info('*' * 89)
+        logger.info('Total dataset: %s ' % str(X.shape))
 
         if (self.val_size is not None):
             if '_clf' in self.method:
                 self.X, self.X_val, self.y, self.y_val = train_test_split(X, y, test_size=self.val_size, random_state=self.random_state, shuffle=True, stratify=y)
             elif '_reg' in self.method:
                 self.X, self.X_val, self.y, self.y_val = train_test_split(X, y, test_size=self.val_size, random_state=self.random_state, shuffle=True)
-            if self.verbose>=3: print('[hgboost] >Validation set: %s ' %(str(self.X_val.shape)))
+            logger.info('Validation set: %s ' % str(self.X_val.shape))
         else:
             self.X = X
             self.y = y
@@ -613,7 +658,7 @@ class hgboost:
 
         """
         # Import the desired model-function for the classification/regression
-        disable = (False if (self.verbose<3) else True)
+        disable = (False if (self.verbose=='silent') else True)
         fn = getattr(self, self.method)
 
         # Split train-test set. This set is used for parameter optimization. Note that parameters are shuffled and the train-test set is retained constant.
@@ -623,15 +668,15 @@ class hgboost:
         elif '_reg' in self.method:
             self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=self.random_state, shuffle=True)
 
-        if self.verbose>=3: print('[hgboost] >Test-set: %s ' %(str(self.X_test.shape)))
-        if self.verbose>=3: print('[hgboost] >Train-set: %s ' %(str(self.X_train.shape)))
-        if self.verbose>=3: print('[hgboost] >*********************************************************************************')
-        if self.verbose>=3: print('[hgboost] >Searching across hyperparameter space for best performing parameters using maximum nr. evaluations: %.0d' %(self.max_eval))
+        logger.info('Test-set: %s ' % str(self.X_test.shape))
+        logger.info('Train-set: %s ' % str(self.X_train.shape))
+        logger.info('*' * 89)
+        logger.info('Searching across hyperparameter space for best performing parameters using maximum nr. evaluations: %.0d' % self.max_eval)
 
 
         # Hyperoptimization to find best performing model. Set the trials which is the object where all the HPopt results are stored.
         trials=Trials()
-        best_params = fmin(fn=fn, space=self.space, algo=self.algo, max_evals=self.max_eval, trials=trials, show_progressbar=disable)
+        best_params = fmin(fn=fn, space=self.space, algo=self.algo, max_evals=self.max_eval, trials=trials, verbose=False, show_progressbar=False)
         # Summary results
         results_summary, model, best_params = self._to_df(trials, best_params)
 
@@ -653,17 +698,17 @@ class hgboost:
         val_results = None
         if (self.val_size is not None):
             # Evaluate results
-            if self.verbose>=3: print('[hgboost] >*********************************************************************************')
-            if self.verbose>=3: print('[hgboost] >Evaluate best [%s] model on validation dataset (%.0f samples, %.2g%%)' %(self.method, len(self.y_val), self.val_size * 100))
+            logger.info('*' * 89)
+            logger.info('Evaluate best [%s] model on validation dataset (%.0f samples, %.2g%%)' % (self.method, len(self.y_val), self.val_size * 100))
             # With hyperparameter optimization.
-            val_score, val_results = self._eval(self.X_val, self.y_val, model, verbose=2)
+            val_score, val_results = self._eval(self.X_val, self.y_val, model)
             # With defaults parameters.
-            val_score_basic, val_results_basic = self._eval(self.X_val, self.y_val, model_basic, verbose=2)
+            val_score_basic, val_results_basic = self._eval(self.X_val, self.y_val, model_basic)
             # Store
             comparison_results['Model with optimized hyperparameters (validation set)'] = val_results
             comparison_results['Model with default parameters (validation set)'] = val_results_basic
-            if self.verbose>=3: print('[hgboost] >[%s]: %.4g using optimized hyperparameters on validation set.' %(self.eval_metric, val_score['loss']))
-            if self.verbose>=3: print('[hgboost] >[%s]: %.4g using default (not optimized) parameters on validation set.' %(self.eval_metric, val_score_basic['loss']))
+            logger.info('[%s]: %.4g using optimized hyperparameters on validation set.' % (self.eval_metric, val_score['loss']))
+            logger.info('[%s]: %.4g using default (not optimized) parameters on validation set.' % (self.eval_metric, val_score_basic['loss']))
             # Store Validation results
             results_summary = _store_validation_scores(results_summary, best_params, model_basic, val_score_basic, val_score, self.greater_is_better)
 
@@ -688,9 +733,9 @@ class hgboost:
         # Determine maximum folds
         top_cv_evals = np.minimum(results_summary.shape[0], self.top_cv_evals)
         idx_top_models = results_summary['loss'].sort_values(ascending=ascending).index[0:top_cv_evals]
-        if self.verbose>=3: print('[hgboost] >*********************************************************************************')
-        if self.verbose>=3: print('[hgboost] >%.0d-fold cross validation for the top %.0d scoring models, Total nr. tests: %.0f' %(self.cv, len(idx_top_models), self.cv * len(idx_top_models)))
-        disable = (False if (self.verbose<3) else True)
+        logger.info('*' * 89)
+        logger.info('%.0d-fold cross validation for the top %.0d scoring models, Total nr. tests: %.0f' % (self.cv, len(idx_top_models), self.cv * len(idx_top_models)))
+        disable = (False if (self.verbose=='silent') else True)
 
         # For each model, compute the performance.
         for idx in tqdm(idx_top_models, disable=disable):
@@ -725,9 +770,7 @@ class hgboost:
                     score.pop('model')
                     scores.append(score)
                 except Exception as e:
-                    import traceback
-                    print('[hgboost] >CV fold %d model idx %d FAILED: %s' % (k, idx, str(e)))
-                    traceback.print_exc()
+                    logger.error('CV fold %d model idx %d FAILED: %s', k, idx, str(e), exc_info=True)
 
             if len(scores) > 0:
                 # Compute the mean and std across successful folds.
@@ -748,7 +791,7 @@ class hgboost:
             idx_best = results_summary.loc[valid_mask, 'loss_mean'].idxmin()
 
         # Get best k-fold CV performing model based on the mean scores.
-        if self.verbose>=3: print('[hgboost] >[%s] (average): %.4g Best %.0d-fold CV model using optimized hyperparameters.' %(self.eval_metric, results_summary['loss_mean'].loc[idx_best], self.cv))
+        logger.info('[%s] (average): %.4g Best %.0d-fold CV model using optimized hyperparameters.' % (self.eval_metric, results_summary['loss_mean'].loc[idx_best], self.cv))
         model = results_summary['model'].loc[idx_best]
         results_summary['best_cv'] = False
         results_summary.loc[idx_best, 'best_cv'] = True
@@ -758,11 +801,11 @@ class hgboost:
         return model, results_summary, best_params
 
     def _train_model(self, model, space):
-        verbose = 2 if self.verbose<=3 else 3
         # Evaluation is determined for both training and testing set.
         eval_set = [(self.X_train, self.y_train), (self.X_test, self.y_test)]
         # Build fit kwargs from space, stripping internal sentinel keys.
         fit_kwargs = {k: v for k, v in space['fit_params'].items() if not k.startswith('_')}
+        
         # LightGBM early-stopping callbacks are stateful and must be recreated
         # fresh for every fit() call (a reused callback object raises errors on
         # subsequent folds).  We stored the round count under a sentinel key.
@@ -773,10 +816,15 @@ class hgboost:
         elif 'callbacks' in fit_kwargs:
             # Fallback: ensure callbacks is always a plain list, never a tuple.
             fit_kwargs['callbacks'] = list(fit_kwargs['callbacks'])
+            # Force LightGBM to be silent
+            fit_kwargs['verbose'] = False
+        if 'XGBClassifier' in str(model):
+            fit_kwargs['verbose'] = False
+
         # Make fit with stopping-rule to avoid overfitting.
         model.fit(self.X_train, self.y_train, eval_set=eval_set, **fit_kwargs)
         # Evaluate results
-        out, eval_results = self._eval(self.X_test, self.y_test, model, verbose=verbose)
+        out, eval_results = self._eval(self.X_test, self.y_test, model)
         # Return
         return out, eval_results
 
@@ -824,7 +872,7 @@ class hgboost:
 
     # Transform results into dataframe
     def _to_df(self, trials, best_params=None):
-        if self.verbose>=3: print('[hgboost]> Collecting the hyperparameters from the [%.0d] trials.' %(len(trials.trials)))
+        logger.info('Collecting the hyperparameters from the [%.0d] trials.' % len(trials.trials))
 
         # Combine params with scoring results
         model_params = [*self.space['model_params'].keys()]
@@ -846,7 +894,7 @@ class hgboost:
                     else:
                         df_params[param].iloc[i] = getattr(trial['result']['model'], param)
                 except:
-                    if self.verbose>=4: print('[hgboost]> Skip [%s]' %(param))
+                    logger.debug('Skip [%s]' % param)
                     gather_params_legacy = True
 
         # The trials.vals stores the index for some parameters instead of the real values.
@@ -879,7 +927,7 @@ class hgboost:
             idx_best_loss = df['loss'].argmin()
 
         if idx!=idx_best_loss:
-            if self.verbose>=4: print('[hgboost] >[Warning]> Best model of hyperOpt does not have best loss score(?)')
+            logger.debug('[Warning] Best model of hyperOpt does not have best loss score(?)', level=logging.WARNING)
 
         model = df['model'].iloc[idx_best_loss]
         score = df['loss'].iloc[idx_best_loss]
@@ -895,7 +943,7 @@ class hgboost:
             pass
 
         # Return
-        if self.verbose>=3: print('[hgboost] >[%s]: %.4g Best performing model across %.0d iterations using Bayesian Optimization with Hyperopt.' %(self.eval_metric, score, df.shape[0]))
+        logger.info('[%s]: %.4g Best performing model across %.0d iterations using Bayesian Optimization with Hyperopt.' % (self.eval_metric, score, df.shape[0]))
         return(df, model, best_params)
 
     # Predict
@@ -916,7 +964,7 @@ class hgboost:
 
         """
         if not hasattr(self, 'model'):
-            if self.verbose>2: print('[hgboost] >Warning: No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
+            logger.info('Warning: No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>', level=logging.WARNING)
             return None, None
         if model is None:
             model = self.model
@@ -933,7 +981,7 @@ class hgboost:
         # Return
         return y_pred, y_proba
 
-    def _eval(self, X_test, y_test, model, verbose=3):
+    def _eval(self, X_test, y_test, model):
         """Model Evaluation.
 
         Description
@@ -1010,10 +1058,10 @@ class hgboost:
         else:
             raise ValueError('[hgboost] >Error: Method %s does not exists.' %(self.method))
 
-        if self.verbose>=5: print('[hgboost] >[%s] - [%s] - loss: %s' %(self.method, self.eval_metric, loss))
+        logger.debug('[%s] - [%s] - loss: %s' % (self.method, self.eval_metric, loss))
         return out, results
 
-    def preprocessing(self, df, y_min=2, perc_min_num=0.8, excl_background='0.0', hot_only=False, verbose=None):
+    def preprocessing(self, df, y_min=2, perc_min_num=0.8, excl_background='0.0', hot_only=False):
         """Pre-processing of the input data.
 
         Parameters
@@ -1024,9 +1072,6 @@ class hgboost:
             Minimal number of samples that must be present in a group. All groups with less then y_min samples are labeled as _other_ and are not used in the enriching model. The default is None.
         perc_min_num : float [None, 0..1], optional
             Force column (int or float) to be numerical if unique non-zero values are above percentage. The default is None. Alternative can be 0.8
-        verbose : int, (default: 3)
-            Print progress to screen.
-            0: NONE, 1: ERROR, 2: WARNING, 3: INFO, 4: DEBUG, 5: TRACE
 
         Returns
         -------
@@ -1034,8 +1079,7 @@ class hgboost:
             Processed data.
 
         """
-        if verbose is None: verbose = self.verbose
-        X = df2onehot(df, y_min=y_min, hot_only=hot_only, perc_min_num=perc_min_num, excl_background=excl_background, verbose=verbose)
+        X = df2onehot(df, y_min=y_min, hot_only=hot_only, perc_min_num=perc_min_num, excl_background=excl_background, verbose=self.verbose)
         return X['onehot']
 
     def import_example(self, data='titanic', url=None, sep=','):
@@ -1064,7 +1108,7 @@ class hgboost:
         """
         return dz.get(data=data, url=url, sep=sep)
 
-    def treeplot(self, num_trees=None, plottype='horizontal', figsize=(20, 25), return_ax=False, verbose=3):
+    def treeplot(self, num_trees=None, plottype='horizontal', figsize=(20, 25), return_ax=False):
         """Tree plot.
 
         Parameters
@@ -1077,9 +1121,6 @@ class hgboost:
                 * 'vertical'
         figsize: tuple, default (25,25)
             Figure size, (height, width)
-        verbose : int, (default : 3)
-            Print progress to screen.
-            0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE
 
         Returns
         -------
@@ -1087,11 +1128,13 @@ class hgboost:
 
         """
         if not hasattr(self, 'method') or (not hasattr(self, 'model')):
-            print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
+            logger.warning('No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return None
         if ('ensemble' in self.method):
-            if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
+            logger.warning('Warning: No plot for ensemble is possible yet. <return>', level=logging.WARNING)
             return None
+        verbose = 0 if self.verbose == 'silent' else 3
+
         ax = None
         # Plot the tree
         ax = tree.plot(self.model, num_trees=num_trees, plottype=plottype, figsize=figsize, verbose=verbose)
@@ -1113,11 +1156,11 @@ class hgboost:
 
         """
         if not hasattr(self, 'method') or ('ensemble' in self.method):
-            if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
+            logger.warning('Warning: No plot for ensemble is possible yet. <return>', level=logging.WARNING)
             return None
 
-        print('[hgboost] >%.0d-fold crossvalidation is performed with [%s]' %(self.cv, self.method))
-        disable = (False if (self.verbose<3) else True)
+        logger.info('%.0d-fold crossvalidation is performed with [%s]' % (self.cv, self.method))
+        disable = (False if (self.verbose=='silent') else True)
 
         ax = None
 
@@ -1134,7 +1177,7 @@ class hgboost:
                 # Make train-test
                 _, X_test, _, y_test = train_test_split(self.X, self.y, test_size=self.test_size, random_state=None, shuffle=True, stratify=self.y)
                 # Evaluate model using hyperoptimized model
-                _, cl_results = self._eval(X_test, y_test, self.model, verbose=0)
+                _, cl_results = self._eval(X_test, y_test, self.model)
                 cv_results[name] = cl_results
                 # Evaluate using default settings
                 # _, cl_results_dumb = self._eval(X_test, y_test, model_dumb['model'], verbose=0)
@@ -1180,16 +1223,16 @@ class hgboost:
         """
         ax = None
         if not hasattr(self, 'method') or (not hasattr(self, 'model')):
-            print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
+            logger.warning('No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return None
         if self.val_size is None:
-            print('[hgboost] >No validation set found. Hint: use the parameter [val_size=0.2] first <return>')
+            logger.warning('No validation set found. Hint: use the parameter [val_size=0.2] first <return>')
             return None
 
         title = 'Results on independent validation set'
         if ('_clf' in self.method) and not ('_multi' in self.method):
             if (self.results.get('val_results', None)) is not None:
-                print('[hgboost] >Results are plot from key: "results["val_results"]"')
+                logger.info('Results are plotted from key: "results[\'val_results\']"')
                 if normalized is not None: self.results['val_results']['confmat']['normalized']=normalized
                 ax = cle.plot(self.results['val_results'], title=title)
                 if return_ax: return ax
@@ -1241,7 +1284,7 @@ class hgboost:
 
         """
         if not hasattr(self, 'method') or ('ensemble' in self.method):
-            if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
+            logger.warning( 'Warning: No plot for ensemble is possible yet. <return>', level=logging.WARNING)
             return None, None
 
         top_n = np.minimum(top_n, self.results['summary'].shape[0])
@@ -1294,7 +1337,7 @@ class hgboost:
                 i_col = np.mod(i, nrCols)
                 # Make new column
                 if i_col == 0: i_row = i_row + 1
-                if self.verbose>=5: print('>Plot row: %.0d, col: %.0d' %(i_row, i_col))
+                logger.debug('Plot row: %.0d, col: %.0d' % (i_row, i_col))
 
                 col_data = pd.to_numeric(summary_results[param], errors='coerce').dropna()
                 if col_data.nunique() < 2:
@@ -1334,8 +1377,7 @@ class hgboost:
                 ax[i_row][i_col].legend(loc='upper right')
                 i = i + 1
             except Exception as e:
-                if self.verbose >= 2:
-                    print('[hgboost] >Warning: Could not plot param [%s]: %s' % (param, str(e)))
+                logger.warning( 'Warning: Could not plot param [%s]: %s' % (param, str(e)), level=logging.WARNING)
                 i = i + 1
 
         # Hide unused subplots in density figure
@@ -1396,8 +1438,7 @@ class hgboost:
                 ax2[i_row][i_col].legend(loc='upper right')
                 i = i + 1
             except Exception as e:
-                if self.verbose >= 2:
-                    print('[hgboost] >Warning: Could not plot scatter param [%s]: %s' % (param, str(e)))
+                logger.warning('Warning: Could not plot scatter param [%s]: %s' % (param, str(e)), level=logging.WARNING)
                 i = i + 1
 
         # Hide unused subplots in scatter figure
@@ -1426,10 +1467,10 @@ class hgboost:
         """
         ax1, ax2 = None, None
         if not hasattr(self, 'method') or (not hasattr(self, 'model')):
-            print('[hgboost] >No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
+            logger.warning('No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return ax1, ax2
         if ('ensemble' in self.method):
-            if self.verbose>=2: print('[hgboost] >Warning: No plot for ensemble is possible yet. <return>')
+            logger.warning('Warning: No plot for ensemble is possible yet. <return>', level=logging.WARNING)
             self.plot_ensemble(ylim, figsize, ax1, ax2)
             return ax1, ax2
 
@@ -1596,12 +1637,12 @@ class hgboost:
         # Save
         status = pypickle.save(filepath, storedata, overwrite=overwrite, verbose=verbose)
         if status:
-            if verbose>=3: print('[hgboost] >Save model results.')
-            if verbose>=3: print('[hgboost] >Save user-defined parameters.')
-            if verbose>=3: print('[hgboost] >Save trained model.')
-            if verbose>=3: print('[hgboost] >Save succesful!')
+            logger.info('Save model results.')
+            logger.info('Save user-defined parameters.')
+            logger.info('Save trained model.')
+            logger.info('Save successful!')
         else:
-            if verbose>=3: print('[hgboost] >Could not save. Tip: "hgb.save(overwrite=True)"')
+            logger.warning('Could not save. Tip: "hgb.save(overwrite=True)"')
         # return
         return status
 
@@ -1679,14 +1720,14 @@ class hgboost:
             self.random_state = storedata['random_state']
             self.n_jobs = storedata['n_jobs']
             self.verbose = storedata['verbose']
-            if verbose>=3: print('[hgboost] >Restore model results.')
-            if verbose>=3: print('[hgboost] >Restore user-defined parameters.')
-            if verbose>=3: print('[hgboost] >Restore trained model.')
-            if verbose>=3: print('[hgboost] >Loading succesful!')
+            logger.info('Restore model results.')
+            logger.info('Restore user-defined parameters.')
+            logger.info('Restore trained model.')
+            logger.info('Loading successful!')
             # Return results
             return self.results
         else:
-            if verbose>=2: print('[hgboost] >WARNING: Could not load data.')
+            logger.warning('Could not load data.')
 
 
 # %%
@@ -1757,7 +1798,7 @@ def _store_validation_scores(results_summary, best_params, model_basic, val_scor
     #     data = wget.filename_from_url(url)
 
     # if url is None:
-    #     if verbose>=3: print('[hgboost] >Nothing to download.')
+    #     print('[hgboost] >Nothing to download.')
     #     return None
 
     # curpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
@@ -1767,11 +1808,11 @@ def _store_validation_scores(results_summary, best_params, model_basic, val_scor
 
     # # Check file exists.
     # if not os.path.isfile(PATH_TO_DATA):
-    #     if verbose>=3: print('[hgboost] >Downloading [%s] dataset from github source..' %(data))
+    #     print('[hgboost] >Downloading [%s] dataset from github source..' %(data))
     #     wget.download(url, curpath)
 
     # # Import local dataset
-    # if verbose>=3: print('[hgboost] >Import dataset [%s]' %(data))
+    # print('[hgboost] >Import dataset [%s]' %(data))
     # df = pd.read_csv(PATH_TO_DATA, sep=sep)
     # # Return
     # return df
@@ -1784,7 +1825,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
     # uniform: continuous uniform (floats spaced evenly)
     # loguniform: continuous log uniform (floats spaced evenly on a log scale)
     if eval_metric is None: raise ValueError('[hgboost] >eval_metric must be provided.')
-    if verbose>=3: print('[hgboost] >Collecting %s parameters.' %(fn_name))
+    logger.info('Collecting %s parameters.', fn_name)
 
     ############### XGB parameters ###############
     if fn_name=='xgb_reg':
@@ -1867,7 +1908,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
         # Class sizes
         if is_unbalance:
             # https://catboost.ai/docs/concepts/python-reference_parameters-list.html#python-reference_parameters-list
-            if verbose>=3: print('[hgboost] >Correct for unbalanced classes using [auto_class_weights].')
+            logger.info('Correct for unbalanced classes using [auto_class_weights].')
             scale_pos_weight = np.sum(y!=pos_label) / np.sum(y==pos_label)
         else:
             scale_pos_weight = hp.choice('scale_pos_weight', np.arange(1, 101, 9))
@@ -1895,7 +1936,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
 
         # Class sizes
         if is_unbalance:
-            if verbose>=3: print('[hgboost] >Correct for unbalanced classes using [is_unbalance]..')
+            logger.info('Correct for unbalanced classes using [is_unbalance]..')
             is_unbalance = [True]
         else:
             is_unbalance = [True, False]
@@ -1956,7 +1997,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
             xgb_clf_params['objective']='binary:logistic'
             # Class sizes
             if is_unbalance:
-                if verbose>=3: print('[hgboost] >Correct for unbalanced classes using [scale_pos_weight]..')
+                logger.info('Correct for unbalanced classes using [scale_pos_weight]..')
                 scale_pos_weight = np.sum(y!=pos_label) / np.sum(y==pos_label)
             else:
                 scale_pos_weight = hp.choice('scale_pos_weight', np.arange(1, 101, 9))
@@ -1970,7 +2011,7 @@ def _get_params(fn_name, eval_metric=None, y=None, pos_label=None, is_unbalance=
         space['model_params']=xgb_clf_params
         space['fit_params']={'verbose': 0}
 
-        if verbose>=3: print('[hgboost] >[%.0d] hyperparameters in gridsearch space. Used loss function: [%s].' %(len([*space['model_params']]), eval_metric))
+        logger.info('[%.0d] hyperparameters in gridsearch space. Used loss function: [%s].', len([*space['model_params']]), eval_metric)
         return space
 
 
@@ -1994,14 +2035,14 @@ def _check_input(X, y, pos_label, method, verbose=4):
 
     # Set pos_label and y
     if (pos_label is not None) and ('_clf' in method):
-        if verbose>=4: print('[hgboost] >pos_label is used to set [%s].' %(pos_label))
+        logger.debug('pos_label is used to set [%s].', pos_label)
         y=y==pos_label
         pos_label=True
 
     # Checks pos_label status in case of method is classification
     if ('_clf' in method) and (pos_label is None) and (str(y.dtype)=='bool'):
         pos_label=True
-        if verbose>=4: print('[hgboost] >[pos_label] is set to [%s] because [y] is of type [bool].' %(pos_label))
+        logger.debug('[pos_label] is set to [%s] because [y] is of type [bool].', pos_label)
 
     # Raise ValueError in case of pos_label is not set and not bool.
     if ('_clf' in method) and (pos_label is None) and (len(np.unique(y))==2) and not (str(y.dtype)=='bool'):
@@ -2021,7 +2062,7 @@ def _check_input(X, y, pos_label, method, verbose=4):
 
     if ('_clf_multi' in method):
         pos_label=None
-        if verbose>=4: print('[hgboost] >[pos_label] is set to [None] because [method] is of type [%s].' %(method))
+        logger.debug('[pos_label] is set to [None] because [method] is of type [%s].', method)
 
     # Check counts y
     y_counts=np.unique(y, return_counts=True)[1]
@@ -2034,7 +2075,7 @@ def _check_input(X, y, pos_label, method, verbose=4):
     # Set X
     X.reset_index(drop=True, inplace=True)
     X.columns=X.columns.values.astype(str)
-    if verbose>=4: print('[hgboost] >Reset index for X.')
+    logger.debug('Reset index for X.')
 
     # Return
     return X, y, pos_label
@@ -2064,7 +2105,7 @@ def _check_eval_metric(method, eval_metric, greater_is_better, verbose=3):
         elif (eval_metric == 'mae'):
             greater_is_better=False
         else:
-            if verbose>=2: print('[hgboost] >[%s] is not a implemented option. [greater_is_better] is set to %s' %(eval_metric, str(greater_is_better)))
+            logger.warning('[%s] is not an implemented option. [greater_is_better] is set to %s', eval_metric, str(greater_is_better))
 
     # Return
     return eval_metric, greater_is_better
