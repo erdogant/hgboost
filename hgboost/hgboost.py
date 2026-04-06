@@ -900,9 +900,9 @@ class hgboost:
             for param in model_params:
                 try:
                     if 'ctb' in self.method:
-                        df_params[param].iloc[i] = trial['result']['model'].get_all_params().get(param)
+                        df_params.loc[i, param] = trial['result']['model'].get_all_params().get(param)
                     else:
-                        df_params[param].iloc[i] = getattr(trial['result']['model'], param)
+                        df_params.loc[i, param] = getattr(trial['result']['model'], param)
                 except:
                     logger.debug('Skip [%s]' % param)
                     gather_params_legacy = True
@@ -930,7 +930,7 @@ class hgboost:
         # Retrieve idx for best model.
         idx = np.where(trials.best_trial['tid']==df['tid'])[0][0]
         # Als retrieve best model based on loss-score.
-        if self.greater_is_better:
+        if self.larger_is_better:
             df['loss'] = df['loss'] * -1
             idx_best_loss = df['loss'].argmax()
         else:
@@ -939,14 +939,18 @@ class hgboost:
         if idx!=idx_best_loss:
             logger.debug('[Warning] Best model of hyperOpt does not have best loss score(?)')
 
-        model = df['model'].iloc[idx_best_loss]
-        score = df['loss'].iloc[idx_best_loss]
+        # model = df['model'].iloc[idx_best_loss]
+        # score = df['loss'].iloc[idx_best_loss]
+        model = df.loc[idx_best_loss, 'model']
+        score = df.loc[idx_best_loss, 'loss']
         df['best'] = False
-        df.iloc[idx_best_loss, df.columns.get_loc('best')] = True
+        # df.iloc[idx_best_loss, df.columns.get_loc('best')] = True
+        df.loc[idx_best_loss, 'best'] = True
 
         # Get best_params
         try:
-            best_params = df[best_params].iloc[idx_best_loss].to_dict()
+            # best_params = df.loc[idx_best_loss, best_params].to_dict()
+            best_params = df.loc[idx_best_loss].to_dict()
             # Should be the same as:
             # trials.best_trial['result']['model']
         except:
@@ -954,7 +958,7 @@ class hgboost:
 
         # Return
         logger.info('[%s]: %.4g Best performing model across %.0d iterations using Bayesian Optimization with Hyperopt.' % (self.eval_metric, score, df.shape[0]))
-        return(df, model, best_params)
+        return df, model, best_params
 
     # Predict
     def predict(self, X, model=None):
