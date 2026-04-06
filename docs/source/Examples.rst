@@ -18,15 +18,15 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
     from hgboost import hgboost
     
     # Initialize
-    hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
-
-    # Load example data set    
+    hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose='info')
+    
+    # Load example data set
     df = hgb.import_example()
     # Prepare data for classification
     y = df['Survived'].values
     del df['Survived']
-    X = hgb.preprocessing(df, verbose=0)
-
+    X = hgb.preprocessing(df)
+    
     # Fit best model with desired evaluation metric:
     results = hgb.xgboost(X, y, pos_label=1, eval_metric='f1')
     # [hgboost] >Start hgboost classification..
@@ -35,9 +35,9 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
     # [hgboost] >method: xgb_clf
     # [hgboost] >eval_metric: f1
     # [hgboost] >greater_is_better: True
-    # [hgboost] >Total dataset: (891, 204) 
+    # [hgboost] >Total dataset: (891, 204)
     # [hgboost] >Hyperparameter optimization..
-
+    
     # Plot the parameter space
     hgb.plot_params()
     # Plot the summary results
@@ -48,7 +48,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
     hgb.plot_validation()
     # Plot results on the cross-validation
     hgb.plot_cv()
-
+    
     # Make new prdiction using the model (suppose that X is new and unseen data which is similarly prepared as for the learning process)
     y_pred, y_proba = hgb.predict(X)
 
@@ -64,14 +64,14 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.catboost
     from hgboost import hgboost
     
     # Initialize
-    hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+    hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose='info')
 
     # Load example data set    
     df = hgb.import_example()
     # Prepare data for classification
     y = df['Survived'].values
     del df['Survived']
-    X = hgb.preprocessing(df, verbose=0)
+    X = hgb.preprocessing(df)
 
     # Fit best model with desired evaluation metric:
     results = hgb.catboost(X, y, pos_label=1, eval_metric='auc')
@@ -110,14 +110,14 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.lightboo
     from hgboost import hgboost
     
     # Initialize
-    hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+    hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose='info')
 
     # Load example data set    
     df = hgb.import_example()
     # Prepare data for classification
     y = df['Survived'].values
     del df['Survived']
-    X = hgb.preprocessing(df, verbose=0)
+    X = hgb.preprocessing(df)
 
     # Fit best model with desired evaluation metric:
     results = hgb.lightboost(X, y, pos_label=1, eval_metric='auc')
@@ -159,7 +159,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
     from hgboost import hgboost
     
     # Initialize
-    hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+    hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose='info')
 
     # Load example data set    
     df = hgb.import_example()
@@ -167,7 +167,7 @@ Function documentation can be found here :func:`hgboost.hgboost.hgboost.xgboost`
     y = df['Parch'].values
     y[y>=3]=3
     del df['Parch']
-    X = hgb.preprocessing(df, verbose=0)
+    X = hgb.preprocessing(df)
 
     # Fit best model with desired evaluation metric:
     results = hgb.xgboost(X, y, method='xgb_clf_multi', eval_metric='kappa')
@@ -368,13 +368,13 @@ It can be seen from the results that the ensemble classifier performs superior c
     from hgboost import hgboost
 
     # Initialize
-    hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose=3)
+    hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None, verbose='info')
     
     # Import data
     df = hgb.import_example()
     y = df['Survived'].values
     del df['Survived']
-    X = hgb.preprocessing(df, verbose=0)
+    X = hgb.preprocessing(df)
 
     # Fit ensemble model using the three boosting methods. By default these are readily set.
     results = hgb.ensemble(X, y, pos_label=1)
@@ -412,7 +412,7 @@ It can be seen from the results that the ensemble classifier performs superior c
     y = df['Age'].values
     del df['Age']
     I = ~np.isnan(y)
-    X = hgb.preprocessing(df, verbose=0)
+    X = hgb.preprocessing(df)
     X = X.loc[I,:]
     y = y[I]
 

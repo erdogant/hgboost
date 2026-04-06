@@ -112,7 +112,7 @@ class hgboost:
         Computing using either GPU or CPU. Note that GPU usage is not very well supported because various optimizations are performed during training/testing/crossvalidation.
         True: Use GPU.
         False: Use CPU.
-    verbose : int, (default : 3)
+    verbose : str, (default : 'info')
         Print progress to screen.
         0: None, 1: ERROR, 2: WARN, 3: INFO, 4: DEBUG, 5: TRACE
 
@@ -129,7 +129,7 @@ class hgboost:
     * Notebook Regression: https://colab.research.google.com/github/erdogant/hgboost/blob/master/notebooks/hgboost_regression_examples.ipynb
 
     """
-    def __init__(self, max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, is_unbalance=True, random_state=None, n_jobs=-1, gpu=False, early_stopping_rounds=25, verbose=3):
+    def __init__(self, max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, is_unbalance=True, random_state=None, n_jobs=-1, gpu=False, early_stopping_rounds=25, verbose='info'):
         """Initialize hgboost with user-defined parameters."""
         if (threshold is None) or (threshold <= 0): raise ValueError('[hgboost] >Error: [threshold] must be >0 and not [None]')
         if (max_eval is None) or (max_eval <= 0): max_eval=1
@@ -152,28 +152,6 @@ class hgboost:
         self.early_stopping_rounds=early_stopping_rounds
         _set_logger_level(verbose)
 
-    # ------------------------------------------------------------------
-    # Internal logging helper
-    # ------------------------------------------------------------------
-    # def _log(self, min_verbose: int, msg: str, level: int = None) -> None:
-    #     """Emit *msg* when ``self.verbose >= min_verbose``.
-
-    #     Parameters
-    #     ----------
-    #     min_verbose : int
-    #         Minimum verbose value required to emit the message (mirrors the
-    #         old ``if self.verbose >= N: print(...)`` guards).
-    #     msg : str
-    #         Message text (without the ``[hgboost] >`` prefix, which is added
-    #         automatically).
-    #     level : int, optional
-    #         Explicit ``logging`` level (e.g. ``logging.WARNING``).  When
-    #         *None* the level is derived from *min_verbose* via
-    #         ``_VERBOSE_TO_LEVEL``.
-    #     """
-    #     if level is None:
-    #         level = _VERBOSE_TO_LEVEL.get(min_verbose, logging.DEBUG)
-    #     logger.log(level, msg)
 
     def _fit(self, X, y, pos_label=None):
         """Fit the best performing model.
@@ -958,7 +936,7 @@ class hgboost:
             idx_best_loss = df['loss'].argmin()
 
         if idx!=idx_best_loss:
-            logger.debug('[Warning] Best model of hyperOpt does not have best loss score(?)', level=logging.WARNING)
+            logger.debug('[Warning] Best model of hyperOpt does not have best loss score(?)')
 
         model = df['model'].iloc[idx_best_loss]
         score = df['loss'].iloc[idx_best_loss]
@@ -995,7 +973,7 @@ class hgboost:
 
         """
         if not hasattr(self, 'model'):
-            logger.info('Warning: No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>', level=logging.WARNING)
+            logger.info('Warning: No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return None, None
         if model is None:
             model = self.model
@@ -1162,7 +1140,7 @@ class hgboost:
             logger.warning('No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return None
         if ('ensemble' in self.method):
-            logger.warning('Warning: No plot for ensemble is possible yet. <return>', level=logging.WARNING)
+            logger.warning('Warning: No plot for ensemble is possible yet. <return>')
             return None
         verbose = 0 if self.verbose == 'silent' else 3
 
@@ -1187,7 +1165,7 @@ class hgboost:
 
         """
         if not hasattr(self, 'method') or ('ensemble' in self.method):
-            logger.warning('Warning: No plot for ensemble is possible yet. <return>', level=logging.WARNING)
+            logger.warning('Warning: No plot for ensemble is possible yet. <return>')
             return None
 
         logger.info('%.0d-fold crossvalidation is performed with [%s]' % (self.cv, self.method))
@@ -1315,7 +1293,7 @@ class hgboost:
 
         """
         if not hasattr(self, 'method') or ('ensemble' in self.method):
-            logger.warning( 'Warning: No plot for ensemble is possible yet. <return>', level=logging.WARNING)
+            logger.warning( 'Warning: No plot for ensemble is possible yet. <return>')
             return None, None
 
         top_n = np.minimum(top_n, self.results['summary'].shape[0])
@@ -1408,7 +1386,7 @@ class hgboost:
                 ax[i_row][i_col].legend(loc='upper right')
                 i = i + 1
             except Exception as e:
-                logger.warning( 'Warning: Could not plot param [%s]: %s' % (param, str(e)), level=logging.WARNING)
+                logger.warning( 'Warning: Could not plot param [%s]: %s' % (param, str(e)))
                 i = i + 1
 
         # Hide unused subplots in density figure
@@ -1469,7 +1447,7 @@ class hgboost:
                 ax2[i_row][i_col].legend(loc='upper right')
                 i = i + 1
             except Exception as e:
-                logger.warning('Warning: Could not plot scatter param [%s]: %s' % (param, str(e)), level=logging.WARNING)
+                logger.warning('Warning: Could not plot scatter param [%s]: %s' % (param, str(e)))
                 i = i + 1
 
         # Hide unused subplots in scatter figure
@@ -1501,7 +1479,7 @@ class hgboost:
             logger.warning('No model found. Hint: fit a model first using xgboost, catboost or lightboost <return>')
             return ax1, ax2
         if ('ensemble' in self.method):
-            logger.warning('Warning: No plot for ensemble is possible yet. <return>', level=logging.WARNING)
+            logger.warning('Warning: No plot for ensemble is possible yet. <return>')
             self.plot_ensemble(ylim, figsize, ax1, ax2)
             return ax1, ax2
 
