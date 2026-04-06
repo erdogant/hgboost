@@ -555,8 +555,21 @@ class hgboost:
         # Store parameters in object
         self.results = {}
         self.voting = voting
-        self.methods = methods
-
+        
+        self.methods = []
+        if np.isin('xgb_clf', methods):
+            self.methods.append('xgb_clf')
+        if catboost_available:
+            self.methods.append('ctb_clf')
+        if lightgbm_available:
+            self.methods.append('lgb_clf')
+        if np.isin('xgb_reg', methods):
+            self.methods.append('xgb_reg')
+        if catboost_available:
+            self.methods.append('ctb_reg')
+        if lightgbm_available:
+            self.methods.append('lgb_reg')
+        
         if np.all(list(map(lambda x: 'clf' in x, methods))):
             logger.info('Create ensemble classification model..')
             self.method = 'ensemble_clf'
