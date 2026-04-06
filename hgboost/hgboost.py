@@ -31,13 +31,16 @@ import xgboost as xgb
 
 try:
     import catboost as ctb
-except:
-    pass
+    catboost_available = True
+except ImportError:
+    catboost_available = False
+
 
 try:
     import lightgbm as lgb
-except:
-    pass
+    lightgbm_available = True
+except ImportError:
+    lightgbm_available = False
 
 logger = logging.getLogger(__name__)
 
@@ -317,6 +320,10 @@ class hgboost:
 
         """
         logger.info('Start hgboost regression.')
+        if not lightgbm_available:
+            logger.warning('Lightboost not installed. First pip install lightgbm>=4.1.0')
+            return
+
         # Method
         self.method='lgb_reg'
         # Run method
@@ -355,6 +362,10 @@ class hgboost:
 
         """
         logger.info('Start hgboost regression.')
+        if not catboost_available:
+            logger.warning('Catboost not installed. First pip install catboost')
+            return
+
         if self.gpu:
             logger.warning('GPU for catboost is not supported. It throws an error because multiple evaluation sets are readily optimized.')
             self.gpu=False
@@ -443,6 +454,9 @@ class hgboost:
 
         """
         logger.info('Start hgboost classification.')
+        if not catboost_available:
+            logger.warning('Catboost not installed. First pip install catboost')
+            return
         if self.gpu:
             logger.warning('GPU for catboost is not supported. It throws an error because I am readily optimizing across multiple evaluation sets.')
 
@@ -486,6 +500,10 @@ class hgboost:
 
         """
         logger.info('Start hgboost classification.')
+        if not lightgbm_available:
+            logger.warning('Lightboost not installed. First pip install lightgbm>=4.1.0')
+            return
+        
         self.method = 'lgb_clf'
         self.pos_label = pos_label
         # Run method
