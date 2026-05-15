@@ -23,8 +23,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from sklearn.model_selection import train_test_split, cross_val_score
-from hyperopt import fmin, tpe, STATUS_OK, Trials, hp
 import xgboost as xgb
+
+try:
+    from hyperopt import fmin, tpe, STATUS_OK, Trials, hp
+except ImportError:
+    raise Exception('hyperopt version > 0.2.7 needs to be installed. Alternative is to install from GitHub source: pip install -U git+https://github.com/hyperopt/hyperopt')
 
 try:
     import catboost as ctb

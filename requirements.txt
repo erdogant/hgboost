@@ -3,7 +3,7 @@ matplotlib
 numpy 
 pandas 
 tqdm
-hyperopt
+git+https://github.com/erdogant/hyperopt.git
 lightgbm>=4.1.0
 catboost
 xgboost

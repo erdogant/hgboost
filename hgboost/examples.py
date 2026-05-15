@@ -1,8 +1,3 @@
-# %%
-
-
-
-
 # %% CLASSIFICATION TWO-CLASS #####
 
 # Import
@@ -196,7 +191,7 @@ del df['Parch']
 X = hgb.preprocessing(df)
 
 # Fit best model with desired evaluation metric:
-results = hgb.xgboost(X, y, method='xgb_clf_multi', eval_metric='kappa')
+results = hgb.xgboost(X, y, method='xgb_clf_multi', eval_metric='f1')
 # [hgboost] >Start hgboost classification..
 # [hgboost] >Collecting xgb_clf parameters
 # [hgboost] >Number of variables in search space is [10], loss function: [kappa]
@@ -230,7 +225,7 @@ import numpy as np
 hgb = hgboost(max_eval=250, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, random_state=None)
 
 # Load example data set
-df = hgb.import_example()
+df = hgb.import_example('titanic')
 y = df['Age'].values
 del df['Age']
 I = ~np.isnan(y)
